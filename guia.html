@@ -4,10 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guías - Mi Casita</title>
+    <!-- Importando fuente de Google -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Importando iconos de FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* 
+         * ==========================================
+         * VARIABLES DE COLOR (TEMA CLARO Y OSCURO)
+         * ==========================================
+         * Si quieres cambiar los colores principales de la página,
+         * modifícalos aquí. 
+         */
         :root {
             --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
             --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #f9f5ed;
@@ -15,15 +24,18 @@
             --accent-red: #d84d65; --border-color: #e8e4dc; --transition-speed: 0.3s;
         }
 
+        /* Colores cuando el modo oscuro está activado */
         [data-theme="dark"] {
             --main-bg: #181521; --card-bg: #221e2d; --text-dark: #f0eef5;
             --text-muted: #a39eb5; --border-color: #353045; --sidebar-bg: #14111c;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: var(--transition-speed); overflow: hidden; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
 
-        /* Sidebar */
+        /* ==========================================
+         * ESTILOS DE LA BARRA LATERAL (SIDEBAR)
+         * ========================================== */
         .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
         .sidebar.collapsed { width: 0; padding: 0; }
         .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; min-width: 260px; }
@@ -41,7 +53,9 @@
         .nav-item:hover { color: var(--sidebar-text-active); }
         .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
 
-        /* Main Content */
+        /* ==========================================
+         * ESTILOS DEL CONTENIDO PRINCIPAL
+         * ========================================== */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
         .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
         .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
@@ -52,10 +66,11 @@
         .welcome-header h1 { font-size: 42px; font-weight: 800; margin-bottom: 12px; }
         .welcome-header h1 span { color: var(--sidebar-btn); }
 
-        /* Layout Grid */
         .grid-layout { display: block; }
         
-        /* Banners de Categorías de Guías (Ajustado para ocupar todo el ancho) */
+        /* ==========================================
+         * ESTILOS DE LOS BANNERS (TARJETAS DE GUÍAS)
+         * ========================================== */
         .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; }
         
         .hub-card {
@@ -76,23 +91,22 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
-        /* La imagen de fondo del banner */
         .hub-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover;
             z-index: 0;
-            filter: brightness(0.6); /* Oscurece la imagen para que se lea el texto */
+            filter: brightness(0.6); /* Oscurece un poco la imagen para que el texto resalte */
             transition: 0.3s;
         }
 
-        .hub-card:hover .hub-bg { filter: brightness(0.8); }
+        .hub-card:hover .hub-bg { filter: brightness(0.8); } /* Aclara la imagen al pasar el mouse */
 
         .hub-content {
             position: relative;
             z-index: 1;
             color: white;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8); /* Sombra para asegurar que se lea sobre cualquier fondo */
         }
 
         .hub-content h2 { font-size: 24px; font-weight: 800; margin-bottom: 5px; }
@@ -105,8 +119,12 @@
 </head>
 <body>
 
+    <!-- =========================================================================
+         MENÚ DE NAVEGACIÓN LATERAL
+         ========================================================================= -->
     <aside class="sidebar" id="sidebar">
        <div class="sidebar-header">
+            <!-- Nota: Aquí editamos el Logo de la esquina superior izquierda -->
             <img src="logo.jpg" alt="Logo" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex-shrink: 0;">
             <div>
                 <h2>Mi Casita</h2>
@@ -126,6 +144,7 @@
             <div class="nav-title" title="Clic para desplegar">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
                 <a href="resumen.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
+                <!-- La clase "active" marca en amarillo en qué página estamos actualmente -->
                 <a href="guia.html" class="nav-item active"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
                 <a href="ranking.html" class="nav-item"><i class="fa-solid fa-trophy"></i> Ranking de la casa</a>
             </div>
@@ -134,7 +153,7 @@
         <div class="nav-group">
             <div class="nav-title" title="Clic para desplegar">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="heroes.html" class="nav-item"><i class="fa-solid fa-khanda"></i> Héroes</a>
+                <a href="heroes.html" class="nav-item"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
                 <a href="equipos.html" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
                 <a href="incursiones.html" class="nav-item"><i class="fa-solid fa-ghost"></i> Incursiones</a>
                 <a href="recursos.html" class="nav-item"><i class="fa-regular fa-gem"></i> Recursos</a>
@@ -149,12 +168,16 @@
         </div>
     </aside>
 
+    <!-- =========================================================================
+         ÁREA PRINCIPAL DE LA PÁGINA
+         ========================================================================= -->
     <main class="main-content">
         <div class="topbar">
             <div class="breadcrumbs">
                 <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <span>Mi Casita &nbsp; > &nbsp; <b>Hub de Guías</b></span>
             </div>
+            <!-- Botón de Modo Oscuro -->
             <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
         </div>
 
@@ -168,35 +191,47 @@
                 
                 <div class="hub-grid">
                     
+                    <!-- =========================================================================
+                         BANNERS DE CATEGORÍAS (ENLACES E IMÁGENES)
+                         =========================================================================
+                         Nota: Para cambiar la imagen de fondo, modifica el enlace dentro de <img src="...">
+                         Si los identificadores "sheet-guiaX" no existen en tu Google Sheet, 
+                         se mostrará el texto por defecto que está escrito aquí en HTML.
+                         ========================================================================= -->
+                         
+                    <!-- CATEGORÍA 1: Incursiones -->
                     <a href="incursiones.html" class="hub-card">
-                        <img src="img/guias/banner_incursiones.jpg" alt="Incursiones" class="hub-bg">
+                        <img src="https://www.gtales.top/assets/thumbnails/raids.webp" alt="Incursiones" class="hub-bg">
                         <div class="hub-content">
-                            <h2>Incursiones de Gremio</h2>
-                            <p>Análisis de jefes y equipos de daño.</p>
+                            <h2 id="sheet-guia1_titulo">Incursiones de Gremio</h2>
+                            <p id="sheet-guia1_desc">Análisis de jefes y equipos de daño.</p>
                         </div>
                     </a>
 
+                    <!-- CATEGORÍA 2: Expedición Co-op -->
                     <a href="#" class="hub-card">
-                        <img src="img/guias/banner_coop.jpg" alt="Co-op" class="hub-bg">
+                        <img src="https://www.gtales.top/assets/guides/coop/thumb.webp" alt="Co-op" class="hub-bg">
                         <div class="hub-content">
-                            <h2>Expedición Co-op</h2>
-                            <p>Tier list y mejores composiciones (Temp 3).</p>
+                            <h2 id="sheet-guia2_titulo">Expedición Co-op</h2>
+                            <p id="sheet-guia2_desc">Tier list y mejores composiciones (Temp 3).</p>
                         </div>
                     </a>
 
+                    <!-- CATEGORÍA 3: Héroes de Tetis -->
                     <a href="#" class="hub-card">
-                        <img src="img/guias/banner_tetis.jpg" alt="Tetis" class="hub-bg">
+                        <img src="https://www.gtales.top/assets/guides/tetis/tetis_thumb.webp" alt="Tetis" class="hub-bg">
                         <div class="hub-content">
-                            <h2>Héroes de Tetis</h2>
-                            <p>Estrategias de supervivencia.</p>
+                            <h2 id="sheet-guia3_titulo">Héroes de Tetis</h2>
+                            <p id="sheet-guia3_desc">Estrategias de supervivencia.</p>
                         </div>
                     </a>
 
+                    <!-- CATEGORÍA 4: Héroes de Debuff -->
                     <a href="#" class="hub-card">
-                        <img src="img/guias/banner_debuff.jpg" alt="Debuff" class="hub-bg">
+                        <img src="https://www.gtales.top/assets/guides/debuff_heroes/thumb.webp" alt="Debuff" class="hub-bg">
                         <div class="hub-content">
-                            <h2>Héroes de Debuff</h2>
-                            <p>Guía definitiva de reducción de defensas.</p>
+                            <h2 id="sheet-guia4_titulo">Héroes de Debuff</h2>
+                            <p id="sheet-guia4_desc">Guía definitiva de reducción de defensas.</p>
                         </div>
                     </a>
 
@@ -206,17 +241,47 @@
         </div>
     </main>
 
-    <!-- CHAT FLOTANTE DE DISCORD (NUEVO) -->
+    <!-- =========================================================================
+         WIDGETBOT: CHAT FLOTANTE DE DISCORD
+         =========================================================================
+         Nota: Aquí están configurados el ID del Servidor (Mi Casita) y el canal 
+         específico donde aparecerán los mensajes del widget.
+         ========================================================================= -->
     <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
         new Crate({
-            server: '1518747166494163045', 
-            channel: '1518747167261593632', 
+            server: '1518747166494163045', // ID del Servidor
+            channel: '1518747167261593632', // ID del Canal
             color: '#292437', 
             notifications: true 
         })
     </script>
 
     <script>
+        // -------------------------------------------------------------------------
+        // CONEXIÓN CON GOOGLE SHEETS (API DE SHEETDB)
+        // -------------------------------------------------------------------------
+        // Nota: Esta es la URL generada por SheetDB. Si alguna vez cambias 
+        // de hoja de cálculo de Google, debes generar una nueva URL y pegarla aquí.
+        const apiURL = 'https://sheetdb.io/api/v1/rfy0fba41r17u';
+
+        fetch(apiURL)
+            .then(response => response.json())
+            .then(data => {
+                // El sistema lee cada fila de tu Google Sheet y busca si hay un
+                // elemento en esta página que tenga un id "sheet-CLAVE"
+                data.forEach(fila => {
+                    const elemento = document.getElementById('sheet-' + fila.clave);
+                    if (elemento) {
+                        // innerHTML permite que si pones <b>Texto</b> en Google Sheets,
+                        // aquí se muestre en negritas.
+                        elemento.innerHTML = fila.texto;
+                    }
+                });
+            })
+            .catch(error => console.error('Error al conectar con la hoja de cálculo:', error));
+        // -------------------------------------------------------------------------
+
+        // Lógica de menús desplegables
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('toggleSidebar');
         toggleBtn.addEventListener('click', () => { sidebar.classList.toggle('collapsed'); });
@@ -229,11 +294,33 @@
             });
         });
 
+        // -------------------------------------------------------------------------
+        // MEMORIA PARA EL MODO OSCURO (LOCALSTORAGE)
+        // -------------------------------------------------------------------------
+        // Nota: Esto hace que el navegador recuerde si dejaste la página en oscuro o claro
         const themeBtn = document.getElementById('themeToggle');
+        const rootElement = document.documentElement;
+
+        // Comprobar al iniciar si hay un tema guardado
+        if (localStorage.getItem('tema-casita') === 'dark') {
+            rootElement.setAttribute('data-theme', 'dark');
+            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        } else {
+            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        }
+
+        // Al hacer clic, cambiar el tema y guardarlo en la memoria
         themeBtn.addEventListener('click', () => {
-            let isDark = document.documentElement.hasAttribute('data-theme');
-            isDark ? document.documentElement.removeAttribute('data-theme') : document.documentElement.setAttribute('data-theme', 'dark');
-            themeBtn.innerHTML = isDark ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
+            let isDark = rootElement.hasAttribute('data-theme');
+            if (isDark) {
+                rootElement.removeAttribute('data-theme');
+                localStorage.setItem('tema-casita', 'light'); // Guarda color blanco
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else {
+                rootElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('tema-casita', 'dark'); // Guarda color oscuro
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
         });
     </script>
 </body>
