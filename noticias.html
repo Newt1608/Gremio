@@ -9,39 +9,24 @@
     
     <style>
         :root {
-            --sidebar-bg: #292437;
-            --sidebar-text: #9691a5;
-            --sidebar-text-active: #ffffff;
-            --sidebar-bg-active: #3c354e;
-            --sidebar-btn: #fdd843;
-            --main-bg: #f9f5ed;
-            --card-bg: #ffffff;
-            --text-dark: #201b2a;
-            --text-muted: #7d7889;
-            --accent-red: #d84d65;
-            --border-color: #e8e4dc;
-            --transition-speed: 0.3s;
+            --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #f9f5ed;
+            --card-bg: #ffffff; --text-dark: #201b2a; --text-muted: #7d7889;
+            --accent-red: #d84d65; --border-color: #e8e4dc; --transition-speed: 0.3s;
         }
 
         [data-theme="dark"] {
-            --main-bg: #181521;
-            --card-bg: #221e2d;
-            --text-dark: #f0eef5;
-            --text-muted: #a39eb5;
-            --border-color: #353045;
-            --sidebar-bg: #14111c;
+            --main-bg: #181521; --card-bg: #221e2d; --text-dark: #f0eef5;
+            --text-muted: #a39eb5; --border-color: #353045; --sidebar-bg: #14111c;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
 
-        /* BARRA LATERAL UNIFICADA */
         .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
         .sidebar.collapsed { width: 0; padding: 0; }
         .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; min-width: 260px; }
-        .sidebar-header .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #d84d65, #fdd843); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; flex-shrink: 0; }
-        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 700; line-height: 1.2; }
-        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        .sidebar-header img { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
         .nav-group { margin-bottom: 10px; min-width: 260px; }
         .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
         .nav-title:hover { color: var(--sidebar-text-active); }
@@ -53,7 +38,6 @@
         .nav-item:hover { color: var(--sidebar-text-active); }
         .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
 
-        /* Main Content */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
         .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
         .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
@@ -65,12 +49,9 @@
         .welcome-header h1 span { color: var(--accent-red); }
         .welcome-header p { color: var(--text-muted); max-width: 600px; line-height: 1.6; }
 
-        /* Al quitar el chat, cambiamos la cuadrícula para que la noticia ocupe el espacio completo y se vea elegante */
-        .grid-layout { display: flex; flex-direction: column; gap: 24px; }
         .card { background-color: var(--card-bg); border-radius: 24px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid var(--border-color); }
         .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 30px; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;}
 
-        /* Estilos específicos para las Noticias */
         .news-article { padding-bottom: 30px; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); }
         .news-article:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
         .news-meta { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; font-size: 12px; font-weight: 600; }
@@ -79,26 +60,25 @@
         .news-date { color: var(--text-muted); }
         .news-article h2 { font-size: 22px; font-weight: 700; margin-bottom: 12px; color: var(--text-dark); }
         .news-article p { font-size: 15px; line-height: 1.7; color: var(--text-muted); max-width: 900px; }
+        .news-article a { color: var(--accent-red); font-weight: 600; text-decoration: none; }
+        .news-article a:hover { text-decoration: underline; }
 
-        @media (max-width: 900px) {
-            .sidebar { position: absolute; height: 100%; z-index: 100; }
-        }
+        @media (max-width: 900px) { .sidebar { position: absolute; height: 100%; z-index: 100; } }
     </style>
 </head>
 <body>
 
-    <!-- BARRA LATERAL UNIFICADA -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo-icon"><i class="fa-solid fa-house"></i></div>
+            <img src="logo.jpg" alt="Logo">
             <div>
                 <h2>Mi Casita</h2>
-                <p>Gremio Cuentos de Guardianes</p>
+                <p>Gremio de Guardian Tales</p>
             </div>
         </div>
 
         <div class="nav-group">
-            <div class="nav-title" title="Clic para desplegar">INICIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
                 <a href="index.html" class="nav-item"><i class="fa-solid fa-fire"></i> Fogata de bienvenida</a>
                 <a href="noticias.html" class="nav-item active"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
@@ -106,7 +86,7 @@
         </div>
 
         <div class="nav-group">
-            <div class="nav-title" title="Clic para desplegar">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
                 <a href="resumen.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
                 <a href="guia.html" class="nav-item"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
@@ -115,10 +95,11 @@
         </div>
 
         <div class="nav-group">
-            <div class="nav-title" title="Clic para desplegar">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
                 <a href="heroes.html" class="nav-item"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
                 <a href="equipos.html" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
+                <!-- Link a Incursiones centralizado -->
                 <a href="incursiones.html" class="nav-item"><i class="fa-solid fa-ghost"></i> Incursiones</a>
                 <a href="recursos.html" class="nav-item"><i class="fa-regular fa-gem"></i> Recursos</a>
             </div>
@@ -132,18 +113,13 @@
         </div>
     </aside>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
         <div class="topbar">
             <div class="breadcrumbs">
-                <button class="toggle-btn" id="toggleSidebar" title="Ocultar/Mostrar Menú">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
+                <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <span>Mi Casita &nbsp; > &nbsp; <b>Noticias del gremio</b></span>
             </div>
-            <button class="theme-btn" id="themeToggle" title="Alternar Modo Oscuro">
-                <i class="fa-solid fa-moon"></i>
-            </button>
+            <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
         </div>
 
         <div class="dashboard-container">
@@ -153,56 +129,59 @@
                 <p>Mantente al día con los últimos avisos, reglas de asalto y actualizaciones importantes para todos los miembros de la posada.</p>
             </div>
 
-            <div class="grid-layout">
+            <div class="card">
+                <h3 class="section-title">Últimos comunicados oficiales</h3>
                 
-                <!-- Muro de Noticias Ancho Completo -->
-                <div class="card">
-                    <h3 class="section-title">Últimos comunicados oficiales</h3>
-                    
-                    <div class="news-article">
-                        <div class="news-meta">
-                            <span class="news-tag"><i class="fa-solid fa-bullhorn"></i> Importante</span>
-                            <span class="news-date">Ayer, 21:40</span>
-                        </div>
-                        <h2>Nuevas metas de asalto y organización</h2>
-                        <p>Para esta nueva temporada hemos ajustado el objetivo mínimo de daño a 2.4M para asegurar que sigamos subiendo en el ranking. Por favor, recuerden usar sus 3 tickets diarios. Si alguien necesita ayuda armando sus equipos, no duden en pedir sugerencias en el chat general.</p>
+                <div class="news-article">
+                    <div class="news-meta">
+                        <span class="news-tag"><i class="fa-solid fa-bullhorn"></i> Importante</span>
+                        <span class="news-date" id="sheet-noticia_imp_fecha">Cargando...</span>
                     </div>
-
-                    <div class="news-article">
-                        <div class="news-meta">
-                            <span class="news-tag" style="background: #eafdf5; color: #1fb173;"><i class="fa-solid fa-book"></i> Guía</span>
-                            <span class="news-date">Hace 2 días</span>
-                        </div>
-                        <h2>Limpieza de inactivos y reclutamiento</h2>
-                        <p>Se ha realizado la limpieza rutinaria de jugadores con más de 7 días de inactividad sin previo aviso. Tenemos 3 espacios libres, así que si tienen amigos que quieran unirse a Mi Casita y sean activos, díganles que manden solicitud o pasen su ID por el canal de Discord.</p>
-                    </div>
-
-                    <div class="news-article">
-                        <div class="news-meta">
-                            <span class="news-tag" style="background: #fdf5ea; color: #e59935;"><i class="fa-solid fa-star"></i> Evento</span>
-                            <span class="news-date">Hace 5 días</span>
-                        </div>
-                        <h2>¡Temporada 3 de Expediciones!</h2>
-                        <p>Recuerden que la meta semanal del gremio es completar las 18 expediciones. Compartan sus reliquias y formaciones en la sección de "Equipos" para ayudarnos entre todos a optimizar las carreras.</p>
-                    </div>
+                    <h2 id="sheet-noticia_imp_titulo">Cargando...</h2>
+                    <p id="sheet-noticia_imp_texto">Cargando contenido...</p>
                 </div>
 
+                <div class="news-article">
+                    <div class="news-meta">
+                        <span class="news-tag" style="background: #eafdf5; color: #1fb173;"><i class="fa-solid fa-book"></i> Guía</span>
+                        <span class="news-date" id="sheet-noticia_guia_fecha">Cargando...</span>
+                    </div>
+                    <h2 id="sheet-noticia_guia_titulo">Cargando...</h2>
+                    <p id="sheet-noticia_guia_texto">Cargando contenido...</p>
+                </div>
+
+                <div class="news-article">
+                    <div class="news-meta">
+                        <span class="news-tag" style="background: #fdf5ea; color: #e59935;"><i class="fa-solid fa-star"></i> Evento</span>
+                        <span class="news-date" id="sheet-noticia_evento_fecha">Cargando...</span>
+                    </div>
+                    <h2 id="sheet-noticia_evento_titulo">Cargando...</h2>
+                    <p id="sheet-noticia_evento_texto">Cargando contenido...</p>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- CHAT FLOTANTE DE DISCORD (Sustituye la columna entera) -->
     <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
-        new Crate({
-            server: '1518747166494163045', 
-            channel: '1518747167261593632', 
-            color: '#292437', 
-            notifications: true 
-        })
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#292437', notifications: true })
     </script>
 
-    <!-- SCRIPTS -->
     <script>
+        // API NUEVA
+        const apiURL = 'https://sheetdb.io/api/v1/byy514yadr0v0';
+
+        fetch(apiURL)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(fila => {
+                    const elemento = document.getElementById('sheet-' + fila.clave);
+                    if (elemento) {
+                        elemento.innerHTML = fila.texto;
+                    }
+                });
+            })
+            .catch(error => console.error('Error al conectar con la hoja de cálculo:', error));
+
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('toggleSidebar');
         toggleBtn.addEventListener('click', () => { sidebar.classList.toggle('collapsed'); });
@@ -217,15 +196,24 @@
 
         const themeBtn = document.getElementById('themeToggle');
         const rootElement = document.documentElement;
-        let isDarkMode = false;
+        
+        if (localStorage.getItem('tema-casita') === 'dark') {
+            rootElement.setAttribute('data-theme', 'dark');
+            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        } else {
+            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        }
+
         themeBtn.addEventListener('click', () => {
-            isDarkMode = !isDarkMode;
-            if (isDarkMode) {
-                rootElement.setAttribute('data-theme', 'dark');
-                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
-            } else {
+            let isDark = rootElement.hasAttribute('data-theme');
+            if (isDark) {
                 rootElement.removeAttribute('data-theme');
+                localStorage.setItem('tema-casita', 'light');
                 themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else {
+                rootElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('tema-casita', 'dark');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
             }
         });
     </script>
