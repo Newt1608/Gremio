@@ -4,457 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Casita - Gremio de Guardianes</title>
-    <!-- Importando fuente de Google -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Importando iconos de FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Variables CSS para facilitar el Modo Claro / Modo Oscuro */
         :root {
-            --sidebar-bg: #292437;
-            --sidebar-text: #9691a5;
-            --sidebar-text-active: #ffffff;
-            --sidebar-bg-active: #3c354e;
-            --sidebar-btn: #fdd843;
-            
-            --main-bg: #f9f5ed;
-            --card-bg: #ffffff;
-            --text-dark: #201b2a;
-            --text-muted: #7d7889;
-            --accent-red: #d84d65;
-            --border-color: #e8e4dc;
-            
-            --transition-speed: 0.3s;
+            --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #f9f5ed;
+            --card-bg: #ffffff; --text-dark: #201b2a; --text-muted: #7d7889;
+            --accent-red: #d84d65; --border-color: #e8e4dc; --transition-speed: 0.3s;
         }
-
-        /* Variables de Modo Oscuro */
         [data-theme="dark"] {
-            --main-bg: #181521;
-            --card-bg: #221e2d;
-            --text-dark: #f0eef5;
-            --text-muted: #a39eb5;
-            --border-color: #353045;
-            --sidebar-bg: #14111c;
+            --main-bg: #181521; --card-bg: #221e2d; --text-dark: #f0eef5;
+            --text-muted: #a39eb5; --border-color: #353045; --sidebar-bg: #14111c;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
 
-        body {
-            display: flex;
-            height: 100vh;
-            background-color: var(--main-bg);
-            color: var(--text-dark);
-            transition: background-color var(--transition-speed), color var(--transition-speed);
-            overflow: hidden;
-        }
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
+        .sidebar.collapsed { width: 0; padding: 0; }
+        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; min-width: 260px; }
+        .sidebar-header img { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 700; line-height: 1.2; }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        .nav-group { margin-bottom: 10px; min-width: 260px; }
+        .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .nav-title:hover { color: var(--sidebar-text-active); }
+        .nav-title i { transition: transform 0.3s ease; }
+        .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
+        .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+        .nav-group.collapsed-group .nav-items-container { max-height: 0; }
+        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; }
+        .nav-item:hover { color: var(--sidebar-text-active); }
+        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
 
-        /* ----- BARRA LATERAL (SIDEBAR) ----- */
-        .sidebar {
-            width: 260px;
-            background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            display: flex;
-            flex-direction: column;
-            transition: width var(--transition-speed);
-            overflow-y: auto;
-            overflow-x: hidden;
-            flex-shrink: 0;
-        }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
+        .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
+        .toggle-btn, .theme-btn { background: none; border: none; color: var(--text-dark); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; background-color: var(--card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
+        .dashboard-container { padding: 20px 60px 60px 60px; max-width: 1200px; margin: 0 auto; width: 100%; }
 
-        .sidebar.collapsed {
-            width: 0;
-            padding: 0;
-        }
+        .welcome-header { margin-bottom: 40px; }
+        .welcome-tag { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .welcome-tag i { color: var(--accent-red); font-size: 8px; }
+        .welcome-header h1 { font-size: 42px; font-weight: 800; margin-bottom: 12px; }
+        .welcome-header h1 span { color: var(--accent-red); }
+        .welcome-header p { color: var(--text-muted); max-width: 600px; line-height: 1.6; }
 
-        .sidebar-header {
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-            min-width: 260px;
-        }
+        .grid-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
 
-        .sidebar-header .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #d84d65, #fdd843);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
+        .hero-card { background: linear-gradient(135deg, #1f1a30, #3a2542); border-radius: 24px; padding: 40px; color: white; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .hero-card h2 { font-size: 32px; font-weight: 800; margin: 10px 0 30px; max-width: 300px; line-height: 1.1; }
+        .hero-card-footer { display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
+        .btn-yellow { background-color: var(--sidebar-btn); color: #292437; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: 700; font-size: 14px; transition: 0.2s; }
 
-        .sidebar-header h2 {
-            color: white;
-            font-size: 18px;
-            font-weight: 700;
-            line-height: 1.2;
-        }
+        .card { background-color: var(--card-bg); border-radius: 24px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid var(--border-color); }
+        .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 20px; font-weight: 700; }
 
-        .sidebar-header p {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--sidebar-text);
-        }
+        .top5-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #fdd843; }
 
-        /* ----- MENÚS DESPLEGABLES (ACORDEÓN) ----- */
-        .nav-group {
-            margin-bottom: 10px;
-            min-width: 260px;
-        }
+        .progress-number { font-size: 48px; font-weight: 800; margin-bottom: 10px; }
+        .progress-bar { height: 8px; background-color: var(--main-bg); border-radius: 4px; margin: 20px 0 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background-color: var(--accent-red); width: 0%; border-radius: 4px; transition: width 0.4s ease; }
+        .progress-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); }
 
-        .nav-title {
-            padding: 10px 24px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .nav-title:hover {
-            color: var(--sidebar-text-active);
-        }
-
-        .nav-title i {
-            transition: transform 0.3s ease;
-        }
-
-        .nav-group.collapsed-group .nav-title i {
-            transform: rotate(-90deg);
-        }
-
-        .nav-items-container {
-            max-height: 300px;
-            overflow: hidden;
-            transition: max-height 0.3s ease-in-out;
-        }
-
-        .nav-group.collapsed-group .nav-items-container {
-            max-height: 0;
-        }
-
-        .nav-item {
-            padding: 10px 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-            color: var(--sidebar-text);
-            transition: 0.2s;
-        }
-
-        .nav-item:hover {
-            color: var(--sidebar-text-active);
-        }
-
-        .nav-item.active {
-            background-color: var(--sidebar-bg-active);
-            color: var(--sidebar-text-active);
-            border-left: 4px solid var(--sidebar-btn);
-        }
-
-        /* ----- CONTENIDO PRINCIPAL ----- */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-        }
-
-        .breadcrumbs {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .toggle-btn, .theme-btn {
-            background: none;
-            border: none;
-            color: var(--text-dark);
-            font-size: 20px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            background-color: var(--card-bg);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: 0.3s;
-        }
-
-        .dashboard-container {
-            padding: 20px 60px 60px 60px;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        /* Header de Bienvenida */
-        .welcome-header {
-            margin-bottom: 40px;
-        }
-
-        .welcome-tag {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .welcome-tag i {
-            color: var(--accent-red);
-            font-size: 8px;
-        }
-
-        .welcome-header h1 {
-            font-size: 42px;
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
-
-        .welcome-header h1 span {
-            color: var(--accent-red);
-        }
-
-        .welcome-header p {
-            color: var(--text-muted);
-            max-width: 600px;
-            line-height: 1.6;
-        }
-
-        /* Grid de tarjetas */
-        .grid-layout {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
-        }
-
-        /* Tarjeta principal oscura */
-        .hero-card {
-            background: linear-gradient(135deg, #1f1a30, #3a2542);
-            border-radius: 24px;
-            padding: 40px;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .hero-card h2 {
-            font-size: 32px;
-            font-weight: 800;
-            margin: 10px 0 30px;
-            max-width: 300px;
-            line-height: 1.1;
-        }
-
-        .hero-card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            z-index: 2;
-        }
-
-        .btn-yellow {
-            background-color: var(--sidebar-btn);
-            color: #292437;
-            padding: 10px 20px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 14px;
-            transition: 0.2s;
-        }
-
-        /* Tarjetas base */
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            border: 1px solid var(--border-color);
-        }
-
-        .section-title {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-
-        /* Estilo para las fotos de perfil del Top 5 */
-        .top5-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #fdd843;
-        }
-
-        /* Progreso Asalto al Gremio */
-        .progress-number {
-            font-size: 48px;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background-color: var(--main-bg);
-            border-radius: 4px;
-            margin: 20px 0 10px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background-color: var(--accent-red);
-            width: 0%; /* Se calcula automáticamente con JS */
-            border-radius: 4px;
-            transition: width 0.4s ease;
-        }
-
-        .progress-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        /* Lista de actividades */
-        .activity-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .activity-item {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            gap: 15px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .activity-item:hover {
-            border-color: var(--text-muted);
-        }
-
-        .activity-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-
+        .activity-list { display: flex; flex-direction: column; gap: 15px; }
+        .activity-item { display: flex; align-items: center; padding: 15px; border: 1px solid var(--border-color); border-radius: 12px; gap: 15px; cursor: pointer; transition: 0.2s; text-decoration: none; color: var(--text-dark); }
+        .activity-item:hover { border-color: var(--text-muted); }
+        .activity-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
         .icon-red { background-color: #fdeaea; color: var(--accent-red); }
         .icon-green { background-color: #eafdf5; color: #1fb173; }
         .icon-yellow { background-color: #fdf5ea; color: #e59935; }
+        .activity-text { flex: 1; }
+        .activity-text h4 { font-size: 14px; margin-bottom: 4px; }
+        .activity-text p { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
 
-        .activity-text {
-            flex: 1;
-        }
+        .next-activity-card { background-color: var(--card-bg); border-radius: 20px; padding: 20px; border: 1px solid var(--border-color); position: relative; overflow: hidden; }
+        .next-activity-card::before { content: ''; position: absolute; right: 0; top: 0; width: 40%; height: 100%; background-color: #e5f1f0; border-radius: 40px 0 0 40px; z-index: 0; }
+        [data-theme="dark"] .next-activity-card::before { background-color: #1e3332; }
+        .next-activity-content { position: relative; z-index: 1; }
 
-        .activity-text h4 {
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .activity-text p {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        /* Próxima actividad */
-        .next-activity-card {
-            background-color: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .next-activity-card::before {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 40%;
-            height: 100%;
-            background-color: #e5f1f0;
-            border-radius: 40px 0 0 40px;
-            z-index: 0;
-        }
-        
-        [data-theme="dark"] .next-activity-card::before {
-            background-color: #1e3332;
-        }
-
-        .next-activity-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        @media (max-width: 900px) {
-            .grid-layout {
-                grid-template-columns: 1fr;
-            }
-            .sidebar {
-                position: absolute;
-                height: 100%;
-                z-index: 100;
-            }
-        }
+        @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } .sidebar { position: absolute; height: 100%; z-index: 100; } }
     </style>
 </head>
 <body>
 
-    <!-- BARRA LATERAL (ACTUALIZADA) -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="logo.jpg" alt="Logo" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex-shrink: 0;">
+            <img src="logo.jpg" alt="Logo">
             <div>
                 <h2>Mi Casita</h2>
                 <p>Gremio de Guardian Tales</p>
@@ -462,7 +100,7 @@
         </div>
 
         <div class="nav-group">
-            <div class="nav-title">INICIO</div>
+            <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
                 <a href="index.html" class="nav-item active"><i class="fa-solid fa-fire"></i> Fogata de bienvenida</a>
                 <a href="noticias.html" class="nav-item"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
@@ -470,7 +108,7 @@
         </div>
 
         <div class="nav-group">
-            <div class="nav-title">GREMIO</div>
+            <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
                 <a href="resumen.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
                 <a href="guia.html" class="nav-item"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
@@ -479,34 +117,31 @@
         </div>
         
         <div class="nav-group">
-            <div class="nav-title">CUENTOS DE GUARDIANES</div>
+            <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
                 <a href="heroes.html" class="nav-item"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
                 <a href="equipos.html" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
+                <!-- Link a Incursiones centralizado -->
                 <a href="incursiones.html" class="nav-item"><i class="fa-solid fa-ghost"></i> Incursiones</a>
                 <a href="recursos.html" class="nav-item"><i class="fa-regular fa-gem"></i> Recursos</a>
             </div>
         </div>
 
         <div class="nav-group" style="margin-top: auto; padding-bottom: 20px;">
-            <a href="preferencias.html" class="nav-item"><i class="fa-solid fa-gear"></i> Preferencias</a>
-            <a href="ayuda.html" class="nav-item"><i class="fa-regular fa-circle-question"></i> Ayuda y atajos</a>
+            <div class="nav-items-container" style="max-height: none;">
+                <a href="preferencias.html" class="nav-item"><i class="fa-solid fa-gear"></i> Preferencias</a>
+                <a href="ayuda.html" class="nav-item"><i class="fa-regular fa-circle-question"></i> Ayuda y atajos</a>
+            </div>
         </div>
     </aside>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
         <div class="topbar">
             <div class="breadcrumbs">
-                <button class="toggle-btn" id="toggleSidebar" title="Ocultar/Mostrar Menú">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
+                <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <span>Mi Casita &nbsp; > &nbsp; <b>Fogata de bienvenida</b></span>
             </div>
-            
-            <button class="theme-btn" id="themeToggle" title="Alternar Modo Oscuro">
-                <i class="fa-solid fa-moon"></i>
-            </button>
+            <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
         </div>
 
         <div class="dashboard-container">
@@ -514,37 +149,36 @@
             <div class="welcome-header">
                 <div class="welcome-tag"><i class="fa-solid fa-square"></i> Temporada 3</div>
                 <h1>Bienvenida a <span>Mi Casita.</span></h1>
-                <p>Una posada pequeña para grandes aventuras. Comparte consejos, coordina tus carreras y celebra cada estrella conseguida.</p>
+                <p>¡Hola! Estás en la página oficial de Mi casita. 🛡️
+Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.</p>
             </div>
 
             <div class="grid-layout">
-                
-                <!-- Columna Izquierda -->
                 <div style="display: flex; flex-direction: column; gap: 40px;">
-                    <!-- Banner Hero -->
+                    
                     <div class="hero-card">
                         <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #a8a3b5;">La fogata está encendida</div>
-                        <h2>Aquí cada aventura tiene un lugar donde volver.</h2>
+                        <h2 id="sheet-banner_titulo">Cargando...</h2>
                         <div class="hero-card-footer">
                             <div>
                                 <p style="font-size: 12px; color: #a8a3b5;">Próximo objetivo</p>
-                                <p style="font-size: 14px; font-weight: 600;">Completar el asalto esta semana</p>
+                                <p id="sheet-banner_sub" style="font-size: 14px; font-weight: 600;">Cargando...</p>
                             </div>
                             <a href="noticias.html" class="btn-yellow">Ver el gremio &rarr;</a>
                         </div>
                     </div>
 
-                    <!-- MÓDULO: Top 5 Ranking -->
                     <div class="card" style="border: 2px solid #fdd843; box-shadow: 0 0 15px rgba(253, 216, 67, 0.15);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3 class="section-title" style="margin:0; color: #d89614;"><i class="fa-solid fa-crown"></i> Top 5 - Asalto Estafermo</h3>
+                            <h3 class="section-title" style="margin:0; color: #d89614;"><i class="fa-solid fa-crown"></i> Top 5 - Asalto de Gremio</h3>
                             <a href="ranking.html" style="font-size: 12px; color: var(--accent-red); text-decoration: none; font-weight: 600;">Ver los 30 &rarr;</a>
                         </div>
                         
-                        <div id="top5-contenedor" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                        <div id="top5-contenedor" style="display: flex; flex-direction: column; gap: 10px;">
+                            <p style="font-size: 13px; color: var(--text-muted); text-align: center;">Cargando Top 5...</p>
+                        </div>
                     </div>
 
-                    <!-- Lo que está pasando -->
                     <div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                             <h3 class="section-title" style="margin:0;">Historias de la posada <br><span style="font-size: 18px; text-transform: none; color: var(--text-dark);">Lo que está pasando</span></h3>
@@ -552,55 +186,49 @@
                         </div>
 
                         <div class="activity-list">
-                            <div class="activity-item">
+                            <a href="noticias.html" class="activity-item">
                                 <div class="activity-icon icon-red"><i class="fa-solid fa-hand-fist"></i></div>
                                 <div class="activity-text">
-                                    <h4>Nueva meta de asalto: 2.4M de daño <span style="background: var(--main-bg); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px;">Comunicado</span></h4>
-                                    <p>Newt - ayer a las 21:40</p>
+                                    <h4><span id="sheet-noticia_imp_titulo">Cargando...</span> <span style="background: var(--main-bg); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px;">Comunicado</span></h4>
+                                    <p><i class="fa-regular fa-clock"></i> <span id="sheet-noticia_imp_fecha">Cargando...</span></p>
                                 </div>
                                 <i class="fa-solid fa-arrow-right" style="color: var(--text-muted);"></i>
-                            </div>
+                            </a>
                             
-                            <div class="activity-item">
+                            <a href="noticias.html" class="activity-item">
                                 <div class="activity-icon icon-green"><i class="fa-solid fa-heart"></i></div>
                                 <div class="activity-text">
-                                    <h4>Demos la bienvenida a ejemplo</h4>
-                                    <p>La familia crece - hace 3 h</p>
+                                    <h4 id="sheet-bienvenida_titulo">Cargando...</h4>
+                                    <p><i class="fa-regular fa-clock"></i> <span id="sheet-bienvenida_hora">Cargando...</span></p>
                                 </div>
                                 <i class="fa-solid fa-arrow-right" style="color: var(--text-muted);"></i>
-                            </div>
+                            </a>
 
-                            <div class="activity-item">
+                            <a href="guia.html" class="activity-item">
                                 <div class="activity-icon icon-yellow"><i class="fa-solid fa-book-open"></i></div>
                                 <div class="activity-text">
-                                    <h4>Guía del gremio</h4>
-                                    <p>Newt - hace 5 h</p>
+                                    <h4 id="sheet-guia_titulo">Cargando...</h4>
+                                    <p><i class="fa-regular fa-clock"></i> <span id="sheet-guia_hora">Cargando...</span></p>
                                 </div>
                                 <i class="fa-solid fa-arrow-right" style="color: var(--text-muted);"></i>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Columna Derecha -->
                 <div style="display: flex; flex-direction: column; gap: 40px;">
                     
-                    <!-- Progreso: Asalto al Gremio con días (X/7) automatizados -->
                     <div class="card">
                         <h3 class="section-title">Asalto al Gremio</h3>
-                        
                         <div class="progress-number" id="porcentaje-texto">0%</div>
-                        
                         <div class="progress-bar">
                             <div class="progress-fill" id="barra-progreso"></div>
                         </div>
-                        
                         <div class="progress-stats">
                             <span id="dias-texto">Días 0/7</span>
                             <span id="estado-texto">Inactivo</span>
                         </div>
                         
-                        <!-- Mensaje automático si los días son 0/7 -->
                         <div id="mensaje-sin-asalto" style="display: none; font-size: 13px; color: var(--accent-red); margin-top: 10px; font-weight: 600;">
                             <i class="fa-solid fa-triangle-exclamation"></i> Actualmente no hay Asalto al Gremio activo.
                         </div>
@@ -609,14 +237,13 @@
                         <a href="ranking.html" style="font-size: 12px; color: var(--accent-red); text-decoration: none; font-weight: 600;">Ver ranking de la casa &rarr;</a>
                     </div>
 
-                    <!-- Próxima actividad -->
                     <div>
                         <h3 class="section-title">Nos vemos pronto <br><span style="font-size: 18px; text-transform: none; color: var(--text-dark);">Próxima actividad</span></h3>
                         <div class="next-activity-card">
                             <div class="next-activity-content">
                                 <span style="font-size: 10px; color: var(--accent-red); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Próximamente</span>
-                                <h2 style="font-size: 24px; font-weight: 800; margin: 8px 0;">Sin actividades</h2>
-                                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">Entramos juntos, probamos equipos y compartimos repeticiones sin presión.</p>
+                                <h2 id="sheet-prox_titulo" style="font-size: 24px; font-weight: 800; margin: 8px 0;">Cargando...</h2>
+                                <p id="sheet-prox_desc" style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">Cargando...</p>
                             </div>
                         </div>
                     </div>
@@ -626,65 +253,82 @@
         </div>
     </main>
 
-    <!-- CHAT FLOTANTE DE DISCORD (NUEVO) -->
     <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
-        new Crate({
-            server: '1518747166494163045',
-            channel: '1518747167261593632',
-            color: '#292437',
-            notifications: true
-        })
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#292437', notifications: true })
     </script>
 
-    <!-- SCRIPTS -->
-    <script src="datos_ranking.js"></script>
     <script>
-        // ----------------------------------------------------
-        // CONFIGURACIÓN DEL ASALTO AL GREMIO (CAMBIA ESTO)
-        // ----------------------------------------------------
-        // Cambia el primer número (días transcurridos del 0 al 7). 
-        // Si pones 0, mostrará automáticamente que no hay asalto activo.
-        const diasActuales = 6; 
-        const diasTotales = 7;
-        // ----------------------------------------------------
+        // API NUEVA
+        const apiURL = 'https://sheetdb.io/api/v1/byy514yadr0v0';
 
-        const porcentaje = Math.round((diasActuales / diasTotales) * 100);
+        fetch(apiURL)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(fila => {
+                    const elemento = document.getElementById('sheet-' + fila.clave);
+                    if (elemento) {
+                        elemento.innerHTML = fila.texto;
+                    }
+                    if (fila.clave === 'dias_asalto') {
+                        const diasActuales = parseInt(fila.texto) || 0; 
+                        const diasTotales = 7;
+                        const porcentaje = Math.round((diasActuales / diasTotales) * 100);
+                        
+                        document.getElementById('porcentaje-texto').innerText = porcentaje + '%';
+                        document.getElementById('barra-progreso').style.width = porcentaje + '%';
+                        document.getElementById('dias-texto').innerText = `Días ${diasActuales}/${diasTotales}`;
+
+                        if (diasActuales === 0) {
+                            document.getElementById('porcentaje-texto').style.display = 'none';
+                            document.querySelector('.progress-bar').style.display = 'none';
+                            document.getElementById('dias-texto').style.display = 'none';
+                            document.getElementById('estado-texto').style.display = 'none';
+                            document.getElementById('mensaje-sin-asalto').style.display = 'block';
+                        } else {
+                            document.getElementById('porcentaje-texto').style.display = 'block';
+                            document.querySelector('.progress-bar').style.display = 'block';
+                            document.getElementById('dias-texto').style.display = 'block';
+                            document.getElementById('estado-texto').style.display = 'block';
+                            document.getElementById('estado-texto').innerText = 'Activo';
+                            document.getElementById('mensaje-sin-asalto').style.display = 'none';
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error al conectar con la hoja de cálculo:', error));
         
-        document.getElementById('porcentaje-texto').innerText = porcentaje + '%';
-        document.getElementById('barra-progreso').style.width = porcentaje + '%';
-        document.getElementById('dias-texto').innerText = `Días ${diasActuales}/${diasTotales}`;
-
-        if (diasActuales === 0) {
-            document.getElementById('porcentaje-texto').style.display = 'none';
-            document.querySelector('.progress-bar').style.display = 'none';
-            document.getElementById('dias-texto').style.display = 'none';
-            document.getElementById('estado-texto').style.display = 'none';
-            document.getElementById('mensaje-sin-asalto').style.display = 'block';
-        } else {
-            document.getElementById('estado-texto').innerText = 'Activo';
-        }
-
-        // Cargar Top 5
+        // RANKING (API NUEVA)
+        const apiRankingURL = 'https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Ranking';
         const contenedorTop5 = document.getElementById('top5-contenedor');
-        if(typeof rankingGremio !== 'undefined' && contenedorTop5) {
-            const top5 = rankingGremio.slice(0, 5);
-            top5.forEach(jugador => {
-                contenedorTop5.innerHTML += `
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; background: var(--main-bg); border-radius: 12px; border-left: 4px solid #fdd843;">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <span style="font-size: 18px; font-weight: 800; color: #d89614;">#${jugador.posicion}</span>
-                            <img src="${jugador.foto}" alt="${jugador.nombre}" class="top5-avatar">
-                            <span style="font-weight: 700; font-size: 14px;">${jugador.nombre}</span>
-                        </div>
-                        <div style="font-size: 12px; font-weight: 700; color: var(--text-muted);">
-                            <i class="fa-solid fa-burst" style="color: var(--accent-red);"></i> ${jugador.daño.oscuridad}
-                        </div>
-                    </div>
-                `;
-            });
+
+        if (contenedorTop5) {
+            fetch(apiRankingURL)
+                .then(response => response.json())
+                .then(data => {
+                    contenedorTop5.innerHTML = ''; 
+                    const top5 = data.slice(0, 5);
+                    top5.forEach(jugador => {
+                        const daño = jugador.asalto ? jugador.asalto : '0';
+                        contenedorTop5.innerHTML += `
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; background: var(--main-bg); border-radius: 12px; border-left: 4px solid #fdd843;">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <span style="font-size: 18px; font-weight: 800; color: #d89614;">#${jugador.posicion}</span>
+                                    <img src="${jugador.foto}" alt="${jugador.nombre}" class="top5-avatar" onerror="this.src='https://via.placeholder.com/36/3c354e/ffffff?text=?'">
+                                    <span style="font-weight: 700; font-size: 14px;">${jugador.nombre}</span>
+                                </div>
+                                <div style="font-size: 14px; font-weight: 800; color: var(--accent-red);">
+                                    <i class="fa-solid fa-fire-flame-curved"></i> ${daño}
+                                </div>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al cargar el ranking:', error);
+                    contenedorTop5.innerHTML = '<p style="color: var(--accent-red); font-size: 12px; padding: 10px;">Error al cargar el Top 5 desde Google Sheets.</p>';
+                });
         }
 
-        // Menú y Modo Oscuro
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('toggleSidebar');
         toggleBtn.addEventListener('click', () => { sidebar.classList.toggle('collapsed'); });
@@ -698,10 +342,26 @@
         });
 
         const themeBtn = document.getElementById('themeToggle');
+        const rootElement = document.documentElement;
+
+        if (localStorage.getItem('tema-casita') === 'dark') {
+            rootElement.setAttribute('data-theme', 'dark');
+            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        } else {
+            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        }
+
         themeBtn.addEventListener('click', () => {
-            let isDark = document.documentElement.hasAttribute('data-theme');
-            isDark ? document.documentElement.removeAttribute('data-theme') : document.documentElement.setAttribute('data-theme', 'dark');
-            themeBtn.innerHTML = isDark ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
+            let isDark = rootElement.hasAttribute('data-theme');
+            if (isDark) {
+                rootElement.removeAttribute('data-theme');
+                localStorage.setItem('tema-casita', 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else {
+                rootElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('tema-casita', 'dark');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
         });
     </script>
 </body>
