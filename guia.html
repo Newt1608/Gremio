@@ -10,21 +10,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* 
-         * ==========================================
-         * VARIABLES DE COLOR (TEMA CLARO Y OSCURO)
-         * ==========================================
-         * Si quieres cambiar los colores principales de la página,
-         * modifícalos aquí. 
-         */
         :root {
             --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
             --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #f9f5ed;
             --card-bg: #ffffff; --text-dark: #201b2a; --text-muted: #7d7889;
             --accent-red: #d84d65; --border-color: #e8e4dc; --transition-speed: 0.3s;
+            --setup-blue: #4299f6;
         }
 
-        /* Colores cuando el modo oscuro está activado */
         [data-theme="dark"] {
             --main-bg: #181521; --card-bg: #221e2d; --text-dark: #f0eef5;
             --text-muted: #a39eb5; --border-color: #353045; --sidebar-bg: #14111c;
@@ -33,15 +26,21 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
 
-        /* ==========================================
-         * ESTILOS DE LA BARRA LATERAL (SIDEBAR)
-         * ========================================== */
+        /* BARRA LATERAL Y PERFIL */
         .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
         .sidebar.collapsed { width: 0; padding: 0; }
-        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; min-width: 260px; }
-        .sidebar-header .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #d84d65, #fdd843); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; flex-shrink: 0; }
-        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 700; line-height: 1.2; }
+        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
+        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
         .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        
+        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
+        .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--setup-blue); object-fit: cover; }
+        .profile-info-wrap span { color: white; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;}
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
+
         .nav-group { margin-bottom: 10px; min-width: 260px; }
         .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
         .nav-title:hover { color: var(--sidebar-text-active); }
@@ -49,13 +48,37 @@
         .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
         .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
         .nav-group.collapsed-group .nav-items-container { max-height: 0; }
-        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; }
+        
+        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
         .nav-item:hover { color: var(--sidebar-text-active); }
         .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
 
-        /* ==========================================
-         * ESTILOS DEL CONTENIDO PRINCIPAL
-         * ========================================== */
+        /* CANDADOS ANIMADOS */
+        .lock-icon { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
+        .nav-item.locked { cursor: not-allowed; opacity: 0.6; }
+        .nav-item.locked:hover .lock-icon { color: var(--accent-red); filter: drop-shadow(0 0 8px rgba(216, 77, 101, 0.8)); }
+        
+        @keyframes shake { 0% { transform: translateY(-50%) translateX(0); } 25% { transform: translateY(-50%) translateX(-4px); } 50% { transform: translateY(-50%) translateX(4px); } 75% { transform: translateY(-50%) translateX(-4px); } 100% { transform: translateY(-50%) translateX(0); } }
+        .lock-shake { animation: shake 0.4s ease-in-out !important; color: var(--accent-red) !important; }
+        @keyframes floatLock { 0% { transform: translateY(-40%); } 100% { transform: translateY(-60%); } }
+
+        /* ALERTA DE PERMISO DENEGADO */
+        .toast-alert { position: fixed; top: 20px; right: -300px; background: rgba(216, 77, 101, 0.95); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 700; font-size: 13px; box-shadow: 0 10px 30px rgba(216, 77, 101, 0.4); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 10px; z-index: 9999; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .toast-alert.show { right: 30px; }
+
+        /* ANIMACIÓN GRIS AL CERRAR SESIÓN */
+        .logout-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #110f17; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 9999; }
+        .logout-overlay.active { opacity: 1; pointer-events: auto; }
+        .logout-loader-container { position: relative; width: 120px; height: 120px; margin-bottom: 20px; }
+        .logout-loader-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid #110f17; position: relative; z-index: 2; box-shadow: 0 10px 30px rgba(0,0,0,0.8); filter: grayscale(100%) brightness(0.6); transform: scale(0.8); transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .logout-overlay.active .logout-loader-img { transform: scale(1); }
+        .spinner-ring-gray { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: #555; border-right-color: #333; z-index: 1; animation: spin 1.5s linear infinite; opacity: 0; transition: opacity 0.5s ease; }
+        .logout-overlay.active .spinner-ring-gray { opacity: 1; }
+        .logout-text { font-size: 18px; font-weight: 700; color: #888; text-align: center; text-transform: uppercase; letter-spacing: 1px; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s; }
+        .logout-overlay.active .logout-text { opacity: 1; transform: translateY(0); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* CONTENIDO PRINCIPAL */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
         .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
         .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
@@ -68,116 +91,112 @@
 
         .grid-layout { display: block; }
         
-        /* ==========================================
-         * ESTILOS DE LOS BANNERS (TARJETAS DE GUÍAS)
-         * ========================================== */
+        /* BANNERS DE GUÍAS */
         .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; }
         
         .hub-card {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            height: 180px;
-            text-decoration: none;
-            display: flex;
-            align-items: flex-end;
-            padding: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid var(--border-color);
+            position: relative; border-radius: 20px; overflow: hidden; height: 180px;
+            text-decoration: none; display: flex; align-items: flex-end; padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--border-color);
         }
-        
-        .hub-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
+        .hub-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .hub-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.6); transition: 0.3s; }
+        .hub-card:hover .hub-bg { filter: brightness(0.8); }
 
-        .hub-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: 0;
-            filter: brightness(0.6); /* Oscurece un poco la imagen para que el texto resalte */
-            transition: 0.3s;
-        }
-
-        .hub-card:hover .hub-bg { filter: brightness(0.8); } /* Aclara la imagen al pasar el mouse */
-
-        .hub-content {
-            position: relative;
-            z-index: 1;
-            color: white;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8); /* Sombra para asegurar que se lea sobre cualquier fondo */
-        }
-
+        .hub-content { position: relative; z-index: 1; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
         .hub-content h2 { font-size: 24px; font-weight: 800; margin-bottom: 5px; }
         .hub-content p { font-size: 13px; font-weight: 600; color: #e8e4dc; }
 
-        @media (max-width: 1100px) {
-            .sidebar { position: absolute; height: 100%; z-index: 100; }
-        }
+        @media (max-width: 1100px) { .sidebar { position: absolute; height: 100%; z-index: 100; } }
     </style>
 </head>
 <body>
 
-    <!-- =========================================================================
-         MENÚ DE NAVEGACIÓN LATERAL
-         ========================================================================= -->
+    <!-- MENSAJE DE PERMISO DENEGADO -->
+    <div class="toast-alert" id="toastAlert">
+        <i class="fa-solid fa-lock"></i> No tienes permisos para esta página.
+    </div>
+
+    <!-- OVERLAY DE CIERRE DE SESIÓN -->
+    <div class="logout-overlay" id="logoutOverlay">
+        <div class="logout-loader-container">
+            <div class="spinner-ring-gray"></div>
+            <img src="" alt="Perfil" class="logout-loader-img" id="logoutAvatar" onerror="this.src='logo.jpg';">
+        </div>
+        <div class="logout-text">Cerrando sesión...</div>
+    </div>
+
     <aside class="sidebar" id="sidebar">
-       <div class="sidebar-header">
-            <!-- Nota: Aquí editamos el Logo de la esquina superior izquierda -->
-            <img src="logo.jpg" alt="Logo" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex-shrink: 0;">
+        <!-- HEADER PRINCIPAL -->
+        <div class="sidebar-header">
+            <img src="logo.jpg" alt="Logo">
             <div>
                 <h2>Mi Casita</h2>
                 <p>Gremio de Guardian Tales</p>
             </div>
         </div>
 
+        <!-- PERFIL DEL USUARIO DINÁMICO -->
+        <div class="user-profile-sidebar" id="user-profile-sidebar">
+            <div class="profile-info-wrap">
+                <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
+                <span id="sidebar-name">Usuario</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
+                <i class="fa-solid fa-power-off"></i>
+            </button>
+        </div>
+
+        <!-- MENÚ INICIO (Todos los roles) -->
         <div class="nav-group">
-            <div class="nav-title" title="Clic para desplegar">INICIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
                 <a href="index.html" class="nav-item"><i class="fa-solid fa-fire"></i> Fogata de bienvenida</a>
                 <a href="noticias.html" class="nav-item"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
             </div>
         </div>
 
+        <!-- MENÚ GREMIO (Bloqueado para Basico) -->
         <div class="nav-group">
-            <div class="nav-title" title="Clic para desplegar">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="resumen.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
-                <!-- La clase "active" marca en amarillo en qué página estamos actualmente -->
-                <a href="guia.html" class="nav-item active"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
-                <a href="ranking.html" class="nav-item"><i class="fa-solid fa-trophy"></i> Ranking de la casa</a>
+                <a href="resumen.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-chart-pie"></i> Resumen del gremio
+                </a>
+                <a href="guia.html" class="nav-item active restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-book-bookmark"></i> Guía
+                </a>
+                <a href="ranking.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-trophy"></i> Ranking de la casa
+                </a>
             </div>
         </div>
         
+        <!-- MENÚ GUARDIANES (Bloqueado para Basico y Caballero, Solo Heroe) -->
         <div class="nav-group">
-            <div class="nav-title" title="Clic para desplegar">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="heroes.html" class="nav-item"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
-                <a href="equipos.html" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
-                <a href="incursiones.html" class="nav-item"><i class="fa-solid fa-ghost"></i> Incursiones</a>
-                <a href="recursos.html" class="nav-item"><i class="fa-regular fa-gem"></i> Recursos</a>
+                <a href="heroes.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
+                <a href="equipos.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
             </div>
         </div>
 
-        <div class="nav-group" style="margin-top: auto; padding-bottom: 20px;">
-            <div class="nav-items-container" style="max-height: none;">
-                <a href="preferencias.html" class="nav-item"><i class="fa-solid fa-gear"></i> Preferencias</a>
-                <a href="ayuda.html" class="nav-item"><i class="fa-regular fa-circle-question"></i> Ayuda y atajos</a>
+        <!-- MENÚ INCURSIONES -->
+        <div class="nav-group">
+            <div class="nav-title">INCURSIONES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="incursiones.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-ghost"></i> Asalto</a>
+                <a href="arena.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
             </div>
         </div>
     </aside>
 
-    <!-- =========================================================================
-         ÁREA PRINCIPAL DE LA PÁGINA
-         ========================================================================= -->
     <main class="main-content">
         <div class="topbar">
             <div class="breadcrumbs">
                 <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <span>Mi Casita &nbsp; > &nbsp; <b>Hub de Guías</b></span>
             </div>
-            <!-- Botón de Modo Oscuro -->
             <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
         </div>
 
@@ -190,14 +209,6 @@
             <div class="grid-layout">
                 
                 <div class="hub-grid">
-                    
-                    <!-- =========================================================================
-                         BANNERS DE CATEGORÍAS (ENLACES E IMÁGENES)
-                         =========================================================================
-                         Nota: Para cambiar la imagen de fondo, modifica el enlace dentro de <img src="...">
-                         Si los identificadores "sheet-guiaX" no existen en tu Google Sheet, 
-                         se mostrará el texto por defecto que está escrito aquí en HTML.
-                         ========================================================================= -->
                          
                     <!-- CATEGORÍA 1: Incursiones -->
                     <a href="incursiones.html" class="hub-card">
@@ -241,47 +252,91 @@
         </div>
     </main>
 
-    <!-- =========================================================================
-         WIDGETBOT: CHAT FLOTANTE DE DISCORD
-         =========================================================================
-         Nota: Aquí están configurados el ID del Servidor (Mi Casita) y el canal 
-         específico donde aparecerán los mensajes del widget.
-         ========================================================================= -->
     <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
-        new Crate({
-            server: '1518747166494163045', // ID del Servidor
-            channel: '1518747167261593632', // ID del Canal
-            color: '#292437', 
-            notifications: true 
-        })
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#292437', notifications: true })
     </script>
 
     <script>
-        // -------------------------------------------------------------------------
-        // CONEXIÓN CON GOOGLE SHEETS (API DE SHEETDB)
-        // -------------------------------------------------------------------------
-        // Nota: Esta es la URL generada por SheetDB. Si alguna vez cambias 
-        // de hoja de cálculo de Google, debes generar una nueva URL y pegarla aquí.
-        const apiURL = 'https://sheetdb.io/api/v1/rfy0fba41r17u';
+        // =========================================================================
+        // COMPROBAR SESIÓN Y GESTIONAR ROLES Y CANDADOS
+        // =========================================================================
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem('sesion_activa') === 'true') {
+                const avatarGuardado = localStorage.getItem('usuario_avatar');
+                const nombreGuardado = localStorage.getItem('usuario_nombre');
+                // Convertimos el rol a minúsculas, si está vacío asume 'basico'
+                const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
+                
+                document.getElementById('user-profile-sidebar').style.display = 'flex';
+                if (avatarGuardado) {
+                    document.getElementById('sidebar-avatar').src = avatarGuardado;
+                    document.getElementById('logoutAvatar').src = avatarGuardado; 
+                }
+                if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
+
+                // Lógica de Candados
+                document.querySelectorAll('.nav-item').forEach(link => {
+                    const reqOriginal = link.getAttribute('data-req');
+                    if (reqOriginal) {
+                        const reqRole = reqOriginal.toLowerCase();
+                        let bloqueado = false;
+
+                        if (reqRole === 'heroe' && rolUsuario !== 'heroe') bloqueado = true;
+                        if (reqRole === 'caballero' && rolUsuario !== 'caballero' && rolUsuario !== 'heroe') bloqueado = true;
+
+                        if (bloqueado) {
+                            link.classList.add('locked');
+                            const candado = document.createElement('i');
+                            candado.className = 'fa-solid fa-lock lock-icon';
+                            link.appendChild(candado);
+
+                            link.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                candado.classList.remove('lock-shake');
+                                void candado.offsetWidth; // Reinicia animación
+                                candado.classList.add('lock-shake');
+
+                                const toast = document.getElementById('toastAlert');
+                                toast.classList.add('show');
+                                setTimeout(() => { toast.classList.remove('show'); }, 3000);
+                            });
+                        }
+                    }
+                });
+            } else {
+                window.location.href = 'login.html'; // Expulsa a usuarios no identificados
+            }
+        });
+
+        // BOTÓN CERRAR SESIÓN
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            document.getElementById('logoutOverlay').classList.add('active'); 
+            setTimeout(() => {
+                localStorage.removeItem('sesion_activa');
+                localStorage.removeItem('usuario_nombre');
+                localStorage.removeItem('usuario_avatar');
+                localStorage.removeItem('usuario_roll');
+                window.location.href = 'login.html';
+            }, 2500);
+        });
+
+        // API PARA CARGAR LOS TEXTOS GLOBALES DE LA HOJA 'DATOS'
+        const timestamp = new Date().getTime();
+        const apiURL = `https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Datos&_=${timestamp}`;
 
         fetch(apiURL)
             .then(response => response.json())
             .then(data => {
-                // El sistema lee cada fila de tu Google Sheet y busca si hay un
-                // elemento en esta página que tenga un id "sheet-CLAVE"
                 data.forEach(fila => {
                     const elemento = document.getElementById('sheet-' + fila.clave);
                     if (elemento) {
-                        // innerHTML permite que si pones <b>Texto</b> en Google Sheets,
-                        // aquí se muestre en negritas.
                         elemento.innerHTML = fila.texto;
                     }
                 });
             })
-            .catch(error => console.error('Error al conectar con la hoja de cálculo:', error));
-        // -------------------------------------------------------------------------
+            .catch(error => console.error('Error al conectar con la hoja Datos:', error));
 
-        // Lógica de menús desplegables
+        // CONTROLES DE LA INTERFAZ LATERAL
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('toggleSidebar');
         toggleBtn.addEventListener('click', () => { sidebar.classList.toggle('collapsed'); });
@@ -294,14 +349,9 @@
             });
         });
 
-        // -------------------------------------------------------------------------
-        // MEMORIA PARA EL MODO OSCURO (LOCALSTORAGE)
-        // -------------------------------------------------------------------------
-        // Nota: Esto hace que el navegador recuerde si dejaste la página en oscuro o claro
         const themeBtn = document.getElementById('themeToggle');
         const rootElement = document.documentElement;
 
-        // Comprobar al iniciar si hay un tema guardado
         if (localStorage.getItem('tema-casita') === 'dark') {
             rootElement.setAttribute('data-theme', 'dark');
             themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
@@ -309,16 +359,15 @@
             themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
         }
 
-        // Al hacer clic, cambiar el tema y guardarlo en la memoria
         themeBtn.addEventListener('click', () => {
             let isDark = rootElement.hasAttribute('data-theme');
             if (isDark) {
                 rootElement.removeAttribute('data-theme');
-                localStorage.setItem('tema-casita', 'light'); // Guarda color blanco
+                localStorage.setItem('tema-casita', 'light');
                 themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
             } else {
                 rootElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('tema-casita', 'dark'); // Guarda color oscuro
+                localStorage.setItem('tema-casita', 'dark');
                 themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
             }
         });
