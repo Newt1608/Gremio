@@ -13,6 +13,7 @@
             --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #f9f5ed;
             --card-bg: #ffffff; --text-dark: #201b2a; --text-muted: #7d7889;
             --accent-red: #d84d65; --border-color: #e8e4dc; --transition-speed: 0.3s;
+            --setup-blue: #4299f6;
         }
 
         [data-theme="dark"] {
@@ -23,10 +24,21 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
 
+        /* BARRA LATERAL Y PERFIL */
         .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
         .sidebar.collapsed { width: 0; padding: 0; }
-        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; min-width: 260px; }
-        .sidebar-header img { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
+        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        
+        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
+        .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--setup-blue); object-fit: cover; }
+        .profile-info-wrap span { color: white; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;}
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
+
         .nav-group { margin-bottom: 10px; min-width: 260px; }
         .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
         .nav-title:hover { color: var(--sidebar-text-active); }
@@ -34,11 +46,38 @@
         .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
         .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
         .nav-group.collapsed-group .nav-items-container { max-height: 0; }
-        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; }
+        
+        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
         .nav-item:hover { color: var(--sidebar-text-active); }
         .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
 
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
+        /* CANDADOS ANIMADOS */
+        .lock-icon { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
+        .nav-item.locked { cursor: not-allowed; opacity: 0.6; }
+        .nav-item.locked:hover .lock-icon { color: var(--accent-red); filter: drop-shadow(0 0 8px rgba(216, 77, 101, 0.8)); }
+        
+        @keyframes shake { 0% { transform: translateY(-50%) translateX(0); } 25% { transform: translateY(-50%) translateX(-4px); } 50% { transform: translateY(-50%) translateX(4px); } 75% { transform: translateY(-50%) translateX(-4px); } 100% { transform: translateY(-50%) translateX(0); } }
+        .lock-shake { animation: shake 0.4s ease-in-out !important; color: var(--accent-red) !important; }
+        @keyframes floatLock { 0% { transform: translateY(-40%); } 100% { transform: translateY(-60%); } }
+
+        /* ALERTA DE PERMISO DENEGADO */
+        .toast-alert { position: fixed; top: 20px; right: -300px; background: rgba(216, 77, 101, 0.95); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 700; font-size: 13px; box-shadow: 0 10px 30px rgba(216, 77, 101, 0.4); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 10px; z-index: 9999; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .toast-alert.show { right: 30px; }
+
+        /* ANIMACIÓN GRIS AL CERRAR SESIÓN */
+        .logout-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #110f17; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 9999; }
+        .logout-overlay.active { opacity: 1; pointer-events: auto; }
+        .logout-loader-container { position: relative; width: 120px; height: 120px; margin-bottom: 20px; }
+        .logout-loader-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid #110f17; position: relative; z-index: 2; box-shadow: 0 10px 30px rgba(0,0,0,0.8); filter: grayscale(100%) brightness(0.6); transform: scale(0.8); transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .logout-overlay.active .logout-loader-img { transform: scale(1); }
+        .spinner-ring-gray { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: #555; border-right-color: #333; z-index: 1; animation: spin 1.5s linear infinite; opacity: 0; transition: opacity 0.5s ease; }
+        .logout-overlay.active .spinner-ring-gray { opacity: 1; }
+        .logout-text { font-size: 18px; font-weight: 700; color: #888; text-align: center; text-transform: uppercase; letter-spacing: 1px; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s; }
+        .logout-overlay.active .logout-text { opacity: 1; transform: translateY(0); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; position: relative; }
         .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
         .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
         .toggle-btn, .theme-btn { background: none; border: none; color: var(--text-dark); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; background-color: var(--card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
@@ -68,7 +107,22 @@
 </head>
 <body>
 
+    <!-- MENSAJE DE PERMISO DENEGADO -->
+    <div class="toast-alert" id="toastAlert">
+        <i class="fa-solid fa-lock"></i> No tienes permisos para esta página.
+    </div>
+
+    <!-- OVERLAY DE CIERRE DE SESIÓN -->
+    <div class="logout-overlay" id="logoutOverlay">
+        <div class="logout-loader-container">
+            <div class="spinner-ring-gray"></div>
+            <img src="" alt="Perfil" class="logout-loader-img" id="logoutAvatar" onerror="this.src='logo.jpg';">
+        </div>
+        <div class="logout-text">Cerrando sesión...</div>
+    </div>
+
     <aside class="sidebar" id="sidebar">
+        <!-- HEADER PRINCIPAL -->
         <div class="sidebar-header">
             <img src="logo.jpg" alt="Logo">
             <div>
@@ -77,6 +131,18 @@
             </div>
         </div>
 
+        <!-- PERFIL DEL USUARIO DINÁMICO CON BOTÓN ROJO -->
+        <div class="user-profile-sidebar" id="user-profile-sidebar">
+            <div class="profile-info-wrap">
+                <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
+                <span id="sidebar-name">Usuario</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
+                <i class="fa-solid fa-power-off"></i>
+            </button>
+        </div>
+
+        <!-- MENÚ INICIO (Todos los roles pueden ver) -->
         <div class="nav-group">
             <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -85,30 +151,37 @@
             </div>
         </div>
 
+        <!-- MENÚ GREMIO (Bloqueado para Basico) -->
         <div class="nav-group">
             <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="resumen.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
-                <a href="guia.html" class="nav-item"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
-                <a href="ranking.html" class="nav-item"><i class="fa-solid fa-trophy"></i> Ranking de la casa</a>
+                <a href="resumen.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-chart-pie"></i> Resumen del gremio
+                </a>
+                <a href="guia.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-book-bookmark"></i> Guía
+                </a>
+                <a href="ranking.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-trophy"></i> Ranking de la casa
+                </a>
             </div>
         </div>
-
+        
+<!-- MENÚ GUARDIANES -->
         <div class="nav-group">
             <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="heroes.html" class="nav-item"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
-                <a href="equipos.html" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
-                <!-- Link a Incursiones centralizado -->
-                <a href="incursiones.html" class="nav-item"><i class="fa-solid fa-ghost"></i> Incursiones</a>
-                <a href="recursos.html" class="nav-item"><i class="fa-regular fa-gem"></i> Recursos</a>
+                <a href="heroes.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
+                <a href="equipos.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
             </div>
         </div>
 
-        <div class="nav-group" style="margin-top: auto; padding-bottom: 20px;">
-            <div class="nav-items-container" style="max-height: none;">
-                <a href="preferencias.html" class="nav-item"><i class="fa-solid fa-gear"></i> Preferencias</a>
-                <a href="ayuda.html" class="nav-item"><i class="fa-regular fa-circle-question"></i> Ayuda y atajos</a>
+        <!-- MENÚ INCURSIONES -->
+        <div class="nav-group">
+            <div class="nav-title">INCURSIONES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="incursiones.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-ghost"></i> Asalto</a>
+                <a href="arena.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
             </div>
         </div>
     </aside>
@@ -167,8 +240,79 @@
     </script>
 
     <script>
-        // API NUEVA
-        const apiURL = 'https://sheetdb.io/api/v1/byy514yadr0v0';
+        // =========================================================================
+        // COMPROBAR SESIÓN, CARGAR PERFIL Y GESTIONAR CANDADOS DE ROLES
+        // =========================================================================
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem('sesion_activa') === 'true') {
+                const avatarGuardado = localStorage.getItem('usuario_avatar');
+                const nombreGuardado = localStorage.getItem('usuario_nombre');
+                // Convertimos el rol a minúsculas, si está vacío asume 'basico'
+                const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
+                
+                document.getElementById('user-profile-sidebar').style.display = 'flex';
+                if (avatarGuardado) {
+                    document.getElementById('sidebar-avatar').src = avatarGuardado;
+                    document.getElementById('logoutAvatar').src = avatarGuardado; 
+                }
+                if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
+
+                // Lógica de Candados según el Rol
+                document.querySelectorAll('.nav-item').forEach(link => {
+                    const reqOriginal = link.getAttribute('data-req');
+                    if (reqOriginal) {
+                        const reqRole = reqOriginal.toLowerCase();
+                        let bloqueado = false;
+
+                        // Si requiere Heroe, solo entra Heroe
+                        if (reqRole === 'heroe' && rolUsuario !== 'heroe') {
+                            bloqueado = true;
+                        }
+                        // Si requiere Caballero, entran Caballero y Heroe
+                        if (reqRole === 'caballero' && rolUsuario !== 'caballero' && rolUsuario !== 'heroe') {
+                            bloqueado = true;
+                        }
+
+                        if (bloqueado) {
+                            link.classList.add('locked');
+                            const candado = document.createElement('i');
+                            candado.className = 'fa-solid fa-lock lock-icon';
+                            link.appendChild(candado);
+
+                            link.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                candado.classList.remove('lock-shake');
+                                void candado.offsetWidth; // Reflow para reiniciar animación
+                                candado.classList.add('lock-shake');
+
+                                const toast = document.getElementById('toastAlert');
+                                toast.classList.add('show');
+                                setTimeout(() => { toast.classList.remove('show'); }, 3000);
+                            });
+                        }
+                    }
+                });
+
+            } else {
+                window.location.href = 'login.html'; // Expulsar si no hay sesión
+            }
+        });
+
+        // BOTÓN CERRAR SESIÓN
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            document.getElementById('logoutOverlay').classList.add('active'); 
+            setTimeout(() => {
+                localStorage.removeItem('sesion_activa');
+                localStorage.removeItem('usuario_nombre');
+                localStorage.removeItem('usuario_avatar');
+                localStorage.removeItem('usuario_roll'); // Borra el rol
+                window.location.href = 'login.html';
+            }, 2500);
+        });
+
+        // API NOTICIAS Y TEXTOS GLOBALES
+        const timestamp = new Date().getTime();
+        const apiURL = `https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Datos&_=${timestamp}`;
 
         fetch(apiURL)
             .then(response => response.json())
