@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipos - Mi Casita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* VARIABLES DE COLOR */
+        :root {
+            --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #f9f5ed;
+            --card-bg: #ffffff; --text-dark: #201b2a; --text-muted: #7d7889;
+            --accent-red: #d84d65; --border-color: #e8e4dc; --transition-speed: 0.3s;
+            --setup-blue: #3b68ff;
+        }
+
+        [data-theme="dark"] {
+            --main-bg: #181521; --card-bg: #221e2d; --text-dark: #f0eef5;
+            --text-muted: #a39eb5; --border-color: #353045; --sidebar-bg: #14111c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
+
+        /* BARRA LATERAL Y PERFIL */
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
+        .sidebar.collapsed { width: 0; padding: 0; }
+        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
+        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        
+        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
+        .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--setup-blue); object-fit: cover; }
+        .profile-info-wrap span { color: white; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;}
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
+
+        .nav-group { margin-bottom: 10px; min-width: 260px; }
+        .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .nav-title:hover { color: var(--sidebar-text-active); }
+        .nav-title i { transition: transform 0.3s ease; }
+        .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
+        .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+        .nav-group.collapsed-group .nav-items-container { max-height: 0; }
+        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
+        .nav-item:hover { color: var(--sidebar-text-active); }
+        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
+
+        /* CANDADOS ANIMADOS */
+        .lock-icon { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
+        .nav-item.locked { cursor: not-allowed; opacity: 0.6; }
+        .nav-item.locked:hover .lock-icon { color: var(--accent-red); filter: drop-shadow(0 0 8px rgba(216, 77, 101, 0.8)); }
+        
+        @keyframes shake { 0% { transform: translateY(-50%) translateX(0); } 25% { transform: translateY(-50%) translateX(-4px); } 50% { transform: translateY(-50%) translateX(4px); } 75% { transform: translateY(-50%) translateX(-4px); } 100% { transform: translateY(-50%) translateX(0); } }
+        .lock-shake { animation: shake 0.4s ease-in-out !important; color: var(--accent-red) !important; }
+        @keyframes floatLock { 0% { transform: translateY(-40%); } 100% { transform: translateY(-60%); } }
+
+        /* ALERTA DE PERMISO DENEGADO */
+        .toast-alert { position: fixed; top: 20px; right: -300px; background: rgba(216, 77, 101, 0.95); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 700; font-size: 13px; box-shadow: 0 10px 30px rgba(216, 77, 101, 0.4); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 10px; z-index: 9999; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .toast-alert.show { right: 30px; }
+
+        /* ANIMACIÓN GRIS AL CERRAR SESIÓN */
+        .logout-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #110f17; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 9999; }
+        .logout-overlay.active { opacity: 1; pointer-events: auto; }
+        .logout-loader-container { position: relative; width: 120px; height: 120px; margin-bottom: 20px; }
+        .logout-loader-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid #110f17; position: relative; z-index: 2; box-shadow: 0 10px 30px rgba(0,0,0,0.8); filter: grayscale(100%) brightness(0.6); transform: scale(0.8); transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .logout-overlay.active .logout-loader-img { transform: scale(1); }
+        .spinner-ring-gray { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: #555; border-right-color: #333; z-index: 1; animation: spin 1.5s linear infinite; opacity: 0; transition: opacity 0.5s ease; }
+        .logout-overlay.active .spinner-ring-gray { opacity: 1; }
+        .logout-text { font-size: 18px; font-weight: 700; color: #888; text-align: center; text-transform: uppercase; letter-spacing: 1px; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s; }
+        .logout-overlay.active .logout-text { opacity: 1; transform: translateY(0); }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
+        .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
+        .toggle-btn, .theme-btn { background: none; border: none; color: var(--text-dark); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; background-color: var(--card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
+        .dashboard-container { padding: 20px 40px 60px 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+        /* HEADER DE GALERÍA DE EQUIPOS */
+        .gallery-header { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 20px; display: flex; align-items: center; gap: 20px; }
+        .gallery-icon { width: 60px; height: 60px; border-radius: 15px; background: linear-gradient(135deg, #d84d65, #ff7b93); display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; }
+        .gallery-title h1 { font-size: 28px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .gallery-title p { font-size: 12px; color: var(--text-muted); font-weight: 700; }
+
+        /* BARRA DE BÚSQUEDA Y FILTRO DE CATEGORÍAS */
+        .toolbar-filters { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 14px 20px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .search-wrapper { position: relative; flex: 1; min-width: 240px; max-width: 380px; }
+        .search-wrapper i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
+        .search-input { width: 100%; padding: 11px 15px 11px 38px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--main-bg); color: var(--text-dark); font-size: 14px; font-weight: 600; outline: none; transition: 0.2s; }
+        .search-input:focus { border-color: var(--setup-blue); }
+
+        .controls-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .element-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        .elem-filter-btn {
+            padding: 0 16px; height: 40px; border-radius: 10px; border: 1px solid var(--border-color);
+            background: var(--main-bg); color: var(--text-muted); display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .elem-filter-btn i, .filter-type-icon { font-size: 14px; }
+        .filter-type-icon { width: 18px; height: 18px; object-fit: contain; transition: transform 0.2s; }
+        .elem-filter-btn:hover { border-color: var(--setup-blue); color: var(--text-dark); }
+        .elem-filter-btn:hover .filter-type-icon { transform: scale(1.15); }
+        .elem-filter-btn.active { border-color: var(--setup-blue); background: rgba(59, 104, 255, 0.2); color: #ffffff; box-shadow: 0 0 12px rgba(59, 104, 255, 0.35); }
+
+        /* GRID DE EQUIPOS (TARJETAS COMPACTAS) */
+        .equip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 15px; }
+
+        .equip-card {
+            background: #292437; border: 2px solid #353045; border-radius: 12px;
+            padding: 15px 10px; cursor: pointer; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+        }
+        .equip-card:hover { transform: translateY(-4px); border-color: var(--setup-blue); }
+        
+        /* =========================================================
+           MARCOS DE COLORES POR RAREZA (GRID)
+           ========================================================= */
+        /* Mítico (Morado a Rosa/Rojo) */
+        .equip-card.myth-equip {
+            background: linear-gradient(#292437, #292437) padding-box, linear-gradient(to bottom, #9c27b0, #ff4081) border-box;
+            border: 2px solid transparent; box-shadow: 0 4px 15px rgba(156, 39, 176, 0.25);
+        }
+        .equip-card.myth-equip:hover { box-shadow: 0 8px 25px rgba(255, 64, 129, 0.45); }
+
+        /* Épico (Verde) */
+        .equip-card.epic-equip {
+            background: linear-gradient(#292437, #292437) padding-box, linear-gradient(to bottom, #4caf50, #81c784) border-box;
+            border: 2px solid transparent; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.25);
+        }
+        .equip-card.epic-equip:hover { box-shadow: 0 8px 25px rgba(76, 175, 80, 0.45); }
+
+        /* Legendario / Leyenda (Amarillo a Naranja) */
+        .equip-card.leg-equip {
+            background: linear-gradient(#292437, #292437) padding-box, linear-gradient(to bottom, #ffd54f, #ff9800) border-box;
+            border: 2px solid transparent; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.25);
+        }
+        .equip-card.leg-equip:hover { box-shadow: 0 8px 25px rgba(255, 152, 0, 0.45); }
+
+        /* Único (Naranja Puro) */
+        .equip-card.unique-equip {
+            background: linear-gradient(#292437, #292437) padding-box, linear-gradient(to bottom, #ff5722, #e64a19) border-box;
+            border: 2px solid transparent; box-shadow: 0 4px 15px rgba(255, 87, 34, 0.25);
+        }
+        .equip-card.unique-equip:hover { box-shadow: 0 8px 25px rgba(255, 87, 34, 0.45); }
+
+        /* Raro / Extraño (Azul) */
+        .equip-card.rare-equip {
+            background: linear-gradient(#292437, #292437) padding-box, linear-gradient(to bottom, #2196f3, #1976d2) border-box;
+            border: 2px solid transparent; box-shadow: 0 4px 15px rgba(33, 150, 243, 0.25);
+        }
+        .equip-card.rare-equip:hover { box-shadow: 0 8px 25px rgba(33, 150, 243, 0.45); }
+
+        /* Normal (Gris) */
+        .equip-card.normal-equip {
+            background: linear-gradient(#292437, #292437) padding-box, linear-gradient(to bottom, #9e9e9e, #757575) border-box;
+            border: 2px solid transparent; box-shadow: 0 4px 15px rgba(158, 158, 158, 0.25);
+        }
+        .equip-card.normal-equip:hover { box-shadow: 0 8px 25px rgba(158, 158, 158, 0.45); }
+
+        /* Imágenes y Estrellas */
+        .equip-img-wrapper { width: 60px; height: 60px; margin-bottom: 8px; display: flex; justify-content: center; align-items: center; }
+        .equip-img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+        
+        .equip-stars { display: flex; justify-content: center; gap: 1px; margin-bottom: 8px; }
+        .equip-star { width: 14px; height: 14px; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.8)); }
+
+        .equip-info h3 { font-size: 12px; color: white; font-weight: 700; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .equip-info p { font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
+
+        /* RENDERIZADO DE CARTAS (SPRITESHEET) */
+        .sprite-item-card { width: 45px; height: 60px; background-size: 2625.641% 948.148%; background-repeat: no-repeat; border-radius: 4px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
+        .sprite-item-modal { width: 140px; height: 185px; background-size: 2625.641% 948.148%; background-repeat: no-repeat; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.8); }
+
+        /* MODAL DE EQUIPOS */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.82); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-content { background: var(--card-bg); width: 90%; max-width: 1000px; max-height: 90vh; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; position: relative; border: 2px solid var(--border-color); box-shadow: 0 20px 50px rgba(0,0,0,0.6); transform: translateY(20px) scale(0.95); transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
+        .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
+
+        .modal-header { padding: 20px 30px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--main-bg); }
+        .modal-header h2 { font-size: 20px; font-weight: 800; text-transform: uppercase; color: var(--text-dark); display: flex; align-items: center; gap: 10px; }
+        .close-modal-btn { background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+        .close-modal-btn:hover { color: var(--accent-red); }
+
+        .equip-modal-body { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; padding: 30px; overflow-y: auto; }
+        
+        .em-img-box { background: linear-gradient(135deg, #292437, #181521); border: 2px solid #3c354e; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; aspect-ratio: 1/1; box-shadow: inset 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; }
+        .em-main-img { max-width: 100%; max-height: 220px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6)); }
+
+        /* =========================================================
+           MARCOS DE COLORES POR RAREZA (MODAL)
+           ========================================================= */
+        .em-img-box.myth-modal-img {
+            background: linear-gradient(135deg, #292437, #181521) padding-box, linear-gradient(to bottom, #9c27b0, #ff4081) border-box !important;
+            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(255, 64, 129, 0.25), inset 0 10px 30px rgba(0,0,0,0.5) !important;
+        }
+        .em-img-box.epic-modal-img {
+            background: linear-gradient(135deg, #292437, #181521) padding-box, linear-gradient(to bottom, #4caf50, #81c784) border-box !important;
+            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(76, 175, 80, 0.25), inset 0 10px 30px rgba(0,0,0,0.5) !important;
+        }
+        .em-img-box.leg-modal-img {
+            background: linear-gradient(135deg, #292437, #181521) padding-box, linear-gradient(to bottom, #ffd54f, #ff9800) border-box !important;
+            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(255, 152, 0, 0.25), inset 0 10px 30px rgba(0,0,0,0.5) !important;
+        }
+        .em-img-box.unique-modal-img {
+            background: linear-gradient(135deg, #292437, #181521) padding-box, linear-gradient(to bottom, #ff5722, #e64a19) border-box !important;
+            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(255, 87, 34, 0.25), inset 0 10px 30px rgba(0,0,0,0.5) !important;
+        }
+        .em-img-box.rare-modal-img {
+            background: linear-gradient(135deg, #292437, #181521) padding-box, linear-gradient(to bottom, #2196f3, #1976d2) border-box !important;
+            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(33, 150, 243, 0.25), inset 0 10px 30px rgba(0,0,0,0.5) !important;
+        }
+        .em-img-box.normal-modal-img {
+            background: linear-gradient(135deg, #292437, #181521) padding-box, linear-gradient(to bottom, #9e9e9e, #757575) border-box !important;
+            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(158, 158, 158, 0.25), inset 0 10px 30px rgba(0,0,0,0.5) !important;
+        }
+
+        .section-panel { background: var(--main-bg); border-radius: 16px; padding: 25px; border: 1px solid var(--border-color); }
+        .panel-title { font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; color: var(--text-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .skill-item { margin-bottom: 20px; }
+        .skill-item:last-child { margin-bottom: 0; }
+        .skill-type { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;}
+        .skill-name { font-size: 15px; font-weight: 800; color: var(--text-dark); margin-bottom: 6px; }
+        .skill-desc { font-size: 13px; line-height: 1.6; color: var(--text-muted); font-weight: 500;}
+
+        @media (max-width: 800px) {
+            .equip-modal-body { grid-template-columns: 1fr; }
+            .em-img-box { aspect-ratio: auto; min-height: 250px; }
+            .sidebar { position: absolute; height: 100%; z-index: 100; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <!-- MENSAJE DE PERMISO DENEGADO -->
+    <div class="toast-alert" id="toastAlert">
+        <i class="fa-solid fa-lock"></i> No tienes permisos para esta página.
+    </div>
+
+    <!-- OVERLAY DE CIERRE DE SESIÓN -->
+    <div class="logout-overlay" id="logoutOverlay">
+        <div class="logout-loader-container">
+            <div class="spinner-ring-gray"></div>
+            <img src="" alt="Perfil" class="logout-loader-img" id="logoutAvatar" onerror="this.src='logo.jpg';">
+        </div>
+        <div class="logout-text">Cerrando sesión...</div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <!-- HEADER PRINCIPAL -->
+        <div class="sidebar-header">
+            <img src="logo.jpg" alt="Logo">
+            <div>
+                <h2>Mi Casita</h2>
+                <p>Gremio de Guardian Tales</p>
+            </div>
+        </div>
+
+        <!-- PERFIL DEL USUARIO DINÁMICO CON BOTÓN ROJO -->
+        <div class="user-profile-sidebar" id="user-profile-sidebar">
+            <div class="profile-info-wrap">
+                <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
+                <span id="sidebar-name">Usuario</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
+                <i class="fa-solid fa-power-off"></i>
+            </button>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-fire"></i> Fogata de bienvenida</a>
+                <a href="noticias.html" class="nav-item"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
+            </div>
+        </div>
+        <div class="nav-group">
+            <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="resumen.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
+                <a href="guia.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
+                <a href="ranking.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-trophy"></i> Ranking de la casa</a>
+            </div>
+        </div>
+        <div class="nav-group">
+            <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="heroes.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
+                <a href="equipos.html" class="nav-item active restrict-heroe" data-req="Heroe"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
+                <a href="incursiones.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-ghost"></i> Incursiones</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="topbar">
+            <div class="breadcrumbs">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <span>Mi Casita &nbsp; > &nbsp; Cuentos de Guardianes &nbsp; > &nbsp; <b>Equipos</b></span>
+            </div>
+            <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-sun"></i></button>
+        </div>
+
+        <div class="dashboard-container">
+            <div class="gallery-header">
+                <div class="gallery-icon" style="background: linear-gradient(135deg, #d84d65, #ff7b93);"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="gallery-title">
+                    <h1>Arsenal y Equipamiento</h1>
+                    <p>HOGAR / EQUIPOS</p>
+                </div>
+            </div>
+
+            <div class="toolbar-filters">
+                <div class="search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Buscar armas, cartas o reliquias...">
+                </div>
+
+                <div class="controls-right">
+                    <div class="element-filters" id="typeFilters">
+                        <button class="elem-filter-btn active" data-type="all" title="Todos">
+                            <i class="fa-solid fa-border-all"></i> Todos
+                        </button>
+                        <button class="elem-filter-btn" data-type="arma" title="Armas">
+                            <img src="https://static.wikia.nocookie.net/guardian-tales/images/c/c1/Icon_ItemBook_OneHandedSword.png/revision/latest?cb=20230504141213&format=original" class="filter-type-icon" alt="Arma"> Armas
+                        </button>
+                        <button class="elem-filter-btn" data-type="accesorio" title="Accesorios">
+                            <i class="fa-solid fa-ring"></i> Accesorios
+                        </button>
+                        <button class="elem-filter-btn" data-type="reliquia" title="Reliquias">
+                            <img src="https://static.wikia.nocookie.net/guardian-tales/images/9/9b/Icon_ItemBook_Relic.png/revision/latest?cb=20230504141217&format=original" class="filter-type-icon" alt="Reliquia"> Reliquias
+                        </button>
+                        <button class="elem-filter-btn" data-type="carta" title="Cartas">
+                            <img src="https://static.wikia.nocookie.net/guardian-tales/images/1/1f/Icon_ItemBook_Card.png/revision/latest?cb=20230504141154&format=original" class="filter-type-icon" alt="Carta"> Cartas
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="equip-grid" id="equipGrid">
+                <p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Cargando arsenal desde la base de datos...</p>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="equipModal" onclick="closeModal()">
+        <div class="modal-content" id="equipModalContent" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="em-header-name">
+                    <i class="fa-solid fa-shield-halved" style="color: var(--setup-blue); margin-right: 8px;"></i> Detalle del Ítem
+                </h2>
+                <button class="close-modal-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="equip-modal-body">
+                <div class="equip-profile-col">
+                    <div class="em-img-box" id="em-img-container">
+                        <div id="em-stars-container" class="equip-stars" style="justify-content: center; margin-bottom: 12px; width: 100%;"></div>
+                        <img src="" id="em-main-img" class="em-main-img">
+                    </div>
+                </div>
+
+                <div class="kit-col">
+                    <div class="section-panel">
+                        <div class="panel-title" id="em-title">Nombre del Arma</div>
+                        
+                        <div class="skill-item">
+                            <div class="skill-type">Tipo y Clasificación</div>
+                            <div class="skill-name" id="em-type-class">-</div>
+                        </div>
+
+                        <div class="skill-item">
+                            <div class="skill-type">DPS / Stats Principales</div>
+                            <div class="skill-name" id="em-dps">-</div>
+                        </div>
+
+                        <div class="skill-item">
+                            <div class="skill-type">Efecto / Opciones Básicas</div>
+                            <div class="skill-desc" id="em-effect" style="color: var(--text-dark); font-weight: 600;">-</div>
+                        </div>
+
+                        <div class="skill-item">
+                            <div class="skill-type">Habilidad / Ubicación</div>
+                            <div class="skill-name" id="em-skill-name">-</div>
+                            <div class="skill-desc" id="em-skill-desc">-</div>
+                        </div>
+                        
+                        <div class="skill-item" id="em-hero-assoc-container" style="border-top: 1px dashed var(--border-color); padding-top: 15px; margin-top: 20px;">
+                            <div class="skill-type">Exclusiva para el Héroe</div>
+                            <div class="skill-name" id="em-hero-assoc" style="color: var(--setup-blue);">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // =========================================================================
+        // COMPROBAR SESIÓN Y GESTIONAR ROLES Y CANDADOS
+        // =========================================================================
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem('sesion_activa') === 'true') {
+                const avatarGuardado = localStorage.getItem('usuario_avatar');
+                const nombreGuardado = localStorage.getItem('usuario_nombre');
+                const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
+                
+                document.getElementById('user-profile-sidebar').style.display = 'flex';
+                if (avatarGuardado) {
+                    document.getElementById('sidebar-avatar').src = avatarGuardado;
+                    document.getElementById('logoutAvatar').src = avatarGuardado; 
+                }
+                if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
+
+                document.querySelectorAll('.nav-item').forEach(link => {
+                    const reqOriginal = link.getAttribute('data-req');
+                    if (reqOriginal) {
+                        const reqRole = reqOriginal.toLowerCase();
+                        let bloqueado = false;
+
+                        if (reqRole === 'heroe' && rolUsuario !== 'heroe') bloqueado = true;
+                        if (reqRole === 'caballero' && rolUsuario !== 'caballero' && rolUsuario !== 'heroe') bloqueado = true;
+
+                        if (bloqueado) {
+                            link.classList.add('locked');
+                            const candado = document.createElement('i');
+                            candado.className = 'fa-solid fa-lock lock-icon';
+                            link.appendChild(candado);
+
+                            link.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                candado.classList.remove('lock-shake');
+                                void candado.offsetWidth; 
+                                candado.classList.add('lock-shake');
+
+                                const toast = document.getElementById('toastAlert');
+                                toast.classList.add('show');
+                                setTimeout(() => { toast.classList.remove('show'); }, 3000);
+                            });
+                        }
+                    }
+                });
+            } else {
+                window.location.href = 'login.html'; 
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            document.getElementById('logoutOverlay').classList.add('active'); 
+            setTimeout(() => {
+                localStorage.removeItem('sesion_activa');
+                localStorage.removeItem('usuario_nombre');
+                localStorage.removeItem('usuario_avatar');
+                localStorage.removeItem('usuario_roll');
+                window.location.href = 'login.html';
+            }, 2500);
+        });
+
+        // =========================================================================
+        // LÓGICA DE BASE DE DATOS Y RENDERIZADO DE EQUIPOS
+        // =========================================================================
+        const urlSpritesheet = "https://static.wikia.nocookie.net/guardian-tales/images/1/10/Spritesheet_Cards.png?format=original";
+        
+        // Íconos de Estrellas
+        const starEpicUrl = "https://static.wikia.nocookie.net/guardian-tales/images/5/53/Icon_EquipStar_Epic.png/revision/latest?cb=20231021080533&format=original";
+        const starLegUrl = "https://static.wikia.nocookie.net/guardian-tales/images/4/40/StageStar_Sub.png/revision/latest?cb=20210221222151&format=original";
+
+        const mapaFandomStatic = {
+            "Accessory_Mad_Panda_Brooch.png": "https://static.wikia.nocookie.net/guardian-tales/images/9/94/Accessory_Mad_Panda_Brooch.png",
+            "Accessory_Minotaur's_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/e/e3/Accessory_Minotaur%27s_Necklace.png",
+            "Accessory_Earth_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/9/98/Accessory_Earth_Necklace.png",
+            "Accessory_Ice_Queen_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/6/61/Accessory_Ice_Queen_Ring.png",
+            "Accessory_Martyr_Mirror_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/c/c1/Accessory_Martyr_Mirror_Necklace.png",
+            "Accessory_Shadow_Beast_Confining_Bracelet.png": "https://static.wikia.nocookie.net/guardian-tales/images/a/a1/Accessory_Shadow_Beast_Confining_Bracelet.png",
+            "Accessory_Flame_Dragon_King's_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/4/46/Accessory_Flame_Dragon_King%27s_Necklace.png",
+            "Accessory_Protector's_Brooch.png": "https://static.wikia.nocookie.net/guardian-tales/images/d/de/Accessory_Protector%27s_Brooch.png",
+            "Accessory_Mirror_Necklace_of_Riches.png": "https://static.wikia.nocookie.net/guardian-tales/images/7/74/Accessory_Mirror_Necklace_of_Riches.png",
+            "Accessory_Ruby_Mirror_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/3/38/Accessory_Ruby_Mirror_Ring.png",
+            "Accessory_Mirror_Earring_of_Worship.png": "https://static.wikia.nocookie.net/guardian-tales/images/a/a6/Accessory_Mirror_Earring_of_Worship.png",
+            "Accessory_Mirror_Earring_of_Patience.png": "https://static.wikia.nocookie.net/guardian-tales/images/2/29/Accessory_Mirror_Earring_of_Patience.png",
+            "Accessory_Mirror_Earring_of_Nobility.png": "https://static.wikia.nocookie.net/guardian-tales/images/0/05/Accessory_Mirror_Earring_of_Nobility.png",
+            "Accessory_Mirror_Earring_of_Faith.png": "https://static.wikia.nocookie.net/guardian-tales/images/d/dd/Accessory_Mirror_Earring_of_Faith.png",
+            "Accessory_Sniper_Goggles.png": "https://static.wikia.nocookie.net/guardian-tales/images/a/a5/Accessory_Sniper_Goggles.png",
+            "Accessory_Dusk_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/3/38/Accessory_Dusk_Ring.png",
+            "Accessory_Melody_Earring.png": "https://static.wikia.nocookie.net/guardian-tales/images/8/82/Accessory_Melody_Earring.png",
+            "Accessory_Ring_of_Belief.png": "https://static.wikia.nocookie.net/guardian-tales/images/2/24/Accessory_Ring_of_Belief.png",
+            "Accessory_Black_Crown_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/f/f2/Accessory_Black_Crown_Ring.png",
+            "Accessory_Chaste_Love_Brooch.png": "https://static.wikia.nocookie.net/guardian-tales/images/d/d0/Accessory_Chaste_Love_Brooch.png",
+            "Accessory_Dark_Magic_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/7/78/Accessory_Dark_Magic_Ring.png",
+            "Accessory_Ocean_Earring.png": "https://static.wikia.nocookie.net/guardian-tales/images/9/91/Accessory_Ocean_Earring.png",
+            "Accessory_Honor_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/8/85/Accessory_Honor_Ring.png",
+            "Accessory_Cursed_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/5/5e/Accessory_Cursed_Necklace.png",
+            "Accessory_Gold_Pocket_Watch.png": "https://static.wikia.nocookie.net/guardian-tales/images/0/04/Accessory_Gold_Pocket_Watch.png",
+            "Accessory_Sharp_Shooter.png": "https://static.wikia.nocookie.net/guardian-tales/images/a/a4/Accessory_Sharp_Shooter.png"
+        };
+
+        function normalizarUrlImagen(url) {
+            if (!url) return '';
+            let limpia = url.trim();
+            if (limpia.includes("Special:FilePath/")) {
+                const archivo = decodeURIComponent(limpia.split("Special:FilePath/")[1]);
+                if (mapaFandomStatic[archivo]) return mapaFandomStatic[archivo];
+            }
+            return limpia;
+        }
+
+        function obtenerColumnaFilaCarta(valorSprite) {
+            const texto = valorSprite.trim();
+            const parts = texto.split(":");
+            if (texto.startsWith("px:")) {
+                const pxX = parseFloat(parts[1]) || 0;
+                const pxY = parseFloat(parts[2]) || 0;
+                return { col: Math.round(pxX / 40), row: Math.round(pxY / 54) };
+            }
+            if (parts.length >= 3) {
+                return { col: parseFloat(parts[1]) || 0, row: parseFloat(parts[2]) || 0 };
+            }
+            const idx = (parseInt(parts[1]) || 0) % 142;
+            return { col: idx % 16, row: Math.floor(idx / 16) };
+        }
+
+        let equiposDB = [];
+        let selectedType = 'all';
+
+        const timestamp = new Date().getTime();
+        const apiHeroes = `https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Heroes&_=${timestamp}`;
+        const apiArmas = `https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Armas&_=${timestamp}`;
+
+        Promise.all([
+            fetch(apiHeroes).then(res => res.json()),
+            fetch(apiArmas).then(res => res.json())
+        ]).then(([heroesData, armasData]) => {
+            
+            let contadorCartas = 0;
+
+            equiposDB = armasData.filter(a => a.id_arma && a.nombre).map(a => {
+                let imgStr = normalizarUrlImagen(a.img);
+                const isCard = (a.tipo && a.tipo.toLowerCase() === 'carta') || (a.id_arma && a.id_arma.startsWith('carta_'));
+                
+                if (isCard) {
+                    if (!imgStr || (!imgStr.startsWith('sprite:') && !imgStr.startsWith('px:'))) {
+                        imgStr = `sprite:${contadorCartas}`;
+                    }
+                    contadorCartas++;
+                }
+
+                // Determinador de categoría automática
+                let rawTipo = (a.tipo || '').toLowerCase();
+                let cat = 'arma';
+                if (rawTipo.includes('carta') || isCard) cat = 'carta';
+                else if (rawTipo.includes('reliquia')) cat = 'reliquia';
+                else if (rawTipo.includes('accesorio') || rawTipo.includes('anillo') || rawTipo.includes('collar') || rawTipo.includes('broche') || a.clasificacion === 'Epico') cat = 'accesorio';
+
+                // Determinar Rareza, Marcos y Estrellas
+                let classifLower = (a.clasificacion || '').toLowerCase();
+                
+                let isMythic = classifLower.includes('mito') || classifLower.includes('mitic');
+                let isEpic = classifLower.includes('epic') || classifLower.includes('épic');
+                let isLegend = classifLower.includes('legend') || classifLower.includes('leyenda');
+                let isUnique = classifLower.includes('unico') || classifLower.includes('único');
+                let isRare = classifLower.includes('raro') || classifLower.includes('extraño');
+                let isNormal = classifLower.includes('normal');
+
+                let frameClass = '';
+                let starCount = 0;
+                let starImg = '';
+
+                if (isMythic) {
+                    frameClass = 'myth-equip';
+                    starCount = 6;
+                    starImg = starEpicUrl; // Usa la estrella de borde verde (Mítico son 6 estrellas)
+                } else if (isEpic) {
+                    frameClass = 'epic-equip';
+                    starCount = 5;
+                    starImg = starEpicUrl; // Estrella verde
+                } else if (isLegend) {
+                    frameClass = 'leg-equip';
+                    starCount = 4;
+                    starImg = starLegUrl; // Estrella dorada leyenda
+                } else if (isUnique) {
+                    frameClass = 'unique-equip';
+                    starCount = 3;
+                    starImg = starLegUrl;
+                } else if (isRare) {
+                    frameClass = 'rare-equip';
+                    starCount = 2;
+                    starImg = starLegUrl;
+                } else if (isNormal) {
+                    frameClass = 'normal-equip';
+                    starCount = 1;
+                    starImg = starLegUrl;
+                }
+
+                // Las cartas no llevan marco ni estrellas
+                if (isCard) {
+                    starCount = 0;
+                    frameClass = '';
+                }
+
+                let heroObj = heroesData.find(h => h.id === a.heroe_id);
+                let heroName = heroObj ? heroObj.nombre : (a.heroe_id && a.heroe_id !== 'ninguno' ? a.heroe_id : 'Ninguno');
+
+                return {
+                    id: a.id_arma.trim(),
+                    name: a.nombre.trim(),
+                    type: a.tipo || '-',
+                    category: cat,
+                    classification: a.clasificacion || '-',
+                    frameClass: frameClass,
+                    starCount: starCount,
+                    starImg: starImg,
+                    hero_id: a.heroe_id || 'ninguno',
+                    hero_name: heroName,
+                    img: imgStr,
+                    dps: a.dps || '-',
+                    effect: a.efecto || '-',
+                    skillName: a.hab_nombre || '-',
+                    skillDesc: a.hab_desc || '-'
+                };
+            });
+
+            applyFiltersAndSort();
+
+        }).catch(error => {
+            console.error("Error cargando los equipos:", error);
+            document.getElementById('equipGrid').innerHTML = '<p style="color:var(--accent-red); grid-column: 1/-1; text-align:center;">Error al cargar la base de datos. Verifica tu enlace de SheetDB.</p>';
+        });
+
+        const grid = document.getElementById('equipGrid');
+
+        function applyFiltersAndSort() {
+            const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+            
+            let filtered = equiposDB.filter(e => {
+                const matchName = e.name.toLowerCase().includes(searchTerm);
+                const matchType = selectedType === 'all' || e.category === selectedType;
+                return matchName && matchType;
+            });
+
+            const catOrder = { 'arma': 1, 'accesorio': 2, 'reliquia': 3, 'carta': 4 };
+            filtered.sort((a, b) => {
+                if (catOrder[a.category] !== catOrder[b.category]) {
+                    return catOrder[a.category] - catOrder[b.category];
+                }
+                return a.name.localeCompare(b.name);
+            });
+
+            renderGrid(filtered);
+        }
+
+        function renderGrid(data) {
+            grid.innerHTML = '';
+            if(data.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); font-weight: 700;">No se encontró equipamiento con esos filtros.</p>';
+                return;
+            }
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `equip-card ${item.frameClass}`;
+                card.onclick = () => openModal(item.id);
+
+                let starsHTML = '';
+                if (item.starCount > 0) {
+                    starsHTML = '<div class="equip-stars">';
+                    for (let i = 0; i < item.starCount; i++) {
+                        starsHTML += `<img src="${item.starImg}" class="equip-star" alt="star">`;
+                    }
+                    starsHTML += '</div>';
+                }
+
+                let imgHTML = '';
+                if (item.img.startsWith("sprite:") || item.img.startsWith("px:")) {
+                    const { col, row } = obtenerColumnaFilaCarta(item.img);
+                    const posX = ((col * 40) / (1024 - 39)) * 100;
+                    const posY = ((row * 54) / (512 - 54)) * 100;
+                    imgHTML = `<div class="sprite-item-card" style="background-image: url('${urlSpritesheet}'); background-position: ${posX.toFixed(4)}% ${posY.toFixed(4)}%;"></div>`;
+                } else {
+                    imgHTML = `<img src="${item.img}" class="equip-img" onerror="this.src='https://via.placeholder.com/60/3c354e/ffffff?text=?'" referrerpolicy="no-referrer">`;
+                }
+
+                card.innerHTML = `
+                    <div class="equip-img-wrapper">${imgHTML}</div>
+                    ${starsHTML}
+                    <div class="equip-info">
+                        <h3>${item.name}</h3>
+                        <p>${item.type}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // =========================================================================
+        // FUNCIONALIDAD DEL MODAL
+        // =========================================================================
+        function openModal(id) {
+            const item = equiposDB.find(e => e.id === id);
+            if(!item) return;
+
+            document.getElementById('em-title').innerText = item.name;
+            document.getElementById('em-type-class').innerText = `${item.type} • ${item.classification}`;
+            document.getElementById('em-dps').innerText = item.dps;
+            document.getElementById('em-effect').innerText = item.effect;
+            document.getElementById('em-skill-name').innerText = item.skillName;
+            document.getElementById('em-skill-desc').innerText = item.skillDesc;
+
+            // Renderizar Estrellas en el Modal
+            const starsContainer = document.getElementById('em-stars-container');
+            if (item.starCount > 0) {
+                let sHTML = '';
+                for (let i = 0; i < item.starCount; i++) {
+                    sHTML += `<img src="${item.starImg}" class="equip-star" style="width:16px; height:16px;" alt="star">`;
+                }
+                starsContainer.innerHTML = sHTML;
+                starsContainer.style.display = 'flex';
+            } else {
+                starsContainer.style.display = 'none';
+            }
+
+            if (item.hero_id === 'ninguno' || item.hero_name === 'Ninguno' || !item.hero_name) {
+                document.getElementById('em-hero-assoc-container').style.display = 'none';
+            } else {
+                document.getElementById('em-hero-assoc-container').style.display = 'block';
+                document.getElementById('em-hero-assoc').innerText = item.hero_name;
+            }
+
+            const imgContainer = document.getElementById('em-img-container');
+            
+            // Limpiar clases previas del modal y agregar la nueva
+            imgContainer.className = 'em-img-box';
+            if (item.frameClass) {
+                // Mapear clase de grid a clase de modal (e.g. myth-equip -> myth-modal-img)
+                const modalClass = item.frameClass.replace('-equip', '-modal-img');
+                imgContainer.classList.add(modalClass);
+            }
+            
+            const currentImg = document.getElementById('em-main-img');
+            if (currentImg) currentImg.remove();
+            const spriteDiv = imgContainer.querySelector('.sprite-item-modal');
+            if (spriteDiv) spriteDiv.remove();
+
+            if (item.img.startsWith("sprite:") || item.img.startsWith("px:")) {
+                const { col, row } = obtenerColumnaFilaCarta(item.img);
+                const posX = ((col * 40) / (1024 - 39)) * 100;
+                const posY = ((row * 54) / (512 - 54)) * 100;
+                
+                const newSprite = document.createElement('div');
+                newSprite.className = 'sprite-item-modal';
+                newSprite.style.backgroundImage = `url('${urlSpritesheet}')`;
+                newSprite.style.backgroundPosition = `${posX.toFixed(4)}% ${posY.toFixed(4)}%`;
+                imgContainer.appendChild(newSprite);
+            } else {
+                const newImg = document.createElement('img');
+                newImg.id = 'em-main-img';
+                newImg.className = 'em-main-img';
+                newImg.src = item.img;
+                newImg.setAttribute('referrerpolicy', 'no-referrer');
+                newImg.onerror = function() { this.src='https://via.placeholder.com/150/3c354e/ffffff?text=?'; };
+                imgContainer.appendChild(newImg);
+            }
+
+            document.getElementById('equipModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('equipModal').classList.remove('active');
+        }
+
+        document.querySelectorAll('#typeFilters .elem-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#typeFilters .elem-filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedType = btn.getAttribute('data-type');
+                applyFiltersAndSort();
+            });
+        });
+
+        document.getElementById('searchInput').addEventListener('input', applyFiltersAndSort);
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('collapsed'); });
+        document.querySelectorAll('.nav-title').forEach(title => {
+            title.addEventListener('click', () => { title.closest('.nav-group').classList.toggle('collapsed-group'); });
+        });
+        
+        const themeBtn = document.getElementById('themeToggle');
+        const rootElement = document.body;
+
+        if (localStorage.getItem('tema-casita') === 'light') {
+            rootElement.removeAttribute('data-theme');
+            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        } else {
+            rootElement.setAttribute('data-theme', 'dark');
+            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        }
+
+        themeBtn.addEventListener('click', () => {
+            let isDark = rootElement.hasAttribute('data-theme');
+            if (isDark) {
+                rootElement.removeAttribute('data-theme');
+                localStorage.setItem('tema-casita', 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else {
+                rootElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('tema-casita', 'dark');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        });
+    </script>
+</body>
+</html>
