@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena de Mazmorras - Mi Casita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #1e1b2e;
+            --card-bg: #151520; --text-dark: #ffffff; --text-muted: #8888a5;
+            --border-color: #2a2a3e; --setup-blue: #3b68ff; --accent-red: #d84d65;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); overflow: hidden; }
+
+        /* BARRA LATERAL Y PERFIL */
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: 0.3s; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
+        .sidebar.collapsed { width: 0; padding: 0; }
+        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
+        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        
+        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
+        .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--setup-blue); object-fit: cover; }
+        .profile-info-wrap span { color: white; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;}
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
+
+        .nav-group { margin-bottom: 10px; min-width: 260px; }
+        .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .nav-title:hover { color: var(--sidebar-text-active); }
+        .nav-title i { transition: transform 0.3s ease; }
+        .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
+        .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+        .nav-group.collapsed-group .nav-items-container { max-height: 0; }
+        
+        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
+        .nav-item:hover { color: var(--sidebar-text-active); }
+        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
+
+        /* CANDADOS ANIMADOS */
+        .lock-icon { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
+        .nav-item.locked { cursor: not-allowed; opacity: 0.6; }
+        .nav-item.locked:hover .lock-icon { color: var(--accent-red); filter: drop-shadow(0 0 8px rgba(216, 77, 101, 0.8)); }
+        
+        @keyframes shake { 0% { transform: translateY(-50%) translateX(0); } 25% { transform: translateY(-50%) translateX(-4px); } 50% { transform: translateY(-50%) translateX(4px); } 75% { transform: translateY(-50%) translateX(-4px); } 100% { transform: translateY(-50%) translateX(0); } }
+        .lock-shake { animation: shake 0.4s ease-in-out !important; color: var(--accent-red) !important; }
+        @keyframes floatLock { 0% { transform: translateY(-40%); } 100% { transform: translateY(-60%); } }
+
+        /* ALERTA DE PERMISO DENEGADO */
+        .toast-alert { position: fixed; top: 20px; right: -300px; background: rgba(216, 77, 101, 0.95); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 700; font-size: 13px; box-shadow: 0 10px 30px rgba(216, 77, 101, 0.4); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 10px; z-index: 9999; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .toast-alert.show { right: 30px; }
+
+        /* ANIMACIÓN GRIS AL CERRAR SESIÓN */
+        .logout-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #110f17; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 9999; }
+        .logout-overlay.active { opacity: 1; pointer-events: auto; }
+        .logout-loader-container { position: relative; width: 120px; height: 120px; margin-bottom: 20px; }
+        .logout-loader-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid #110f17; position: relative; z-index: 2; box-shadow: 0 10px 30px rgba(0,0,0,0.8); filter: grayscale(100%) brightness(0.6); transform: scale(0.8); transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .logout-overlay.active .logout-loader-img { transform: scale(1); }
+        .spinner-ring-gray { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: #555; border-right-color: #333; z-index: 1; animation: spin 1.5s linear infinite; opacity: 0; transition: opacity 0.5s ease; }
+        .logout-overlay.active .spinner-ring-gray { opacity: 1; }
+        .logout-text { font-size: 18px; font-weight: 700; color: #888; text-align: center; text-transform: uppercase; letter-spacing: 1px; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s; }
+        .logout-overlay.active .logout-text { opacity: 1; transform: translateY(0); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
+        .breadcrumbs { font-size: 14px; color: var(--text-muted); }
+        .dashboard-container { padding: 0 40px 60px 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        
+        .arena-header { background: linear-gradient(90deg, #151520 0%, #1e1b2e 100%); border-radius: 16px; padding: 30px; border: 1px solid var(--border-color); margin-bottom: 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .arena-icon { width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, #2a52d3, #3b68ff); display: flex; justify-content: center; align-items: center; font-size: 30px; color: white; box-shadow: 0 4px 15px rgba(59, 104, 255, 0.4); }
+        .arena-title-wrapper { display: flex; flex-direction: column; gap: 4px; }
+        .arena-tag { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
+        .arena-title-wrapper h1 { font-size: 32px; font-weight: 900; text-transform: uppercase; color: white; letter-spacing: 1px; }
+        .arena-breadcrumbs { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        .selection-panel { background: var(--card-bg); border-radius: 16px; padding: 30px; border: 1px solid var(--border-color); margin-bottom: 30px; }
+        .panel-heading { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: white; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        .panel-heading::before { content: ''; width: 20px; height: 2px; background: var(--setup-blue); display: inline-block; }
+        
+        .selection-layout { display: flex; gap: 40px; flex-wrap: wrap; }
+        
+        .boss-grid { flex: 1.5; display: flex; flex-wrap: wrap; gap: 15px; min-width: 300px; }
+        .boss-btn { width: 105px; height: 105px; background: #1a1625; border-radius: 12px; border: 2px solid transparent; cursor: pointer; position: relative; transition: 0.2s; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .boss-btn:hover { background: #231f32; border-color: rgba(59, 104, 255, 0.5); }
+        .boss-btn.active { border-color: var(--setup-blue); background: rgba(59, 104, 255, 0.1); box-shadow: 0 0 15px rgba(59, 104, 255, 0.3); }
+        .boss-btn img.slime-img { width: 85%; height: 85%; object-fit: contain; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.6)); transition: 0.2s; }
+        .boss-btn.active img.slime-img { transform: scale(1.08); filter: drop-shadow(0 8px 12px rgba(0,0,0,0.8)); }
+        
+        .elem-badge { position: absolute; bottom: -6px; right: -6px; width: 26px; height: 26px; background: #151520; border-radius: 50%; padding: 4px; border: 1px solid #3a334e; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .elem-badge img { width: 100%; height: 100%; object-fit: contain; }
+
+        .weakness-list { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 250px; }
+        .weakness-btn { display: flex; align-items: center; gap: 15px; background: #1a1625; padding: 18px 20px; border-radius: 12px; border: 1px solid transparent; cursor: pointer; color: white; font-weight: 800; transition: 0.2s; font-size: 13px; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .weakness-btn:hover { background: #231f32; border-color: rgba(59, 104, 255, 0.5); }
+        .weakness-btn.active { border-color: var(--setup-blue); background: rgba(59, 104, 255, 0.1); }
+        .weakness-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.1); padding: 5px; }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        #resultados-equipos { display: none; }
+        
+        .team-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .team-header-main { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(0, 0, 0, 0.15); flex-wrap: wrap; gap: 15px; }
+        .damage-info { display: flex; flex-direction: column; }
+        .season { font-size: 10px; color: var(--text-muted); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        .damage-val { font-size: 32px; font-weight: 900; color: var(--text-dark); margin-top: -2px; }
+
+        /* Miniaturas superiores limpias */
+        .hero-mini-list { display: flex; gap: 8px; }
+        .hero-mini-list img { width: 45px; height: 45px; border-radius: 8px; border: 1px solid var(--border-color); object-fit: cover; background: #3c354e; }
+
+        .team-tabs { display: flex; background: var(--card-bg); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+        .tab { flex: 1; text-align: center; padding: 15px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; letter-spacing: 1px; }
+        .tab:hover { color: var(--text-dark); background: rgba(255, 255, 255, 0.03); }
+        .tab.active { background: var(--setup-blue); color: #ffffff; }
+        .content-panel { display: none; padding: 25px; background: var(--card-bg); }
+        .content-panel.active { display: block; }
+        .setup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 15px; }
+        .setup-hero-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.15); padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border-color); gap: 12px; }
+
+        /* Perfil del héroe en SETUP con Nombre, Clase, Elemento y Evolución Mítica */
+        .hero-profile-box { display: flex; align-items: center; gap: 14px; min-width: 0; }
+        .hero-avatar-wrap { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+        .setup-hero-img { width: 52px; height: 52px; border-radius: 10px; border: 2px solid var(--border-color); background: #3c354e; object-fit: cover; }
+        .badge-elem-hero { position: absolute; bottom: -5px; left: -5px; width: 20px; height: 20px; background: #151520; border-radius: 50%; padding: 2px; border: 1px solid #3c354e; display: flex; align-items: center; justify-content: center; }
+        .badge-elem-hero img { width: 100%; height: 100%; object-fit: contain; }
+        .badge-myth-hero { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; background: #151520; border-radius: 50%; padding: 2px; border: 1px solid #fdd843; box-shadow: 0 0 8px rgba(253, 216, 67, 0.4); display: flex; align-items: center; justify-content: center; }
+        .badge-myth-hero img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .hero-profile-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        .hero-profile-name { font-size: 14px; font-weight: 800; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .hero-profile-meta { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .hero-profile-meta img { width: 15px; height: 15px; object-fit: contain; }
+        
+        .gear-list { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+        .gear-item { width: 38px; height: 38px; background: var(--main-bg); border-radius: 6px; border: 1px solid var(--border-color); object-fit: cover; padding: 2px; }
+        .card-placeholder { width: 28px; height: 38px; background: var(--main-bg); border-radius: 4px; display: flex; justify-content: center; align-items: center; color: var(--text-muted); font-size: 12px; border: 1px dashed var(--border-color); }
+
+        .sprite-card { 
+            width: 28px !important; height: 38px !important;
+            background-size: 2625.641% 948.148%; background-repeat: no-repeat; 
+            padding: 0 !important; border-radius: 4px; flex-shrink: 0;
+        }
+
+        #floating-video-container { position: fixed; bottom: 20px; right: 20px; width: 450px; height: 280px; background: #000; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 9999; display: none; flex-direction: column; overflow: hidden; resize: both; min-width: 300px; min-height: 200px; border: 2px solid var(--setup-blue); }
+        .floating-header { background: #13111c; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; cursor: move; user-select: none; border-bottom: 1px solid #2a2a3e; }
+        .floating-header button { background: none; border: none; color: #fff; cursor: pointer; font-size: 16px; transition: 0.2s;}
+        .floating-header button:hover { color: var(--accent-red); }
+        .floating-body { flex: 1; width: 100%; height: 100%; }
+        .floating-body iframe { width: 100%; height: 100%; border: none; }
+
+        @media (max-width: 1000px) { .sidebar { position: absolute; height: 100%; z-index: 100; } }
+    </style>
+</head>
+<body>
+
+    <!-- MENSAJE DE PERMISO DENEGADO -->
+    <div class="toast-alert" id="toastAlert">
+        <i class="fa-solid fa-lock"></i> No tienes permisos para esta página.
+    </div>
+
+    <!-- OVERLAY DE CIERRE DE SESIÓN -->
+    <div class="logout-overlay" id="logoutOverlay">
+        <div class="logout-loader-container">
+            <div class="spinner-ring-gray"></div>
+            <img src="" alt="Perfil" class="logout-loader-img" id="logoutAvatar" onerror="this.src='logo.jpg';">
+        </div>
+        <div class="logout-text">Cerrando sesión...</div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <!-- HEADER PRINCIPAL -->
+        <div class="sidebar-header">
+            <img src="logo.jpg" alt="Logo">
+            <div>
+                <h2>Mi Casita</h2>
+                <p>Gremio de Guardian Tales</p>
+            </div>
+        </div>
+
+        <!-- PERFIL DEL USUARIO DINÁMICO CON BOTÓN ROJO -->
+        <div class="user-profile-sidebar" id="user-profile-sidebar">
+            <div class="profile-info-wrap">
+                <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
+                <span id="sidebar-name">Usuario</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
+                <i class="fa-solid fa-power-off"></i>
+            </button>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-fire"></i> Fogata de bienvenida</a>
+                <a href="noticias.html" class="nav-item"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
+            </div>
+        </div>
+        <div class="nav-group">
+            <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="resumen.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
+                <a href="guia.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
+                <a href="ranking.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-trophy"></i> Ranking de la casa</a>
+            </div>
+        </div>
+<!-- MENÚ GUARDIANES -->
+        <div class="nav-group">
+            <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="heroes.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
+                <a href="equipos.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
+            </div>
+        </div>
+
+        <!-- MENÚ INCURSIONES -->
+        <div class="nav-group">
+            <div class="nav-title">INCURSIONES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="incursiones.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-ghost"></i> Asalto</a>
+                <a href="arena.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="topbar">
+            <div class="breadcrumbs">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <span>Mi Casita &nbsp; > &nbsp; Incursiones &nbsp; > &nbsp; <b>Arena de Mazmorras</b></span>
+            </div>
+            <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
+        </div>
+
+        <div class="dashboard-container">
+            
+            <div class="arena-header">
+                <div class="arena-icon">
+                    <i class="fa-brands fa-d-and-d"></i>
+                </div>
+                <div class="arena-title-wrapper">
+                    <span class="arena-tag">Táctica</span>
+                    <h1>Arena del Reino de las Mazmorras</h1>
+                    <span class="arena-breadcrumbs">Hogar / Arena del Reino de las Mazmorras</span>
+                </div>
+            </div>
+
+            <div class="selection-panel">
+                <div class="panel-heading">Selección de Jefes y Debilidades</div>
+                
+                <div class="selection-layout">
+                    <div class="boss-grid">
+                        <div class="boss-btn" data-boss="basico" onclick="seleccionarJefe(this)">
+                            <img src="https://www.gtales.top/assets/guides/dka/basicSlime.webp" alt="Basico" class="slime-img">
+                            <div class="elem-badge"><img src="https://www.gtales.top/assets/elements/basic.svg"></div>
+                        </div>
+                        <div class="boss-btn" data-boss="luz" onclick="seleccionarJefe(this)">
+                            <img src="https://www.gtales.top/assets/guides/dka/lightSlime.webp" alt="Luz" class="slime-img">
+                            <div class="elem-badge"><img src="https://www.gtales.top/assets/elements/light.svg"></div>
+                        </div>
+                        <div class="boss-btn" data-boss="oscuro" onclick="seleccionarJefe(this)">
+                            <img src="https://www.gtales.top/assets/guides/dka/darkSlime.webp" alt="Oscuro" class="slime-img">
+                            <div class="elem-badge"><img src="https://www.gtales.top/assets/elements/dark.svg"></div>
+                        </div>
+                        <div class="boss-btn" data-boss="fuego" onclick="seleccionarJefe(this)">
+                            <img src="https://www.gtales.top/assets/guides/dka/fireSlime.webp" alt="Fuego" class="slime-img">
+                            <div class="elem-badge"><img src="https://www.gtales.top/assets/elements/fire.svg"></div>
+                        </div>
+                        <div class="boss-btn" data-boss="agua" onclick="seleccionarJefe(this)">
+                            <img src="https://www.gtales.top/assets/guides/dka/waterSlime.webp" alt="Agua" class="slime-img">
+                            <div class="elem-badge"><img src="https://www.gtales.top/assets/elements/water.svg"></div>
+                        </div>
+                        <div class="boss-btn" data-boss="tierra" onclick="seleccionarJefe(this)">
+                            <img src="https://www.gtales.top/assets/guides/dka/earthSlime.webp" alt="Tierra" class="slime-img">
+                            <div class="elem-badge"><img src="https://www.gtales.top/assets/elements/earth.svg"></div>
+                        </div>
+                        <div class="boss-btn" data-boss="vacio" onclick="seleccionarJefe(this)">
+                            <img src="https://www.gtales.top/assets/guides/dka/voidSlime.webp" alt="Vacío" class="slime-img">
+                            <div class="elem-badge"><img src="https://www.gtales.top/assets/elements/void.svg"></div>
+                        </div>
+                    </div>
+
+                    <div class="weakness-list">
+                        <div class="weakness-btn" data-weak="aerotransportado" onclick="seleccionarDebilidad(this)">
+                            <div class="weakness-icon">
+                                <img src="https://www.gtales.top/assets/icons/airborne.svg" style="width:100%; height:100%; object-fit:contain;">
+                            </div>
+                            AEROTRANSPORTADO
+                        </div>
+                        <div class="weakness-btn" data-weak="derribado" onclick="seleccionarDebilidad(this)">
+                            <div class="weakness-icon">
+                                <img src="https://www.gtales.top/assets/icons/downed.svg" style="width:100%; height:100%; object-fit:contain;">
+                            </div>
+                            DERRIBADO
+                        </div>
+                        <div class="weakness-btn" data-weak="herido" onclick="seleccionarDebilidad(this)">
+                            <div class="weakness-icon">
+                                <img src="https://www.gtales.top/assets/icons/injured.svg" style="width:100%; height:100%; object-fit:contain;">
+                            </div>
+                            HERIDO
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="estado-vacio" class="empty-state">
+                No se encontraron tácticas para este jefe.
+            </div>
+            
+            <div id="resultados-equipos">
+                <div id="lista-tarjetas-equipos"></div>
+            </div>
+            
+        </div>
+    </main>
+
+    <div id="floating-video-container">
+        <div class="floating-header" id="floating-drag-handle">
+            <span id="floating-title"><i class="fa-brands fa-youtube" style="color: #ff0000;"></i> Reproductor</span>
+            <button onclick="cerrarVideoFlotante()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="floating-body" id="floating-video-slot"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#292437', notifications: true })
+    </script>
+
+    <script>
+        // =========================================================================
+        // COMPROBAR SESIÓN Y GESTIONAR ROLES Y CANDADOS
+        // =========================================================================
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem('sesion_activa') === 'true') {
+                const avatarGuardado = localStorage.getItem('usuario_avatar');
+                const nombreGuardado = localStorage.getItem('usuario_nombre');
+                // Convertimos el rol a minúsculas, si está vacío asume 'basico'
+                const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
+                
+                document.getElementById('user-profile-sidebar').style.display = 'flex';
+                if (avatarGuardado) {
+                    document.getElementById('sidebar-avatar').src = avatarGuardado;
+                    document.getElementById('logoutAvatar').src = avatarGuardado; 
+                }
+                if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
+
+                // Lógica de Candados
+                document.querySelectorAll('.nav-item').forEach(link => {
+                    const reqOriginal = link.getAttribute('data-req');
+                    if (reqOriginal) {
+                        const reqRole = reqOriginal.toLowerCase();
+                        let bloqueado = false;
+
+                        if (reqRole === 'heroe' && rolUsuario !== 'heroe') bloqueado = true;
+                        if (reqRole === 'caballero' && rolUsuario !== 'caballero' && rolUsuario !== 'heroe') bloqueado = true;
+
+                        if (bloqueado) {
+                            link.classList.add('locked');
+                            const candado = document.createElement('i');
+                            candado.className = 'fa-solid fa-lock lock-icon';
+                            link.appendChild(candado);
+
+                            link.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                candado.classList.remove('lock-shake');
+                                void candado.offsetWidth; 
+                                candado.classList.add('lock-shake');
+
+                                const toast = document.getElementById('toastAlert');
+                                toast.classList.add('show');
+                                setTimeout(() => { toast.classList.remove('show'); }, 3000);
+                            });
+                        }
+                    }
+                });
+            } else {
+                window.location.href = 'login.html'; 
+            }
+        });
+
+        // BOTÓN CERRAR SESIÓN
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            document.getElementById('logoutOverlay').classList.add('active'); 
+            setTimeout(() => {
+                localStorage.removeItem('sesion_activa');
+                localStorage.removeItem('usuario_nombre');
+                localStorage.removeItem('usuario_avatar');
+                localStorage.removeItem('usuario_roll');
+                window.location.href = 'login.html';
+            }, 2500);
+        });
+
+        // =========================================================================
+        // BASE DE DATOS Y BÚSQUEDA DE ARENA (Con parche Anti-Caché y Limpiador de Excel)
+        // =========================================================================
+        const timestamp = new Date().getTime();
+        const API_BASE = `https://sheetdb.io/api/v1/byy514yadr0v0`;
+        
+        let dbSistema = [], mapaHeroes = {}, infoHeroes = {}, mapaArmas = {};
+        
+        let jefeSeleccionado = null;
+        let debilidadSeleccionada = null;
+
+        const ICON_MYTH = "https://www.gtales.top/assets/icons/myth.svg";
+        const iconosClases = { "melee": "https://www.gtales.top/assets/icons/melee.svg", "ranged": "https://www.gtales.top/assets/icons/ranged.svg", "supp": "https://www.gtales.top/assets/icons/supp.svg", "tank": "https://www.gtales.top/assets/icons/tank.svg" };
+        const nombresClases = { "melee": "Guerrero", "ranged": "Tirador", "supp": "Apoyo", "tank": "Tanque" };
+        const nombresElementos = { "luz": "Luz", "agua": "Agua", "tierra": "Tierra", "fuego": "Fuego", "basico": "Básico", "oscuro": "Oscuro", "oscuridad": "Oscuro" };
+        const iconosElementos = { "basico": "https://www.gtales.top/assets/elements/basic.svg", "oscuro": "https://www.gtales.top/assets/elements/dark.svg", "oscuridad": "https://www.gtales.top/assets/elements/dark.svg", "tierra": "https://www.gtales.top/assets/elements/earth.svg", "fuego": "https://www.gtales.top/assets/elements/fire.svg", "luz": "https://www.gtales.top/assets/elements/light.svg", "agua": "https://www.gtales.top/assets/elements/water.svg" };
+
+        const mapaFandomStatic = {
+            "Accessory_Mad_Panda_Brooch.png": "https://static.wikia.nocookie.net/guardian-tales/images/9/94/Accessory_Mad_Panda_Brooch.png",
+            "Accessory_Minotaur's_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/e/e3/Accessory_Minotaur%27s_Necklace.png",
+            "Accessory_Earth_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/9/98/Accessory_Earth_Necklace.png",
+            "Accessory_Ice_Queen_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/6/61/Accessory_Ice_Queen_Ring.png",
+            "Accessory_Martyr_Mirror_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/c/c1/Accessory_Martyr_Mirror_Necklace.png",
+            "Accessory_Shadow_Beast_Confining_Bracelet.png": "https://static.wikia.nocookie.net/guardian-tales/images/a/a1/Accessory_Shadow_Beast_Confining_Bracelet.png",
+            "Accessory_Flame_Dragon_King's_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/4/46/Accessory_Flame_Dragon_King%27s_Necklace.png",
+            "Accessory_Protector's_Brooch.png": "https://static.wikia.nocookie.net/guardian-tales/images/d/de/Accessory_Protector%27s_Brooch.png",
+            "Accessory_Mirror_Necklace_of_Riches.png": "https://static.wikia.nocookie.net/guardian-tales/images/7/74/Accessory_Mirror_Necklace_of_Riches.png",
+            "Accessory_Ruby_Mirror_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/3/38/Accessory_Ruby_Mirror_Ring.png",
+            "Accessory_Mirror_Earring_of_Worship.png": "https://static.wikia.nocookie.net/guardian-tales/images/a/a6/Accessory_Mirror_Earring_of_Worship.png",
+            "Accessory_Mirror_Earring_of_Patience.png": "https://static.wikia.nocookie.net/guardian-tales/images/2/29/Accessory_Mirror_Earring_of_Patience.png",
+            "Accessory_Mirror_Earring_of_Nobility.png": "https://static.wikia.nocookie.net/guardian-tales/images/0/05/Accessory_Mirror_Earring_of_Nobility.png",
+            "Accessory_Mirror_Earring_of_Faith.png": "https://static.wikia.nocookie.net/guardian-tales/images/d/dd/Accessory_Mirror_Earring_of_Faith.png",
+            "Accessory_Sniper_Goggles.png": "https://static.wikia.nocookie.net/guardian-tales/images/a/a5/Accessory_Sniper_Goggles.png",
+            "Accessory_Dusk_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/3/38/Accessory_Dusk_Ring.png",
+            "Accessory_Melody_Earring.png": "https://static.wikia.nocookie.net/guardian-tales/images/8/82/Accessory_Melody_Earring.png",
+            "Accessory_Ring_of_Belief.png": "https://static.wikia.nocookie.net/guardian-tales/images/2/24/Accessory_Ring_of_Belief.png",
+            "Accessory_Black_Crown_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/f/f2/Accessory_Black_Crown_Ring.png",
+            "Accessory_Chaste_Love_Brooch.png": "https://static.wikia.nocookie.net/guardian-tales/images/d/d0/Accessory_Chaste_Love_Brooch.png",
+            "Accessory_Dark_Magic_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/7/78/Accessory_Dark_Magic_Ring.png",
+            "Accessory_Ocean_Earring.png": "https://static.wikia.nocookie.net/guardian-tales/images/9/91/Accessory_Ocean_Earring.png",
+            "Accessory_Honor_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/8/85/Accessory_Honor_Ring.png",
+            "Accessory_Cursed_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/5/5e/Accessory_Cursed_Necklace.png",
+            "Accessory_Gold_Pocket_Watch.png": "https://static.wikia.nocookie.net/guardian-tales/images/0/04/Accessory_Gold_Pocket_Watch.png",
+            "Accessory_Sharp_Shooter.png": "https://static.wikia.nocookie.net/guardian-tales/images/a/a4/Accessory_Sharp_Shooter.png"
+        };
+
+        function normalizarUrlImagen(url) {
+            if (!url) return '';
+            let limpia = url.trim();
+            if (limpia.includes("Special:FilePath/")) {
+                const archivo = decodeURIComponent(limpia.split("Special:FilePath/")[1]);
+                if (mapaFandomStatic[archivo]) return mapaFandomStatic[archivo];
+            }
+            return limpia;
+        }
+
+        const urlSpritesheet = "https://static.wikia.nocookie.net/guardian-tales/images/1/10/Spritesheet_Cards.png?format=original";
+
+        async function inicializarBaseDatos() {
+            try {
+                // Agregar timestamp a cada URL para prevenir el caché de SheetDB y ver actualizaciones en vivo
+                const t = new Date().getTime();
+                const [resSistema, resHeroes, resArmas] = await Promise.all([
+                    fetch(`${API_BASE}?sheet=Sistema&_=${t}`).then(r => r.json()),
+                    fetch(`${API_BASE}?sheet=Heroes&_=${t}`).then(r => r.json()),
+                    fetch(`${API_BASE}?sheet=Armas&_=${t}`).then(r => r.json())
+                ]);
+
+                dbSistema = resSistema;
+                resHeroes.forEach(h => {
+                    const idH = (h.id || '').trim();
+                    if (!idH) return;
+                    const icono = normalizarUrlImagen(h.icono);
+                    const claseKey = (h.clase || '').trim().toLowerCase();
+                    const tieneMito = (h.rareza_max || '').trim().toLowerCase() === 'rarity-myth';
+                    mapaHeroes[idH] = icono;
+                    infoHeroes[idH] = {
+                        nombre: h.nombre || idH,
+                        icono: icono,
+                        elemento: (h.elemento || 'basico').trim().toLowerCase(),
+                        clase: claseKey,
+                        icono_clase: h.icono_clase || iconosClases[claseKey] || '',
+                        tiene_mito: tieneMito,
+                        icono_mito: tieneMito ? ICON_MYTH : ''
+                    };
+                });
+
+                let contadorCartas = 0;
+                resArmas.forEach(a => {
+                    const esCarta = (a.tipo && a.tipo.toLowerCase() === 'carta') || (a.id_arma && a.id_arma.startsWith('carta_'));
+                    if (esCarta) {
+                        if (a.img && (a.img.startsWith('sprite:') || a.img.startsWith('px:'))) {
+                            mapaArmas[a.id_arma] = a.img.trim();
+                        } else {
+                            mapaArmas[a.id_arma] = `sprite:${contadorCartas}`;
+                        }
+                        contadorCartas++;
+                    } else {
+                        mapaArmas[a.id_arma] = normalizarUrlImagen(a.img);
+                    }
+                });
+                
+            } catch (error) {
+                console.error("Error al cargar BD:", error);
+                document.getElementById("estado-vacio").innerText = "Error de conexión con la base de datos.";
+            }
+        }
+
+        function seleccionarJefe(elemento) {
+            document.querySelectorAll('.boss-btn').forEach(b => b.classList.remove('active'));
+            elemento.classList.add('active');
+            jefeSeleccionado = elemento.getAttribute('data-boss');
+            buscarEquiposArena();
+        }
+
+        function seleccionarDebilidad(elemento) {
+            document.querySelectorAll('.weakness-btn').forEach(b => b.classList.remove('active'));
+            elemento.classList.add('active');
+            debilidadSeleccionada = elemento.getAttribute('data-weak');
+            buscarEquiposArena();
+        }
+
+        function buscarEquiposArena() {
+            const estadoVacio = document.getElementById("estado-vacio");
+            const contenedorResultados = document.getElementById("resultados-equipos");
+            const listaTarjetas = document.getElementById("lista-tarjetas-equipos");
+
+            if (!jefeSeleccionado || !debilidadSeleccionada) return;
+
+            // Formamos el string a buscar (ej: "slime_basico_aerotransportado")
+            const busqueda = `slime_${jefeSeleccionado}_${debilidadSeleccionada}`.toLowerCase();
+            
+            // Filtro mejorado: a prueba de espacios vacíos en Excel y mayúsculas
+            const equipos = dbSistema.filter(row => {
+                if(row.categoria !== 'Equipo_Arena' || !row.jefe_asociado) return false;
+                const dbJefe = row.jefe_asociado.trim().toLowerCase();
+                return dbJefe === busqueda;
+            });
+
+            if (equipos.length === 0) {
+                contenedorResultados.style.display = "none";
+                estadoVacio.style.display = "block";
+            } else {
+                estadoVacio.style.display = "none";
+                listaTarjetas.innerHTML = "";
+                equipos.forEach((equipo, index) => {
+                    listaTarjetas.innerHTML += crearTarjetaEquipo(equipo, index);
+                });
+                contenedorResultados.style.display = "block";
+            }
+        }
+
+        function extraerIDYoutube(url) {
+            if(!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function obtenerColumnaFilaCarta(valorSprite) {
+            const texto = valorSprite.trim();
+            const parts = texto.split(":");
+
+            if (texto.startsWith("px:")) {
+                const pxX = parseFloat(parts[1]) || 0;
+                const pxY = parseFloat(parts[2]) || 0;
+                return { col: Math.round(pxX / 40), row: Math.round(pxY / 54) };
+            }
+            if (parts.length >= 3) {
+                return { col: parseFloat(parts[1]) || 0, row: parseFloat(parts[2]) || 0 };
+            }
+            const idx = (parseInt(parts[1]) || 0) % 142;
+            return { col: idx % 16, row: Math.floor(idx / 16) };
+        }
+
+        function crearTarjetaEquipo(eq, index) {
+            const ytID = extraerIDYoutube(eq.link_multimedia);
+            const cardId = `tarjeta-arena-${index}`;
+            
+            const constIconoHeroe = (idH) => {
+                if (!idH) return '';
+                const hData = infoHeroes[idH] || { nombre: idH, icono: mapaHeroes[idH] || 'https://via.placeholder.com/45/3c354e/ffffff?text=?' };
+                return `<img src="${hData.icono}" title="${hData.nombre}" alt="${hData.nombre}" referrerpolicy="no-referrer">`;
+            };
+
+            const constFilaSetup = (idH, idW, idA, idC1, idC2, idR) => {
+                if (!idH) return '';
+                const hData = infoHeroes[idH] || {
+                    nombre: idH,
+                    icono: mapaHeroes[idH] || 'https://via.placeholder.com/50/3c354e/ffffff?text=?',
+                    elemento: 'basico', clase: '', icono_clase: '', tiene_mito: false, icono_mito: ''
+                };
+                const elemHeroSvg = iconosElementos[hData.elemento] || iconosElementos['basico'];
+                const nombreClase = nombresClases[hData.clase] || 'Héroe';
+
+                const imgW = mapaArmas[idW] || mapaArmas[idW + '_myth'] || mapaArmas[idW + '_std'] || 'https://via.placeholder.com/38/3c354e/ffffff?text=W';
+                const imgA = mapaArmas[idA] || 'https://via.placeholder.com/38/3c354e/ffffff?text=A';
+                const imgR = mapaArmas[idR] || 'https://via.placeholder.com/38/3c354e/ffffff?text=R';
+
+                const renderCard = (idC, num) => {
+                    if (idC && mapaArmas[idC]) {
+                        let imgUrl = mapaArmas[idC];
+                        if (imgUrl.startsWith("sprite:") || imgUrl.startsWith("px:")) {
+                            const { col, row } = obtenerColumnaFilaCarta(imgUrl);
+                            const posX = ((col * 40) / (1024 - 39)) * 100;
+                            const posY = ((row * 54) / (512 - 54)) * 100;
+                            return `<div class="gear-item sprite-card" title="${idC}" style="background-image: url('${urlSpritesheet}'); background-position: ${posX.toFixed(4)}% ${posY.toFixed(4)}%;"></div>`;
+                        } else {
+                            return `<img src="${imgUrl}" class="gear-item" title="${idC}" referrerpolicy="no-referrer">`;
+                        }
+                    }
+                    return `<div class="card-placeholder" title="Carta ${num}"><i class="fa-regular fa-square"></i></div>`;
+                };
+
+                return `
+                    <div class="setup-hero-row">
+                        <div class="hero-profile-box">
+                            <div class="hero-avatar-wrap">
+                                <img src="${hData.icono}" class="setup-hero-img" title="${hData.nombre}" referrerpolicy="no-referrer">
+                                <div class="badge-elem-hero" title="${nombresElementos[hData.elemento] || hData.elemento}">
+                                    <img src="${elemHeroSvg}" alt="${hData.elemento}">
+                                </div>
+                                ${hData.icono_mito ? `<div class="badge-myth-hero" title="Evolución Mítica"><img src="\${hData.icono_mito}" alt="Myth"></div>` : ''}
+                            </div>
+                            <div class="hero-profile-info">
+                                <span class="hero-profile-name">${hData.nombre}</span>
+                                <div class="hero-profile-meta">
+                                    ${hData.icono_clase ? `<img src="${hData.icono_clase}" alt="${nombreClase}">` : ''}
+                                    <span>${nombreClase}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gear-list">
+                            <img src="${imgW}" class="gear-item" title="${idW}" referrerpolicy="no-referrer" onerror="if(this.src.includes('/myth/')) this.src=this.src.replace('/myth/','/');">
+                            <img src="${imgA}" class="gear-item" title="${idA}" referrerpolicy="no-referrer">
+                            ${renderCard(idC1, 1)}
+                            ${renderCard(idC2, 2)}
+                            <img src="${imgR}" class="gear-item" title="${idR}" referrerpolicy="no-referrer">
+                        </div>
+                    </div>
+                `;
+            };
+
+            return `
+                <div class="team-card" id="${cardId}">
+                    <div class="team-header-main">
+                        <div class="damage-info">
+                            <span class="season">PUNTUACIÓN ESTIMADA</span>
+                            <span class="damage-val">${eq.nombre_o_dano}</span>
+                        </div>
+                        <div class="hero-mini-list">
+                            ${constIconoHeroe(eq.h1_id)} ${constIconoHeroe(eq.h2_id)}
+                            ${constIconoHeroe(eq.h3_id)} ${constIconoHeroe(eq.h4_id)}
+                        </div>
+                    </div>
+                    
+                    <div class="team-tabs">
+                        <div class="tab" onclick="${ytID ? `abrirVideoFlotante('\${ytID}', 'Rotación de Arena')` : 'null'}" ${!ytID ? 'style="opacity:0.3; cursor:not-allowed;"' : ''}>
+                            <i class="fa-solid fa-play"></i> VIDEO
+                        </div>
+                        <div class="tab active" onclick="cambiarTabMenu(this, 'setup-${index}', '${cardId}')">
+                            <i class="fa-solid fa-list"></i> SETUP
+                        </div>
+                        <div class="tab" onclick="cambiarTabMenu(this, 'notas-${index}', '${cardId}')">
+                            <i class="fa-solid fa-circle-info"></i> NOTAS
+                        </div>
+                    </div>
+
+                    <div class="content-panel active" id="setup-${index}">
+                        <div class="setup-grid">
+                            ${constFilaSetup(eq.h1_id, eq.h1_arma, eq.h1_acc, eq.h1_c1, eq.h1_c2, eq.h1_reliquia)}
+                            ${constFilaSetup(eq.h2_id, eq.h2_arma, eq.h2_acc, eq.h2_c1, eq.h2_c2, eq.h2_reliquia)}
+                            ${constFilaSetup(eq.h3_id, eq.h3_arma, eq.h3_acc, eq.h3_c1, eq.h3_c2, eq.h3_reliquia)}
+                            ${constFilaSetup(eq.h4_id, eq.h4_arma, eq.h4_acc, eq.h4_c1, eq.h4_c2, eq.h4_reliquia)}
+                        </div>
+                    </div>
+                    
+                    <div class="content-panel" id="notas-${index}">
+                        <span style="color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Estrategia</span>
+                        <p style="margin-top: 10px; font-weight: 600; line-height: 1.6;">${eq.notas || 'No hay notas registradas.'}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function cambiarTabMenu(btn, tabId, cardId) {
+            const card = document.getElementById(cardId);
+            card.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            card.querySelectorAll('.content-panel').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function abrirVideoFlotante(youtubeId, titulo) {
+            const container = document.getElementById('floating-video-container');
+            const slot = document.getElementById('floating-video-slot');
+            document.getElementById('floating-title').innerHTML = `<i class="fa-brands fa-youtube" style="color: #ff0000; margin-right: 8px;"></i> ${titulo}`;
+            slot.innerHTML = `<iframe src="https://www.youtube.com/embed/${youtubeId}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            container.style.display = 'flex';
+        }
+
+        function cerrarVideoFlotante() {
+            document.getElementById('floating-video-slot').innerHTML = ''; 
+            document.getElementById('floating-video-container').style.display = 'none';
+        }
+
+        const floatingContainer = document.getElementById('floating-video-container');
+        const dragHandle = document.getElementById('floating-drag-handle');
+        let isDragging = false, startX, startY, initialX, initialY;
+
+        dragHandle.addEventListener('mousedown', (e) => {
+            isDragging = true; startX = e.clientX; startY = e.clientY;
+            const rect = floatingContainer.getBoundingClientRect();
+            floatingContainer.style.bottom = 'auto'; floatingContainer.style.right = 'auto';
+            floatingContainer.style.top = rect.top + 'px'; floatingContainer.style.left = rect.left + 'px';
+            initialX = rect.left; initialY = rect.top;
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+        function onMouseMove(e) { if (!isDragging) return; floatingContainer.style.left = (initialX + (e.clientX - startX)) + 'px'; floatingContainer.style.top = (initialY + (e.clientY - startY)) + 'px'; }
+        function onMouseUp() { isDragging = false; document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('collapsed'); });
+        document.querySelectorAll('.nav-title').forEach(title => {
+            title.addEventListener('click', () => { title.closest('.nav-group').classList.toggle('collapsed-group'); });
+        });
+
+        // =========================================================================
+        // MODO OSCURO
+        // =========================================================================
+        const themeBtn = document.getElementById('themeToggle');
+        const rootElement = document.documentElement;
+        
+        if (localStorage.getItem('tema-casita') === 'dark' || !localStorage.getItem('tema-casita')) { 
+            rootElement.setAttribute('data-theme', 'dark'); 
+            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>'; 
+        } else { 
+            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>'; 
+        }
+        
+        themeBtn.addEventListener('click', () => {
+            if (rootElement.hasAttribute('data-theme')) { 
+                rootElement.removeAttribute('data-theme'); 
+                localStorage.setItem('tema-casita', 'light'); 
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>'; 
+            } else { 
+                rootElement.setAttribute('data-theme', 'dark'); 
+                localStorage.setItem('tema-casita', 'dark'); 
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>'; 
+            }
+        });
+
+        // Inicia
+        inicializarBaseDatos();
+    </script>
+</body>
+</html>
