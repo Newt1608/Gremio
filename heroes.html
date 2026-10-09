@@ -26,12 +26,21 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
 
-        /* BARRA LATERAL (SIDEBAR) UNIFICADA */
+        /* BARRA LATERAL Y PERFIL */
         .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
         .sidebar.collapsed { width: 0; padding: 0; }
-        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; min-width: 260px; }
-        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 700; line-height: 1.2; }
+        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
+        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
         .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        
+        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
+        .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--setup-blue); object-fit: cover; }
+        .profile-info-wrap span { color: white; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;}
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
+
         .nav-group { margin-bottom: 10px; min-width: 260px; }
         .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
         .nav-title:hover { color: var(--sidebar-text-active); }
@@ -39,10 +48,36 @@
         .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
         .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
         .nav-group.collapsed-group .nav-items-container { max-height: 0; }
-        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; }
+        
+        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
         .nav-item:hover { color: var(--sidebar-text-active); }
         .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
+
+        /* CANDADOS ANIMADOS */
+        .lock-icon { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
+        .nav-item.locked { cursor: not-allowed; opacity: 0.6; }
+        .nav-item.locked:hover .lock-icon { color: var(--accent-red); filter: drop-shadow(0 0 8px rgba(216, 77, 101, 0.8)); }
         
+        @keyframes shake { 0% { transform: translateY(-50%) translateX(0); } 25% { transform: translateY(-50%) translateX(-4px); } 50% { transform: translateY(-50%) translateX(4px); } 75% { transform: translateY(-50%) translateX(-4px); } 100% { transform: translateY(-50%) translateX(0); } }
+        .lock-shake { animation: shake 0.4s ease-in-out !important; color: var(--accent-red) !important; }
+        @keyframes floatLock { 0% { transform: translateY(-40%); } 100% { transform: translateY(-60%); } }
+
+        /* ALERTA DE PERMISO DENEGADO */
+        .toast-alert { position: fixed; top: 20px; right: -300px; background: rgba(216, 77, 101, 0.95); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 700; font-size: 13px; box-shadow: 0 10px 30px rgba(216, 77, 101, 0.4); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 10px; z-index: 9999; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .toast-alert.show { right: 30px; }
+
+        /* ANIMACIÓN GRIS AL CERRAR SESIÓN */
+        .logout-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #110f17; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 9999; }
+        .logout-overlay.active { opacity: 1; pointer-events: auto; }
+        .logout-loader-container { position: relative; width: 120px; height: 120px; margin-bottom: 20px; }
+        .logout-loader-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid #110f17; position: relative; z-index: 2; box-shadow: 0 10px 30px rgba(0,0,0,0.8); filter: grayscale(100%) brightness(0.6); transform: scale(0.8); transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .logout-overlay.active .logout-loader-img { transform: scale(1); }
+        .spinner-ring-gray { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: #555; border-right-color: #333; z-index: 1; animation: spin 1.5s linear infinite; opacity: 0; transition: opacity 0.5s ease; }
+        .logout-overlay.active .spinner-ring-gray { opacity: 1; }
+        .logout-text { font-size: 18px; font-weight: 700; color: #888; text-align: center; text-transform: uppercase; letter-spacing: 1px; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s; }
+        .logout-overlay.active .logout-text { opacity: 1; transform: translateY(0); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* CONTENIDO PRINCIPAL */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
         .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
@@ -56,9 +91,7 @@
         .gallery-title h1 { font-size: 28px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         .gallery-title p { font-size: 12px; color: var(--text-muted); font-weight: 700; }
 
-        /* =========================================================================
-         * BARRA DE BÚSQUEDA Y FILTRO DE ELEMENTOS (ALL + 6 ELEMENTOS)
-         * ========================================================================= */
+        /* BARRA DE BÚSQUEDA Y FILTRO DE ELEMENTOS */
         .toolbar-filters {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -100,19 +133,8 @@
         }
         .search-input:focus { border-color: var(--setup-blue); }
 
-        .controls-right {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-
-        .element-filters {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+        .controls-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .element-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
         .elem-filter-btn {
             width: 40px;
@@ -127,17 +149,9 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .elem-filter-btn img {
-            width: 22px;
-            height: 22px;
-            object-fit: contain;
-            transition: transform 0.2s;
-        }
+        .elem-filter-btn img { width: 22px; height: 22px; object-fit: contain; transition: transform 0.2s; }
         .elem-filter-btn i { font-size: 16px; }
-        .elem-filter-btn:hover {
-            border-color: var(--setup-blue);
-            color: var(--text-dark);
-        }
+        .elem-filter-btn:hover { border-color: var(--setup-blue); color: var(--text-dark); }
         .elem-filter-btn:hover img { transform: scale(1.12); }
         .elem-filter-btn.active {
             border-color: var(--setup-blue);
@@ -159,217 +173,78 @@
             cursor: pointer;
         }
 
-        /* =========================================================================
-         * GRID DE HÉROES OPTIMIZADO (SIN LAG AL HACER SCROLL)
-         * ========================================================================= */
-        .hero-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
-            gap: 15px;
-        }
+        /* GRID DE HÉROES OPTIMIZADO */
+        .hero-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 15px; }
 
         .hero-card {
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            cursor: pointer;
+            position: relative; border-radius: 12px; overflow: hidden; cursor: pointer;
             transition: border-color 0.15s ease, transform 0.15s ease;
-            border: 2px solid #353045;
-            background: #292437;
-            aspect-ratio: 1 / 1;
-            contain: layout paint;
+            border: 2px solid #353045; background: #292437; aspect-ratio: 1 / 1; contain: layout paint;
         }
-        .hero-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--setup-blue);
-        }
-        .hero-card.is-myth-card:hover {
-            border-color: var(--myth-color);
-        }
-
-        .hero-portrait {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
+        .hero-card:hover { transform: translateY(-3px); border-color: var(--setup-blue); }
+        .hero-card.is-myth-card:hover { border-color: var(--myth-color); }
+        .hero-portrait { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         /* Esquina superior izquierda: Elemento + Clase */
         .card-top-left {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            z-index: 3;
-            background: rgba(18, 15, 26, 0.82);
-            padding: 2px 4px;
-            border-radius: 7px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            pointer-events: none;
+            position: absolute; top: 5px; left: 5px; display: flex; align-items: center; gap: 2px;
+            z-index: 3; background: rgba(18, 15, 26, 0.82); padding: 2px 4px; border-radius: 7px;
+            border: 1px solid rgba(255, 255, 255, 0.12); pointer-events: none;
         }
-        .card-mini-icon {
-            width: 19px;
-            height: 19px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .card-mini-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
+        .card-mini-icon { width: 19px; height: 19px; display: flex; align-items: center; justify-content: center; }
+        .card-mini-icon img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Esquina superior derecha: Símbolo Mítico fijo y resaltado SIN animaciones pesadas */
+        /* Esquina superior derecha: Símbolo Mítico */
         .card-top-right-myth {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 24px;
-            height: 24px;
-            z-index: 3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #18121e;
-            border: 1.5px solid #ff9f1c;
-            border-radius: 50%;
-            padding: 3px;
-            box-shadow: 0 0 8px rgba(255, 140, 0, 0.85);
-            pointer-events: none;
+            position: absolute; top: 5px; right: 5px; width: 24px; height: 24px; z-index: 3;
+            display: flex; align-items: center; justify-content: center; background: #18121e;
+            border: 1.5px solid #ff9f1c; border-radius: 50%; padding: 3px; box-shadow: 0 0 8px rgba(255, 140, 0, 0.85); pointer-events: none;
         }
-        .card-top-right-myth img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-        }
+        .card-top-right-myth img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
-        /* Sombra inferior para estrellas y nombre */
+        /* Sombra inferior y Hover Name */
         .card-bottom-gradient {
-            position: absolute;
-            inset: auto 0 0 0;
-            height: 45%;
+            position: absolute; inset: auto 0 0 0; height: 45%;
             background: linear-gradient(to top, rgba(10, 8, 16, 0.92) 0%, rgba(10, 8, 16, 0.4) 55%, transparent 100%);
-            z-index: 2;
-            pointer-events: none;
+            z-index: 2; pointer-events: none;
         }
+        .hero-stars-container { position: absolute; bottom: 6px; left: 7px; display: flex; align-items: center; gap: 1px; z-index: 3; transition: opacity 0.15s ease; pointer-events: none; }
+        .hero-star { width: 15px; height: 15px; }
 
-        /* Estrellas abajo a la izquierda */
-        .hero-stars-container {
-            position: absolute;
-            bottom: 6px;
-            left: 7px;
-            display: flex;
-            align-items: center;
-            gap: 1px;
-            z-index: 3;
-            transition: opacity 0.15s ease;
-            pointer-events: none;
-        }
-        .hero-star {
-            width: 15px;
-            height: 15px;
-        }
-
-        /* Nombre del héroe al pasar el cursor (como BETH en la imagen) */
         .hero-hover-name {
-            position: absolute;
-            bottom: 7px;
-            left: 8px;
-            right: 6px;
-            font-size: 11px;
-            font-weight: 900;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            line-height: 1.15;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.95);
-            z-index: 4;
-            opacity: 0;
-            transition: opacity 0.15s ease;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            pointer-events: none;
+            position: absolute; bottom: 7px; left: 8px; right: 6px; font-size: 11px; font-weight: 900;
+            color: #ffffff; text-transform: uppercase; letter-spacing: 0.4px; line-height: 1.15;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.95); z-index: 4; opacity: 0; transition: opacity 0.15s ease;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
         }
+        .hero-card:hover .hero-stars-container { opacity: 0; }
+        .hero-card:hover .hero-hover-name { opacity: 1; }
 
-        .hero-card:hover .hero-stars-container {
-            opacity: 0;
-        }
-        .hero-card:hover .hero-hover-name {
-            opacity: 1;
-        }
-
-        /* =========================================================================
-         * VENTANA MODAL Y MARCO ANARANJADO MÍTICO EN EL PERFIL
-         * ========================================================================= */
+        /* VENTANA MODAL DEL PERFIL */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.82); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         
         .modal-content { background: var(--card-bg); width: 90%; max-width: 1200px; max-height: 90vh; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; position: relative; border: 2px solid var(--border-color); box-shadow: 0 20px 50px rgba(0,0,0,0.6); transform: translateY(20px) scale(0.95); transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
         .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
-
-        /* Cuando el usuario selecciona el modo Mítico, el borde del modal brilla en naranja */
-        .modal-content.myth-modal-active {
-            border-color: var(--myth-color);
-            box-shadow: 0 0 35px rgba(255, 140, 0, 0.28), 0 20px 50px rgba(0,0,0,0.7);
-        }
+        .modal-content.myth-modal-active { border-color: var(--myth-color); box-shadow: 0 0 35px rgba(255, 140, 0, 0.28), 0 20px 50px rgba(0,0,0,0.7); }
 
         .modal-header { padding: 20px 30px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--main-bg); }
         .modal-header h2 { font-size: 20px; font-weight: 800; text-transform: uppercase; color: var(--text-dark); display: flex; align-items: center; gap: 10px; }
         .modal-header-icons { display: inline-flex; align-items: center; gap: 8px; }
         .modal-header-icons img { width: 22px; height: 22px; object-fit: contain; }
-        .modal-header-icons img.myth-header-icon {
-            width: 26px;
-            height: 26px;
-            padding: 2px;
-            border-radius: 50%;
-            background: rgba(255, 140, 0, 0.2);
-            border: 1.5px solid #ff9f1c;
-            box-shadow: 0 0 10px rgba(255, 140, 0, 0.8);
-        }
+        .modal-header-icons img.myth-header-icon { width: 26px; height: 26px; padding: 2px; border-radius: 50%; background: rgba(255, 140, 0, 0.2); border: 1.5px solid #ff9f1c; box-shadow: 0 0 10px rgba(255, 140, 0, 0.8); }
         .close-modal-btn { background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
         .close-modal-btn:hover { color: var(--accent-red); }
 
         .modal-body { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 20px; padding: 20px 30px; overflow-y: auto; }
         
-        /* TARJETA 3D INTERACTIVA DE PERFIL (ESTÁNDAR VS MARCO ANARANJADO MÍTICO) */
+        /* TARJETA 3D INTERACTIVA DE PERFIL */
         .hero-profile-col { display: flex; flex-direction: column; gap: 15px; }
-        
-        .tilt-card-wrapper {
-            width: 100%; aspect-ratio: 3/4; border-radius: 16px; position: relative;
-            background-size: cover; background-position: center;
-            box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.6);
-            border: 2px solid rgba(66, 153, 246, 0.45);
-            transform-style: preserve-3d; cursor: pointer;
-            transition: background-image 0.35s ease-in-out, border-color 0.3s ease, box-shadow 0.3s ease; 
-        }
+        .tilt-card-wrapper { width: 100%; aspect-ratio: 3/4; border-radius: 16px; position: relative; background-size: cover; background-position: center; box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.6); border: 2px solid rgba(66, 153, 246, 0.45); transform-style: preserve-3d; cursor: pointer; transition: background-image 0.35s ease-in-out, border-color 0.3s ease, box-shadow 0.3s ease; }
+        .tilt-card-wrapper.myth-frame { border: 3px solid #ff8c00; box-shadow: 0 0 28px rgba(255, 140, 0, 0.65), inset 0 0 18px rgba(255, 140, 0, 0.35), 0 25px 50px -12px rgba(0, 0, 0, 0.7); }
 
-        /* MARCO ANARANJADO INTENSO AL SELECCIONAR EL BOTÓN MITO */
-        .tilt-card-wrapper.myth-frame {
-            border: 3px solid #ff8c00;
-            box-shadow: 0 0 28px rgba(255, 140, 0, 0.65), inset 0 0 18px rgba(255, 140, 0, 0.35), 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-        }
-
-        .tilt-glass-box {
-            position: absolute; bottom: 8px; left: 8px; right: 8px;
-            background: linear-gradient(135deg, rgba(25, 38, 65, 0.92), rgba(20, 18, 30, 0.96));
-            backdrop-filter: blur(12px);
-            border: 1.5px solid rgba(66, 153, 246, 0.45);
-            border-radius: 12px; padding: 15px;
-            transform: translateZ(30px); box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* CAJA INFERIOR CON BORDE Y BRILLO ANARANJADO EN MODO MÍTICO */
-        .tilt-card-wrapper.myth-frame .tilt-glass-box {
-            background: linear-gradient(135deg, rgba(75, 28, 8, 0.92), rgba(24, 18, 28, 0.96));
-            border: 1.5px solid #ff9f1c;
-            box-shadow: 0 0 18px rgba(255, 140, 0, 0.45), 0 10px 20px rgba(0,0,0,0.6);
-        }
+        .tilt-glass-box { position: absolute; bottom: 8px; left: 8px; right: 8px; background: linear-gradient(135deg, rgba(25, 38, 65, 0.92), rgba(20, 18, 30, 0.96)); backdrop-filter: blur(12px); border: 1.5px solid rgba(66, 153, 246, 0.45); border-radius: 12px; padding: 15px; transform: translateZ(30px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+        .tilt-card-wrapper.myth-frame .tilt-glass-box { background: linear-gradient(135deg, rgba(75, 28, 8, 0.92), rgba(24, 18, 28, 0.96)); border: 1.5px solid #ff9f1c; box-shadow: 0 0 18px rgba(255, 140, 0, 0.45), 0 10px 20px rgba(0,0,0,0.6); }
 
         .tilt-header-box { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 8px; }
         .tilt-name { font-size: 24px; font-weight: 900; text-transform: uppercase; color: white; line-height: 1; margin: 0; }
@@ -379,11 +254,7 @@
         .tilt-icons-row { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
         .element-badge-large { width: 28px; height: 28px; background: rgba(0,0,0,0.45); padding: 4px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; }
         .element-badge-large img { width: 100%; height: 100%; object-fit: contain; }
-        .element-badge-large.myth-badge-highlight {
-            background: #18121e;
-            border: 1.5px solid #ff9f1c;
-            box-shadow: 0 0 10px rgba(255, 140, 0, 0.85);
-        }
+        .element-badge-large.myth-badge-highlight { background: #18121e; border: 1.5px solid #ff9f1c; box-shadow: 0 0 10px rgba(255, 140, 0, 0.85); }
 
         .tilt-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .tilt-stat-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
@@ -392,7 +263,6 @@
         .tilt-stat-label { display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 700; color: white; text-transform: uppercase; }
         .tilt-stat-val { font-size: 14px; font-weight: 800; line-height: 1; text-align: right; }
         
-        /* Botones de Estándar / Mito */
         .growth-toggle { display: flex; gap: 10px; background: var(--main-bg); padding: 5px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 5px; }
         .growth-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.25s; background: transparent; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
         .growth-btn.active.std { background: var(--std-color); color: white; box-shadow: 0 4px 12px rgba(66, 153, 246, 0.4); }
@@ -412,68 +282,95 @@
 
         .weapon-col { display: flex; flex-direction: column; gap: 15px; }
         .weapon-card { background: #292437; border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; color: white; border: 2px solid #3c354e; margin-bottom: 15px; transition: 0.3s; }
-        .weapon-card.myth-weapon-frame {
-            border-color: #ff8c00;
-            background: linear-gradient(135deg, rgba(65, 30, 10, 0.9), #292437);
-            box-shadow: 0 0 16px rgba(255, 140, 0, 0.4);
-        }
+        .weapon-card.myth-weapon-frame { border-color: #ff8c00; background: linear-gradient(135deg, rgba(65, 30, 10, 0.9), #292437); box-shadow: 0 0 16px rgba(255, 140, 0, 0.4); }
         .weapon-img { width: 50px; height: 50px; object-fit: contain; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 5px; transition: 0.3s; }
         .weapon-info h3 { font-size: 14px; font-weight: 800; margin-bottom: 2px; }
         .weapon-info p { font-size: 10px; color: #a39eb5; text-transform: uppercase; }
 
-        @media (max-width: 1000px) {
-            .modal-body { grid-template-columns: 1fr; }
-            .tilt-card-wrapper { max-width: 350px; margin: 0 auto; }
-            .sidebar { position: absolute; height: 100%; z-index: 100; }
-        }
+        @media (max-width: 1000px) { .modal-body { grid-template-columns: 1fr; } .tilt-card-wrapper { max-width: 350px; margin: 0 auto; } .sidebar { position: absolute; height: 100%; z-index: 100; } }
     </style>
 </head>
 <body data-theme="dark">
 
+    <!-- MENSAJE DE PERMISO DENEGADO -->
+    <div class="toast-alert" id="toastAlert">
+        <i class="fa-solid fa-lock"></i> No tienes permisos para esta página.
+    </div>
+
+    <!-- OVERLAY DE CIERRE DE SESIÓN -->
+    <div class="logout-overlay" id="logoutOverlay">
+        <div class="logout-loader-container">
+            <div class="spinner-ring-gray"></div>
+            <img src="" alt="Perfil" class="logout-loader-img" id="logoutAvatar" onerror="this.src='logo.jpg';">
+        </div>
+        <div class="logout-text">Cerrando sesión...</div>
+    </div>
+
     <!-- MENÚ LATERAL -->
     <aside class="sidebar" id="sidebar">
+        <!-- HEADER PRINCIPAL -->
         <div class="sidebar-header">
-            <img src="logo.jpg" alt="Logo" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex-shrink: 0;">
+            <img src="logo.jpg" alt="Logo">
             <div>
                 <h2>Mi Casita</h2>
                 <p>Gremio de Guardian Tales</p>
             </div>
         </div>
 
+        <!-- PERFIL DEL USUARIO DINÁMICO -->
+        <div class="user-profile-sidebar" id="user-profile-sidebar">
+            <div class="profile-info-wrap">
+                <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
+                <span id="sidebar-name">Usuario</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
+                <i class="fa-solid fa-power-off"></i>
+            </button>
+        </div>
+
+        <!-- MENÚ INICIO -->
         <div class="nav-group">
-            <div class="nav-title" title="Clic para desplegar">INICIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
                 <a href="index.html" class="nav-item"><i class="fa-solid fa-fire"></i> Fogata de bienvenida</a>
                 <a href="noticias.html" class="nav-item"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
             </div>
         </div>
 
+        <!-- MENÚ GREMIO -->
         <div class="nav-group">
-            <div class="nav-title" title="Clic para desplegar">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="resumen.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
-                <a href="guia.html" class="nav-item"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
-                <a href="ranking.html" class="nav-item"><i class="fa-solid fa-trophy"></i> Ranking de la casa</a>
+                <a href="resumen.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-chart-pie"></i> Resumen del gremio
+                </a>
+                <a href="guia.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-book-bookmark"></i> Guía
+                </a>
+                <a href="ranking.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-trophy"></i> Ranking de la casa
+                </a>
             </div>
         </div>
         
+        <!-- MENÚ GUARDIANES -->
+<!-- MENÚ GUARDIANES -->
         <div class="nav-group">
-            <div class="nav-title" title="Clic para desplegar">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="heroes.html" class="nav-item active"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
-                <a href="equipos.html" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
-                <a href="incursiones.html" class="nav-item"><i class="fa-solid fa-ghost"></i> Incursiones</a>
-                <a href="recursos.html" class="nav-item"><i class="fa-regular fa-gem"></i> Recursos</a>
+                <a href="heroes.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
+                <a href="equipos.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
             </div>
         </div>
-        
-        <div class="nav-group" style="margin-top: auto; padding-bottom: 20px;">
-            <div class="nav-items-container" style="max-height: none;">
-                <a href="preferencias.html" class="nav-item"><i class="fa-solid fa-gear"></i> Preferencias</a>
-                <a href="ayuda.html" class="nav-item"><i class="fa-regular fa-circle-question"></i> Ayuda y atajos</a>
+
+        <!-- MENÚ INCURSIONES -->
+        <div class="nav-group">
+            <div class="nav-title">INCURSIONES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="incursiones.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-ghost"></i> Asalto</a>
+                <a href="arena.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
             </div>
         </div>
-    </aside>
 
     <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
@@ -494,7 +391,7 @@
                 </div>
             </div>
 
-            <!-- BARRA DE BÚSQUEDA + FILTROS DE ELEMENTOS (ALL + 6 ELEMENTOS) -->
+            <!-- BARRA DE BÚSQUEDA + FILTROS DE ELEMENTOS -->
             <div class="toolbar-filters">
                 <div class="search-wrapper">
                     <i class="fa-solid fa-magnifying-glass"></i>
@@ -669,6 +566,69 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
     
     <script>
+        // =========================================================================
+        // COMPROBAR SESIÓN Y GESTIONAR ROLES Y CANDADOS
+        // =========================================================================
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem('sesion_activa') === 'true') {
+                const avatarGuardado = localStorage.getItem('usuario_avatar');
+                const nombreGuardado = localStorage.getItem('usuario_nombre');
+                const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
+                
+                document.getElementById('user-profile-sidebar').style.display = 'flex';
+                if (avatarGuardado) {
+                    document.getElementById('sidebar-avatar').src = avatarGuardado;
+                    document.getElementById('logoutAvatar').src = avatarGuardado; 
+                }
+                if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
+
+                // Aplicar bloqueos visuales según rol
+                document.querySelectorAll('.nav-item').forEach(link => {
+                    const reqOriginal = link.getAttribute('data-req');
+                    if (reqOriginal) {
+                        const reqRole = reqOriginal.toLowerCase();
+                        let bloqueado = false;
+
+                        if (reqRole === 'heroe' && rolUsuario !== 'heroe') bloqueado = true;
+                        if (reqRole === 'caballero' && rolUsuario !== 'caballero' && rolUsuario !== 'heroe') bloqueado = true;
+
+                        if (bloqueado) {
+                            link.classList.add('locked');
+                            const candado = document.createElement('i');
+                            candado.className = 'fa-solid fa-lock lock-icon';
+                            link.appendChild(candado);
+
+                            link.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                candado.classList.remove('lock-shake');
+                                void candado.offsetWidth; 
+                                candado.classList.add('lock-shake');
+
+                                const toast = document.getElementById('toastAlert');
+                                toast.classList.add('show');
+                                setTimeout(() => { toast.classList.remove('show'); }, 3000);
+                            });
+                        }
+                    }
+                });
+            } else {
+                window.location.href = 'login.html'; 
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            document.getElementById('logoutOverlay').classList.add('active');
+            setTimeout(() => {
+                localStorage.removeItem('sesion_activa');
+                localStorage.removeItem('usuario_nombre');
+                localStorage.removeItem('usuario_avatar');
+                localStorage.removeItem('usuario_roll');
+                window.location.href = 'login.html';
+            }, 2500);
+        });
+
+
+        // CONFIGURACIÓN DE HÉROES
         const ICON_MYTH = "https://www.gtales.top/assets/icons/myth.svg";
 
         const starIcons = {
@@ -681,12 +641,8 @@
         };
 
         const starCounts = {
-            "rarity-1": 1,
-            "rarity-2": 2,
-            "rarity-ascend": 2,
-            "rarity-3": 3,
-            "rarity-collab": 3,
-            "rarity-myth": 3
+            "rarity-1": 1, "rarity-2": 2, "rarity-ascend": 2,
+            "rarity-3": 3, "rarity-collab": 3, "rarity-myth": 3
         };
 
         const rarityWeights = {
@@ -713,10 +669,7 @@
         };
 
         const nombresClases = {
-            "melee": "Guerrero",
-            "ranged": "Tirador",
-            "supp": "Apoyo",
-            "tank": "Tanque"
+            "melee": "Guerrero", "ranged": "Tirador", "supp": "Apoyo", "tank": "Tanque"
         };
 
         let heroesDB = [];
@@ -725,8 +678,9 @@
         let currentMode = 'std';
         let selectedElement = 'all';
 
-        const apiHeroes = 'https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Heroes';
-        const apiArmas = 'https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Armas';
+        const timestamp = new Date().getTime();
+        const apiHeroes = `https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Heroes&_=${timestamp}`;
+        const apiArmas = `https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Armas&_=${timestamp}`;
 
         Promise.all([
             fetch(apiHeroes).then(res => res.json()),
@@ -745,7 +699,6 @@
                 const iconoClase = h.icono_clase || iconosClases[claseKey] || '';
                 const nombreClase = nombresClases[claseKey] || 'Héroe';
 
-                // REGLA ESTRICTA: Si no tiene exactamente 'rarity-myth' en rareza_max, NO lleva ícono mítico
                 const tieneMito = (h.rareza_max || '').trim().toLowerCase() === 'rarity-myth';
 
                 return {
@@ -835,15 +788,13 @@
                     starsHTML += `<img src="${starUrl}" alt="star" class="hero-star">`;
                 }
 
-                // Esquina superior izquierda: Elemento + Clase
                 const topLeftHTML = `
                     <div class="card-top-left">
-                        ${hero.elementSvg ? `<div class="card-mini-icon" title="${hero.element}"><img src="${hero.elementSvg}" alt="${hero.element}"></div>` : ''}
-                        ${hero.icono_clase ? `<div class="card-mini-icon" title="${hero.nombre_clase}"><img src="${hero.icono_clase}" alt="${hero.nombre_clase}"></div>` : ''}
+                        ${hero.elementSvg ? `<div class="card-mini-icon" title="\${hero.element}"><img src="${hero.elementSvg}" alt="${hero.element}"></div>` : ''}
+                        ${hero.icono_clase ? `<div class="card-mini-icon" title="\${hero.nombre_clase}"><img src="${hero.icono_clase}" alt="${hero.nombre_clase}"></div>` : ''}
                     </div>
                 `;
 
-                // Esquina superior derecha: Ícono Mítico resaltado (solo si rareza_max === 'rarity-myth')
                 const topRightMythHTML = hero.icono_mito
                     ? `<div class="card-top-right-myth" title="Evolución Mítica"><img src="${hero.icono_mito}" alt="Myth"></div>`
                     : '';
@@ -866,24 +817,21 @@
             currentHero = heroesDB.find(h => h.id === id);
             if (!currentHero) return;
 
-            // SIEMPRE inicia en la versión Estándar al abrir el perfil, para que el usuario elija cambiar a Mito
             currentMode = 'std'; 
             
             document.getElementById('m-name').innerText = currentHero.name;
             document.getElementById('t-name-plate').innerText = currentHero.name;
 
-            // Íconos en el encabezado del modal
             document.getElementById('m-header-icons').innerHTML = `
                 ${currentHero.elementSvg ? `<img src="${currentHero.elementSvg}" title="${currentHero.element}">` : ''}
                 ${currentHero.icono_clase ? `<img src="${currentHero.icono_clase}" title="${currentHero.nombre_clase}">` : ''}
-                ${currentHero.icono_mito ? `<img src="${currentHero.icono_mito}" class="myth-header-icon" title="Evolución Mítica">` : ''}
+                ${currentHero.icono_mito ? `<img src="\${currentHero.icono_mito}" class="myth-header-icon" title="Evolución Mítica">` : ''}
             `;
 
-            // Íconos en la tarjeta 3D del perfil
             document.getElementById('t-card-icons').innerHTML = `
-                ${currentHero.elementSvg ? `<div class="element-badge-large" title="${currentHero.element}"><img src="${currentHero.elementSvg}" alt="${currentHero.element}"></div>` : ''}
-                ${currentHero.icono_clase ? `<div class="element-badge-large" title="${currentHero.nombre_clase}"><img src="${currentHero.icono_clase}" alt="${currentHero.nombre_clase}"></div>` : ''}
-                ${currentHero.icono_mito ? `<div class="element-badge-large myth-badge-highlight" title="Evolución Mítica"><img src="${currentHero.icono_mito}" alt="Myth"></div>` : ''}
+                ${currentHero.elementSvg ? `<div class="element-badge-large" title="\${currentHero.element}"><img src="${currentHero.elementSvg}" alt="${currentHero.element}"></div>` : ''}
+                ${currentHero.icono_clase ? `<div class="element-badge-large" title="\${currentHero.nombre_clase}"><img src="${currentHero.icono_clase}" alt="${currentHero.nombre_clase}"></div>` : ''}
+                ${currentHero.icono_mito ? `<div class="element-badge-large myth-badge-highlight" title="Evolución Mítica"><img src="\${currentHero.icono_mito}" alt="Myth"></div>` : ''}
             `;
             
             document.getElementById('k-normal-name').innerText = currentHero.skills.normalName;
@@ -946,7 +894,6 @@
                 btnStd.classList.add('active');
                 btnMyth.classList.remove('active');
                 
-                // Marco estándar azulado
                 tiltCard.classList.remove('myth-frame');
                 wCard.classList.remove('myth-weapon-frame');
                 modalContent.classList.remove('myth-modal-active');
@@ -971,7 +918,6 @@
                 btnStd.classList.remove('active');
                 btnMyth.classList.add('active');
                 
-                // Marco anaranjado radiante al seleccionar Mito
                 tiltCard.classList.add('myth-frame');
                 wCard.classList.add('myth-weapon-frame');
                 modalContent.classList.add('myth-modal-active');
@@ -996,7 +942,7 @@
             }
         }
 
-        // Eventos de los botones de filtro de elementos (All + 6 elementos)
+        // Eventos de los botones de filtro de elementos
         document.querySelectorAll('#elementFilters .elem-filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('#elementFilters .elem-filter-btn').forEach(b => b.classList.remove('active'));
@@ -1006,7 +952,7 @@
             });
         });
 
-        // Eventos base UI
+        // Controles de barra lateral y filtros
         document.getElementById('toggleSidebar').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('collapsed'); });
         document.querySelectorAll('.nav-title').forEach(title => {
             title.addEventListener('click', () => { title.closest('.nav-group').classList.toggle('collapsed-group'); });
@@ -1015,6 +961,7 @@
         document.getElementById('searchInput').addEventListener('input', applyFiltersAndSort);
         document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
 
+        // Modo Oscuro
         const themeBtn = document.getElementById('themeToggle');
         const rootElement = document.body;
 
