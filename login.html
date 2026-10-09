@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Mi Casita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --main-bg: #181521; --card-bg: rgba(34, 30, 45, 0.7); --setup-blue: #3b68ff;
+            --accent-red: #d84d65; --text-dark: #ffffff; --text-muted: #a39eb5;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { height: 100vh; background-color: var(--main-bg); color: var(--text-dark); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+
+        .bg-orb { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 0; animation: float 10s infinite ease-in-out alternate; }
+        .orb-1 { width: 400px; height: 400px; background: rgba(59, 104, 255, 0.15); top: -100px; left: -100px; }
+        .orb-2 { width: 300px; height: 300px; background: rgba(216, 77, 101, 0.15); bottom: -50px; right: -50px; animation-delay: -5s; }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.1); } }
+
+        .login-wrapper { position: relative; z-index: 10; width: 100%; max-width: 400px; perspective: 1000px; }
+
+        .login-card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); transition: opacity 0.5s ease, transform 0.5s ease; }
+        .login-card.fade-out { opacity: 0; transform: scale(0.9) translateY(-20px); pointer-events: none; }
+
+        .logo-header { text-align: center; margin-bottom: 30px; }
+        .logo-header img { width: 60px; height: 60px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .logo-header h1 { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
+        .logo-header p { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
+
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group .icon-left { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .toggle-password { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; transition: color 0.2s; background: none; border: none; font-size: 14px; padding: 5px; }
+        .toggle-password:hover { color: white; }
+        .input-group input { width: 100%; padding: 14px 45px; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white; font-size: 14px; font-weight: 600; outline: none; transition: 0.3s; }
+        .input-group input:focus { border-color: var(--setup-blue); background: rgba(0,0,0,0.4); box-shadow: 0 0 0 4px rgba(59, 104, 255, 0.15); }
+
+        .btn-login { width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, var(--setup-blue), #2a52d3); color: white; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(59, 104, 255, 0.3); margin-top: 10px; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(59, 104, 255, 0.4); }
+        .btn-login:disabled { background: #444; color: #888; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .error-msg { color: var(--accent-red); font-size: 12px; font-weight: 700; text-align: center; margin-top: 15px; opacity: 0; transition: 0.3s; }
+        .error-msg.show { opacity: 1; }
+
+        .success-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s ease 0.3s; z-index: 20; }
+        .success-overlay.active { opacity: 1; pointer-events: auto; }
+        .avatar-loader-container { position: relative; width: 120px; height: 120px; margin-bottom: 20px; }
+        .avatar-loader-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid #181521; position: relative; z-index: 2; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: scale(0); transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .success-overlay.active .avatar-loader-img { transform: scale(1); }
+        .spinner-ring { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--setup-blue); border-right-color: var(--accent-red); z-index: 1; animation: spin 1.2s linear infinite; opacity: 0; transition: opacity 0.5s ease; }
+        .success-overlay.active .spinner-ring { opacity: 1; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .welcome-text { font-size: 22px; font-weight: 800; color: white; text-align: center; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease 0.6s, transform 0.5s ease 0.6s; }
+        .success-overlay.active .welcome-text { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <div class="login-wrapper">
+        <div class="login-card" id="loginCard">
+            <div class="logo-header">
+                <img src="logo.jpg" alt="Mi Casita Logo" onerror="this.src='https://via.placeholder.com/60/3b68ff/ffffff?text=MC'">
+                <h1>Mi Casita</h1>
+                <p>Acceso exclusivo para el gremio</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <i class="fa-solid fa-user icon-left"></i>
+                    <input type="text" id="username" placeholder="Nombre de usuario" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock icon-left"></i>
+                    <input type="password" id="password" placeholder="Contraseña" required>
+                    <button type="button" class="toggle-password" id="togglePassword">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                <button type="submit" class="btn-login" id="submitBtn">
+                    Iniciar Sesión <i class="fa-solid fa-arrow-right-to-bracket" style="margin-left: 5px;"></i>
+                </button>
+                <div class="error-msg" id="errorMsg">Usuario o contraseña incorrectos.</div>
+            </form>
+        </div>
+
+        <div class="success-overlay" id="successOverlay">
+            <div class="avatar-loader-container">
+                <div class="spinner-ring"></div>
+                <img src="" alt="Perfil" class="avatar-loader-img" id="userAvatar" onerror="this.src='logo.jpg';">
+            </div>
+            <div class="welcome-text" id="welcomeText">¡Bienvenido de vuelta!</div>
+        </div>
+    </div>
+
+    <script>
+        const API_USUARIOS = 'https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Usuarios';
+        
+        const loginForm = document.getElementById('loginForm');
+        const loginCard = document.getElementById('loginCard');
+        const successOverlay = document.getElementById('successOverlay');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        const userAvatar = document.getElementById('userAvatar');
+        const welcomeText = document.getElementById('welcomeText');
+
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function () {
+            const isPassword = passwordInput.getAttribute('type') === 'password';
+            passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+            this.innerHTML = isPassword ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
+        });
+
+        function convertirUrlDrive(url) {
+            if (!url) return 'logo.jpg';
+            let limpia = String(url).trim().split(',')[0].trim();
+            if (!limpia.includes('drive.google.com')) return limpia;
+            const regexID = /(?:id=|\/d\/|open\?id=)([\w-]+)/i;
+            const match = limpia.match(regexID);
+            if (match && match[1]) { return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200-h200`; }
+            return limpia;
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.classList.remove('show');
+            
+            const userVal = document.getElementById('username').value.trim().toLowerCase();
+            const passVal = passwordInput.value.trim();
+
+            const btnOriginalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Conectando...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(API_USUARIOS + '&_=' + new Date().getTime());
+                const usuariosDB = await response.json();
+
+                if (usuariosDB.error) throw new Error(usuariosDB.error);
+
+                const coincidencias = usuariosDB.filter(row => {
+                    const keys = Object.keys(row);
+                    const keyNombre = keys.find(k => k.trim().toLowerCase() === 'nombre');
+                    const keyPass = keys.find(k => k.trim().toLowerCase().includes('contrase'));
+
+                    if (!keyNombre || !keyPass) return false;
+
+                    const dbUser = (row[keyNombre] || '').toString().trim().toLowerCase();
+                    const dbPass = (row[keyPass] || '').toString().trim();
+
+                    return dbUser === userVal && dbPass === passVal;
+                });
+
+                if (coincidencias.length > 0) {
+                    const usuarioReciente = coincidencias[coincidencias.length - 1];
+                    const keys = Object.keys(usuarioReciente);
+                    
+                    const keyFoto = keys.find(k => k.toLowerCase().includes('foto') || k.toLowerCase().includes('perfil'));
+                    const keyNombre = keys.find(k => k.trim().toLowerCase() === 'nombre');
+                    const keyRoll = keys.find(k => k.trim().toLowerCase() === 'roll'); // Columna del Rol
+
+                    const rawUrl = keyFoto ? (usuarioReciente[keyFoto] || '') : '';
+                    const avatarUrl = convertirUrlDrive(rawUrl);
+                    const nombreUsuario = usuarioReciente[keyNombre] || userVal;
+                    
+                    // Si el rol está vacío, se asigna "Basico" por defecto
+                    let userRoll = (keyRoll ? (usuarioReciente[keyRoll] || '') : '').toString().trim();
+                    if (!userRoll) userRoll = 'Basico';
+
+                    localStorage.setItem('sesion_activa', 'true');
+                    localStorage.setItem('usuario_nombre', nombreUsuario);
+                    localStorage.setItem('usuario_avatar', avatarUrl);
+                    localStorage.setItem('usuario_roll', userRoll); // Guardamos el rol
+
+                    userAvatar.src = avatarUrl;
+                    welcomeText.innerHTML = `¡Bienvenido de vuelta,<br><span style="color:var(--setup-blue);">${nombreUsuario}</span>!`;
+
+                    loginCard.classList.add('fade-out');
+                    setTimeout(() => {
+                        successOverlay.classList.add('active');
+                        setTimeout(() => { window.location.href = 'index.html'; }, 2500);
+                    }, 400);
+
+                } else {
+                    errorMsg.innerText = "Usuario o contraseña incorrectos.";
+                    errorMsg.classList.add('show');
+                    submitBtn.innerHTML = btnOriginalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error("Error al conectar con la BD:", error);
+                errorMsg.innerText = "Revisa el enlace de SheetDB o la pestaña Usuarios.";
+                errorMsg.classList.add('show');
+                submitBtn.innerHTML = btnOriginalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        if (localStorage.getItem('sesion_activa') === 'true') {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

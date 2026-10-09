@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evento Halloween - Mi Casita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #1e1b2e;
+            --card-bg: #151520; --text-dark: #ffffff; --text-muted: #8888a5;
+            --border-color: #2a2a3e; --setup-blue: #3b68ff; --accent-red: #ff5722;
+            --halloween-orange: #ff8c00; --halloween-purple: #6a1b9a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); overflow: hidden; }
+
+        /* BARRA LATERAL Y PERFIL */
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
+        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
+        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        
+        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
+        .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--halloween-orange); object-fit: cover; }
+        .profile-info-wrap span { color: white; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;}
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
+
+        .nav-group { margin-bottom: 10px; min-width: 260px; }
+        .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
+        .nav-item:hover { color: var(--sidebar-text-active); }
+        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--halloween-orange); }
+
+        /* ALERTA Y OVERLAY */
+        .toast-alert { position: fixed; top: 20px; right: -300px; background: rgba(216, 77, 101, 0.95); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 700; font-size: 13px; box-shadow: 0 10px 30px rgba(216, 77, 101, 0.4); z-index: 9999; transition: right 0.4s ease; }
+        .toast-alert.show { right: 30px; }
+        .logout-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #110f17; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 9999; }
+        .logout-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; position: relative; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
+        .dashboard-container { padding: 20px 40px 60px 40px; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+        .event-header { background: linear-gradient(135deg, var(--halloween-purple), #1e1b2e); border-radius: 20px; padding: 30px; border: 1px solid var(--halloween-orange); margin-bottom: 30px; text-align: center; box-shadow: 0 10px 30px rgba(255, 140, 0, 0.15); }
+        .event-header h1 { font-size: 36px; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .event-header h1 span { color: var(--halloween-orange); }
+        .event-header p { font-size: 14px; color: #d1c4e9; margin-top: 10px; font-weight: 600; }
+
+        .game-layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
+
+        /* ÁREA DEL JUEGO */
+        .game-board-card { background: var(--card-bg); border-radius: 20px; padding: 30px; border: 2px solid var(--border-color); display: flex; flex-direction: column; align-items: center; position: relative; }
+        
+        .game-hud { width: 100%; display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 24px; font-weight: 900; }
+        .game-score { color: var(--halloween-orange); }
+        .game-time { color: var(--accent-red); }
+
+        .grid-3x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; max-width: 350px; aspect-ratio: 1; }
+        
+        .hole { background: #110f17; border-radius: 16px; border: 2px solid #2a2a3e; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: flex-end; box-shadow: inset 0 10px 20px rgba(0,0,0,0.8); cursor: crosshair; }
+        .slime { width: 80%; height: 80%; object-fit: contain; position: absolute; bottom: -100%; transition: bottom 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; filter: drop-shadow(0 0 10px rgba(106, 27, 154, 0.8)); }
+        .hole.active .slime { bottom: 5%; pointer-events: auto; }
+        .hole.hit .slime { filter: brightness(2) drop-shadow(0 0 20px var(--halloween-orange)); transform: scale(0.9); }
+
+        .btn-start { margin-top: 30px; background: linear-gradient(135deg, var(--halloween-orange), #d84315); color: white; border: none; padding: 15px 40px; font-size: 18px; font-weight: 800; text-transform: uppercase; border-radius: 12px; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 20px rgba(255, 140, 0, 0.3); }
+        .btn-start:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(255, 140, 0, 0.5); }
+        .btn-start:disabled { background: #333; color: #888; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* TABLA DE CLASIFICACIÓN (RANKING HALLOWEEN) */
+        .leaderboard-card { background: var(--card-bg); border-radius: 20px; padding: 30px; border: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        .leaderboard-title { font-size: 18px; font-weight: 800; color: white; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #2a2a3e; padding-bottom: 15px; }
+        
+        .rank-list { display: flex; flex-direction: column; gap: 10px; flex: 1; overflow-y: auto; max-height: 400px; }
+        .rank-item { display: flex; align-items: center; justify-content: space-between; background: var(--main-bg); padding: 12px 15px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .rank-item.top-1 { border-color: var(--halloween-orange); background: rgba(255, 140, 0, 0.1); }
+        
+        .rank-info { display: flex; align-items: center; gap: 12px; }
+        .rank-pos { font-size: 16px; font-weight: 900; color: var(--text-muted); width: 20px; text-align: center; }
+        .rank-item.top-1 .rank-pos { color: var(--halloween-orange); }
+        .rank-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-color); }
+        .rank-item.top-1 .rank-avatar { border-color: var(--halloween-orange); }
+        .rank-name { font-size: 14px; font-weight: 700; color: white; }
+        
+        .rank-score { font-size: 18px; font-weight: 900; color: var(--halloween-orange); }
+
+        @media (max-width: 900px) { .game-layout { grid-template-columns: 1fr; } .sidebar { position: absolute; height: 100%; z-index: 100; } }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div class="toast-alert" id="toastAlert">
+        <i class="fa-solid fa-lock"></i> No tienes permisos para esta página.
+    </div>
+
+    <div class="logout-overlay" id="logoutOverlay">
+        <div class="logout-loader-container">
+            <div class="spinner-ring-gray"></div>
+            <img src="" alt="Perfil" class="logout-loader-img" id="logoutAvatar" onerror="this.src='logo.jpg';">
+        </div>
+        <div class="logout-text">Cerrando sesión...</div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.jpg" alt="Logo">
+            <div>
+                <h2>Mi Casita</h2>
+                <p>Gremio de Guardian Tales</p>
+            </div>
+        </div>
+
+        <div class="user-profile-sidebar" id="user-profile-sidebar">
+            <div class="profile-info-wrap">
+                <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
+                <span id="sidebar-name">Usuario</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn" title="Cerrar sesión"><i class="fa-solid fa-power-off"></i></button>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-fire"></i> Fogata de bienvenida</a>
+                <a href="noticias.html" class="nav-item"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
+            </div>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="resumen.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
+                <a href="guia.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
+                <a href="ranking.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-trophy"></i> Ranking de la casa</a>
+            </div>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">EVENTOS <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="minijuego.html" class="nav-item active restrict-caballero" data-req="Caballero"><i class="fa-solid fa-ghost"></i> Minijuego Halloween</a>
+            </div>
+        </div>
+        
+        <div class="nav-group">
+            <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="heroes.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
+                <a href="equipos.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
+            </div>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">INCURSIONES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="incursiones.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-ghost"></i> Asalto</a>
+                <a href="arena.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="topbar">
+            <div class="breadcrumbs">
+                <button class="toggle-btn" id="toggleSidebar" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fa-solid fa-bars"></i></button>
+            </div>
+        </div>
+
+        <div class="dashboard-container">
+            <div class="event-header">
+                <h1>Cacería de <span>Slimes Oscuros</span></h1>
+                <p>¡Tienes 30 segundos para aplastar la mayor cantidad de slimes posible! Supera tu récord y sube en el ranking del gremio.</p>
+            </div>
+
+            <div class="game-layout">
+                
+                <!-- TABLERO DEL JUEGO -->
+                <div class="game-board-card">
+                    <div class="game-hud">
+                        <div class="game-score">Puntos: <span id="scoreDisplay">0</span></div>
+                        <div class="game-time"><i class="fa-solid fa-stopwatch"></i> <span id="timeDisplay">30</span>s</div>
+                    </div>
+
+                    <div class="grid-3x3" id="gameGrid">
+                        <!-- Generados por JS -->
+                    </div>
+
+                    <button class="btn-start" id="startBtn" onclick="iniciarJuego()">Iniciar Partida</button>
+                    <p id="gameMessage" style="margin-top: 15px; font-weight: 700; color: var(--halloween-orange); font-size: 14px; text-align: center; display: none;">¡Partida finalizada! Guardando puntuación...</p>
+                </div>
+
+                <!-- TABLA DE CLASIFICACIONES -->
+                <div class="leaderboard-card">
+                    <div class="leaderboard-title">
+                        <i class="fa-solid fa-ranking-star" style="color: var(--halloween-orange);"></i> Top Cazadores
+                    </div>
+                    <div class="rank-list" id="leaderboardList">
+                        <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 20px;">Cargando clasificaciones...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#292437', notifications: true })
+    </script>
+
+    <script>
+        // DATOS DEL USUARIO Y SESIÓN
+        let usuarioActual = { nombre: '', foto: '' };
+        let miPuntuacionAlta = 0;
+        let pDataTotal = []; // Guardar toda la tabla para verificaciones
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem('sesion_activa') === 'true') {
+                const avatarGuardado = localStorage.getItem('usuario_avatar');
+                const nombreGuardado = localStorage.getItem('usuario_nombre');
+                const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
+                
+                usuarioActual.nombre = nombreGuardado;
+                usuarioActual.foto = avatarGuardado || 'logo.jpg';
+
+                document.getElementById('user-profile-sidebar').style.display = 'flex';
+                if (avatarGuardado) {
+                    document.getElementById('sidebar-avatar').src = avatarGuardado;
+                    document.getElementById('logoutAvatar').src = avatarGuardado; 
+                }
+                if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
+
+                // Lógica de Candados
+                document.querySelectorAll('.nav-item').forEach(link => {
+                    const reqOriginal = link.getAttribute('data-req');
+                    if (reqOriginal) {
+                        const reqRole = reqOriginal.toLowerCase();
+                        let bloqueado = false;
+                        if (reqRole === 'heroe' && rolUsuario !== 'heroe') bloqueado = true;
+                        if (reqRole === 'caballero' && rolUsuario !== 'caballero' && rolUsuario !== 'heroe') bloqueado = true;
+
+                        if (bloqueado) {
+                            link.classList.add('locked');
+                            const candado = document.createElement('i');
+                            candado.className = 'fa-solid fa-lock lock-icon';
+                            link.appendChild(candado);
+
+                            link.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                candado.classList.remove('lock-shake');
+                                void candado.offsetWidth; 
+                                candado.classList.add('lock-shake');
+                                const toast = document.getElementById('toastAlert');
+                                toast.classList.add('show');
+                                setTimeout(() => { toast.classList.remove('show'); }, 3000);
+                            });
+                        }
+                    }
+                });
+
+                cargarLeaderboard(); // Cargar la tabla al entrar
+
+            } else {
+                window.location.href = 'login.html'; 
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            document.getElementById('logoutOverlay').classList.add('active'); 
+            setTimeout(() => {
+                localStorage.removeItem('sesion_activa');
+                localStorage.removeItem('usuario_nombre');
+                localStorage.removeItem('usuario_avatar');
+                localStorage.removeItem('usuario_roll');
+                window.location.href = 'login.html';
+            }, 2500);
+        });
+
+        // =========================================================================
+        // LÓGICA DEL MINIJUEGO
+        // =========================================================================
+        const grid = document.getElementById('gameGrid');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const startBtn = document.getElementById('startBtn');
+        const msgDisplay = document.getElementById('gameMessage');
+        const slimeImgUrl = "https://www.gtales.top/assets/guides/dka/darkSlime.webp";
+
+        let score = 0;
+        let timeRemaining = 30;
+        let timerInterval;
+        let slimeInterval;
+        let isPlaying = false;
+
+        // Crear los 9 huecos
+        for(let i = 0; i < 9; i++) {
+            const hole = document.createElement('div');
+            hole.className = 'hole';
+            hole.id = `hole-${i}`;
+            const slime = document.createElement('img');
+            slime.src = slimeImgUrl;
+            slime.className = 'slime';
+            hole.appendChild(slime);
+            
+            // Evento de golpear al slime
+            slime.addEventListener('mousedown', (e) => {
+                if(!isPlaying) return;
+                if(hole.classList.contains('active') && !hole.classList.contains('hit')) {
+                    score += 10;
+                    scoreDisplay.innerText = score;
+                    hole.classList.add('hit');
+                    // Ocultar rápidamente
+                    setTimeout(() => {
+                        hole.classList.remove('active');
+                        hole.classList.remove('hit');
+                    }, 100);
+                }
+            });
+            grid.appendChild(hole);
+        }
+
+        const holes = document.querySelectorAll('.hole');
+
+        function iniciarJuego() {
+            if(isPlaying) return;
+            isPlaying = true;
+            score = 0;
+            timeRemaining = 30;
+            scoreDisplay.innerText = score;
+            timeDisplay.innerText = timeRemaining;
+            startBtn.disabled = true;
+            msgDisplay.style.display = 'none';
+
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                timeDisplay.innerText = timeRemaining;
+                if(timeRemaining <= 0) {
+                    finalizarJuego();
+                }
+            }, 1000);
+
+            // Bucle que hace aparecer a los slimes
+            aparecerSlime();
+        }
+
+        function randomHole() {
+            const idx = Math.floor(Math.random() * holes.length);
+            const hole = holes[idx];
+            if (hole.classList.contains('active')) {
+                return randomHole();
+            }
+            return hole;
+        }
+
+        function aparecerSlime() {
+            const time = Math.random() * (1000 - 400) + 400; // Aparecen entre 0.4s y 1s
+            const hole = randomHole();
+            hole.classList.add('active');
+
+            setTimeout(() => {
+                hole.classList.remove('active');
+                if (isPlaying) aparecerSlime();
+            }, time);
+        }
+
+        function finalizarJuego() {
+            isPlaying = false;
+            clearInterval(timerInterval);
+            holes.forEach(h => { h.classList.remove('active'); h.classList.remove('hit'); });
+            
+            startBtn.innerText = "Procesando...";
+            msgDisplay.innerText = `¡Lograste ${score} puntos! Guardando...`;
+            msgDisplay.style.display = 'block';
+
+            guardarPuntuacion(score);
+        }
+
+        // =========================================================================
+        // CONEXIÓN CON SHEETDB (PESTAÑA 'Halloween')
+        // =========================================================================
+        const API_URL = 'https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Halloween';
+
+        function convertirUrlDrive(url) {
+            if (!url) return 'logo.jpg';
+            let limpia = String(url).trim().split(',')[0].trim();
+            if (!limpia.includes('drive.google.com')) return limpia;
+            const regexID = /(?:id=|\/d\/|open\?id=)([\w-]+)/i;
+            const match = limpia.match(regexID);
+            if (match && match[1]) { return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200-h200`; }
+            return limpia;
+        }
+
+        async function cargarLeaderboard() {
+            try {
+                const t = new Date().getTime();
+                const res = await fetch(`${API_URL}&_=${t}`);
+                pDataTotal = await res.json();
+
+                if(pDataTotal.error) { throw new Error(pDataTotal.error); }
+
+                // Identificar si yo ya existo en la tabla para saber mi récord actual
+                const miRegistro = pDataTotal.find(r => r.nombre === usuarioActual.nombre);
+                if(miRegistro) {
+                    miPuntuacionAlta = parseInt(miRegistro.puntuacion) || 0;
+                }
+
+                renderLeaderboard(pDataTotal);
+            } catch (error) {
+                console.error("Error cargando leaderboard:", error);
+                document.getElementById('leaderboardList').innerHTML = '<p style="color:var(--accent-red); text-align:center;">Error al cargar puntuaciones.</p>';
+            }
+        }
+
+        function renderLeaderboard(data) {
+            const list = document.getElementById('leaderboardList');
+            list.innerHTML = '';
+            
+            // Ordenar de mayor a menor
+            const sorted = data.sort((a, b) => (parseInt(b.puntuacion) || 0) - (parseInt(a.puntuacion) || 0));
+
+            if(sorted.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 20px;">Aún no hay cazadores registrados.</p>';
+                return;
+            }
+
+            sorted.forEach((row, index) => {
+                if(!row.nombre) return;
+                const pos = index + 1;
+                const isTop1 = pos === 1 ? 'top-1' : '';
+                const avatar = convertirUrlDrive(row.foto);
+                
+                list.innerHTML += `
+                    <div class="rank-item ${isTop1}">
+                        <div class="rank-info">
+                            <span class="rank-pos">${pos}</span>
+                            <img src="${avatar}" class="rank-avatar" onerror="this.src='logo.jpg'">
+                            <span class="rank-name">${row.nombre}</span>
+                        </div>
+                        <span class="rank-score">${row.puntuacion}</span>
+                    </div>
+                `;
+            });
+        }
+
+        async function guardarPuntuacion(puntosNuevos) {
+            try {
+                const nombreSeguro = usuarioActual.nombre;
+                const avatarSeguro = usuarioActual.foto;
+
+                // Solo guardamos si supera el récord personal
+                if (puntosNuevos > miPuntuacionAlta) {
+                    
+                    const miRegistro = pDataTotal.find(r => r.nombre === nombreSeguro);
+                    
+                    if (miRegistro) {
+                        // PATCH: Actualiza la fila existente
+                        await fetch(`https://sheetdb.io/api/v1/byy514yadr0v0/nombre/${nombreSeguro}?sheet=Halloween`, {
+                            method: 'PATCH',
+                            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ data: { puntuacion: puntosNuevos, foto: avatarSeguro } })
+                        });
+                    } else {
+                        // POST: Crea un nuevo registro si es la primera vez que juega
+                        await fetch(`https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Halloween`, {
+                            method: 'POST',
+                            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ data: [{ nombre: nombreSeguro, foto: avatarSeguro, puntuacion: puntosNuevos }] })
+                        });
+                    }
+
+                    miPuntuacionAlta = puntosNuevos;
+                    msgDisplay.innerText = "¡Nuevo récord personal guardado!";
+                    msgDisplay.style.color = "#4caf50";
+                } else {
+                    msgDisplay.innerText = `Puntuación: ${puntosNuevos}. No superaste tu récord de ${miPuntuacionAlta}.`;
+                    msgDisplay.style.color = "var(--text-muted)";
+                }
+
+                // Recargar la tabla
+                setTimeout(() => {
+                    cargarLeaderboard().then(() => {
+                        startBtn.innerText = "Jugar de Nuevo";
+                        startBtn.disabled = false;
+                    });
+                }, 1500);
+
+            } catch (error) {
+                console.error("Error al guardar:", error);
+                msgDisplay.innerText = "Hubo un error de conexión al guardar tu puntaje.";
+                msgDisplay.style.color = "var(--accent-red)";
+                startBtn.innerText = "Jugar de Nuevo";
+                startBtn.disabled = false;
+            }
+        }
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('collapsed'); });
+    </script>
+</body>
+</html>
