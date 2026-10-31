@@ -9,63 +9,117 @@
     
     <style>
         :root {
-            --main-bg: #181521; --card-bg: rgba(34, 30, 45, 0.7); --setup-blue: #3b68ff;
-            --accent-red: #d84d65; --text-dark: #ffffff; --text-muted: #a39eb5;
-            --border-color: rgba(255, 255, 255, 0.1);
+            /* TEMA HALLOWEEN */
+            --main-bg: #120e17; 
+            --card-bg: rgba(29, 24, 38, 0.85); 
+            --setup-blue: #ff6600; 
+            --accent-red: #d84d65; 
+            --text-dark: #ffffff; 
+            --text-muted: #a39eb5;
+            --border-color: rgba(255, 102, 0, 0.2);
+            --halloween-purple: #4a235a;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { height: 100vh; background-color: var(--main-bg); color: var(--text-dark); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
 
+        /* ====== DECORACIONES DE HALLOWEEN ====== */
+        .bat-bg { position: absolute; font-size: 24px; color: #fff; opacity: 0.08; pointer-events: none; z-index: 0; animation: flyBat 15s infinite linear; }
+        .bat-1 { top: 15%; left: -50px; animation-duration: 18s; }
+        .bat-2 { top: 60%; left: -50px; animation-duration: 25s; animation-delay: 5s; font-size: 16px; }
+        .bat-3 { top: 80%; left: -50px; animation-duration: 20s; animation-delay: 10s; font-size: 32px; }
+        
+        @keyframes flyBat {
+            0% { transform: translateX(-50px) translateY(0) scale(1); }
+            25% { transform: translateX(25vw) translateY(-30px) scale(1.1); }
+            50% { transform: translateX(50vw) translateY(20px) scale(1); }
+            75% { transform: translateX(75vw) translateY(-20px) scale(0.9); }
+            100% { transform: translateX(110vw) translateY(0) scale(1); }
+        }
+
         .bg-orb { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 0; animation: float 10s infinite ease-in-out alternate; }
-        .orb-1 { width: 400px; height: 400px; background: rgba(59, 104, 255, 0.15); top: -100px; left: -100px; }
-        .orb-2 { width: 300px; height: 300px; background: rgba(216, 77, 101, 0.15); bottom: -50px; right: -50px; animation-delay: -5s; }
+        .orb-1 { width: 400px; height: 400px; background: rgba(255, 102, 0, 0.15); top: -100px; left: -100px; }
+        .orb-2 { width: 300px; height: 300px; background: rgba(74, 35, 90, 0.25); bottom: -50px; right: -50px; animation-delay: -5s; }
         @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.1); } }
+
+        /* ====== FLASH DE TRUENO RADIAL ====== */
+        .thunder-flash { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: white; 
+            background: radial-gradient(circle, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+            opacity: 0; pointer-events: none; z-index: 9999; 
+        }
+        .thunder-flash.strike { animation: flashEffect 2s ease-out forwards; }
+        
+        @keyframes flashEffect {
+            0% { opacity: 0; background: white; } 
+            5% { opacity: 1; background: white; }
+            10% { opacity: 1; background: radial-gradient(circle, rgba(255,255,255,0) 10%, rgba(255,255,255,1) 90%); }
+            40% { opacity: 1; background: radial-gradient(circle, rgba(255,255,255,0) 40%, rgba(255,255,255,1) 100%); }
+            100% { opacity: 0; background: radial-gradient(circle, rgba(255,255,255,0) 100%, rgba(255,255,255,0) 100%); }
+        }
 
         .login-wrapper { position: relative; z-index: 10; width: 100%; max-width: 400px; perspective: 1000px; }
 
-        .login-card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); transition: opacity 0.5s ease, transform 0.5s ease; }
+        .login-card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); transition: opacity 0.5s ease, transform 0.5s ease; position: relative; overflow: hidden;}
+        .login-card::after { content: '\f6e2'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; right: -20px; bottom: -20px; font-size: 100px; color: var(--setup-blue); opacity: 0.05; transform: rotate(-15deg); pointer-events: none;}
         .login-card.fade-out { opacity: 0; transform: scale(0.9) translateY(-20px); pointer-events: none; }
 
-        .logo-header { text-align: center; margin-bottom: 30px; }
-        .logo-header img { width: 60px; height: 60px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .logo-header { text-align: center; margin-bottom: 30px; position: relative; z-index: 2;}
+        .logo-header img { width: 60px; height: 60px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 0 15px rgba(255, 102, 0, 0.4); border: 2px solid var(--setup-blue);}
         .logo-header h1 { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
         .logo-header p { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
 
-        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group { margin-bottom: 20px; position: relative; z-index: 2;}
         .input-group .icon-left { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
         .toggle-password { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; transition: color 0.2s; background: none; border: none; font-size: 14px; padding: 5px; }
         .toggle-password:hover { color: white; }
-        .input-group input { width: 100%; padding: 14px 45px; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white; font-size: 14px; font-weight: 600; outline: none; transition: 0.3s; }
-        .input-group input:focus { border-color: var(--setup-blue); background: rgba(0,0,0,0.4); box-shadow: 0 0 0 4px rgba(59, 104, 255, 0.15); }
+        .input-group input { width: 100%; padding: 14px 45px; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: white; font-size: 14px; font-weight: 600; outline: none; transition: 0.3s; }
+        .input-group input:focus { border-color: var(--setup-blue); background: rgba(0,0,0,0.5); box-shadow: 0 0 0 4px rgba(255, 102, 0, 0.15); }
 
-        .btn-login { width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, var(--setup-blue), #2a52d3); color: white; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(59, 104, 255, 0.3); margin-top: 10px; }
-        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(59, 104, 255, 0.4); }
+        .btn-login { width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #ff8800, #ff4400); color: white; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(255, 102, 0, 0.2); margin-top: 10px; position: relative; z-index: 2;}
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(255, 102, 0, 0.4); }
         .btn-login:disabled { background: #444; color: #888; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        .error-msg { color: var(--accent-red); font-size: 12px; font-weight: 700; text-align: center; margin-top: 15px; opacity: 0; transition: 0.3s; }
+        .error-msg { color: var(--accent-red); font-size: 12px; font-weight: 700; text-align: center; margin-top: 15px; opacity: 0; transition: 0.3s; position: relative; z-index: 2;}
         .error-msg.show { opacity: 1; }
 
+        /* ====== ANIMACIÓN DE CARGA Y DECORACIÓN ====== */
         .success-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s ease 0.3s; z-index: 20; }
         .success-overlay.active { opacity: 1; pointer-events: auto; }
+        
         .avatar-loader-container { position: relative; width: 120px; height: 120px; margin-bottom: 20px; }
-        .avatar-loader-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid #181521; position: relative; z-index: 2; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: scale(0); transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        .avatar-loader-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid var(--main-bg); position: relative; z-index: 2; box-shadow: 0 10px 30px rgba(0,0,0,0.8); transform: scale(0); transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .success-overlay.active .avatar-loader-img { transform: scale(1); }
-        .spinner-ring { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--setup-blue); border-right-color: var(--accent-red); z-index: 1; animation: spin 1.2s linear infinite; opacity: 0; transition: opacity 0.5s ease; }
+        
+        /* Contenedor de la Decoración del Perfil */
+        .avatar-decoration { position: absolute; z-index: 3; pointer-events: none; opacity: 0; transition: opacity 0.5s ease 1s; }
+        .success-overlay.active .avatar-decoration { opacity: 1; }
+        
+        .spinner-ring { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--setup-blue); border-right-color: var(--halloween-purple); z-index: 1; animation: spin 1.5s linear infinite; opacity: 0; transition: opacity 0.5s ease; }
         .success-overlay.active .spinner-ring { opacity: 1; }
+        
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .welcome-text { font-size: 22px; font-weight: 800; color: white; text-align: center; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease 0.6s, transform 0.5s ease 0.6s; }
+        
+        .welcome-text { font-size: 22px; font-weight: 800; color: white; text-align: center; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease 1.2s, transform 0.5s ease 1.2s; }
         .success-overlay.active .welcome-text { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body>
+    <div class="thunder-flash" id="thunderFlash"></div>
+
+    <i class="fa-solid fa-bat bat-bg bat-1"></i>
+    <i class="fa-solid fa-bat bat-bg bat-2"></i>
+    <i class="fa-solid fa-bat bat-bg bat-3"></i>
+
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
 
     <div class="login-wrapper">
         <div class="login-card" id="loginCard">
             <div class="logo-header">
-                <img src="logo.jpg" alt="Mi Casita Logo" onerror="this.src='https://via.placeholder.com/60/3b68ff/ffffff?text=MC'">
+                <img src="logo.jpg" alt="Mi Casita Logo" onerror="this.src='https://via.placeholder.com/60/ff6600/ffffff?text=MC'">
                 <h1>Mi Casita</h1>
                 <p>Acceso exclusivo para el gremio</p>
             </div>
@@ -93,21 +147,48 @@
             <div class="avatar-loader-container">
                 <div class="spinner-ring"></div>
                 <img src="" alt="Perfil" class="avatar-loader-img" id="userAvatar" onerror="this.src='logo.jpg';">
+                <!-- Imagen de decoración asignada dinámicamente -->
+                <img src="" class="avatar-decoration" id="userDecoration" style="display: none;">
             </div>
             <div class="welcome-text" id="welcomeText">¡Bienvenido de vuelta!</div>
         </div>
     </div>
 
     <script>
-        const API_USUARIOS = 'https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Usuarios';
+        // ==========================================
+        // SISTEMA DE AUDIO
+        // ==========================================
+        const bgMusic = new Audio('Neva Main.mp3');
+        bgMusic.loop = true;
+        bgMusic.volume = 0.4;
+        
+        const thunderSound = new Audio('Thunder.mp3');
+        thunderSound.volume = 1.0;
+
+        let musicStarted = false;
+        document.body.addEventListener('click', () => {
+            if (!musicStarted) {
+                bgMusic.play().catch(e => console.log("Autoplay bloqueado:", e));
+                musicStarted = true;
+            }
+        });
+
+        // ==========================================
+        // LÓGICA DE INICIO DE SESIÓN
+        // ==========================================
+        const API_USUARIOS = 'https://sheetdb.io/api/v1/dzln6qkj7w4on?sheet=Usuarios';
         
         const loginForm = document.getElementById('loginForm');
         const loginCard = document.getElementById('loginCard');
         const successOverlay = document.getElementById('successOverlay');
         const submitBtn = document.getElementById('submitBtn');
         const errorMsg = document.getElementById('errorMsg');
+        
         const userAvatar = document.getElementById('userAvatar');
+        const userDecoration = document.getElementById('userDecoration');
+        
         const welcomeText = document.getElementById('welcomeText');
+        const thunderFlash = document.getElementById('thunderFlash');
 
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('password');
@@ -127,6 +208,16 @@
             if (match && match[1]) { return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200-h200`; }
             return limpia;
         }
+
+        // ==========================================
+        // DICCIONARIO DE DECORACIONES (1 al 4)
+        // ==========================================
+        const decoracionesMap = {
+            "1": { src: "img/gifs/Sombrero de bruja.gif", css: "width: 140%; top: -75%; left: -20%;" },
+            "2": { src: "img/gifs/Sombrero de calabaza.gif", css: "width: 140%; top: -45%; left: -20%;" },
+            "3": { src: "img/gifs/Cuernos.gif", css: "width: 100%; top: -55%; left: 0%;" },
+            "4": { src: "img/gifs/Sombrero fantasma.gif", css: "width: 115%; top: -65%; left: -11%;" }
+        };
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -164,29 +255,62 @@
                     
                     const keyFoto = keys.find(k => k.toLowerCase().includes('foto') || k.toLowerCase().includes('perfil'));
                     const keyNombre = keys.find(k => k.trim().toLowerCase() === 'nombre');
-                    const keyRoll = keys.find(k => k.trim().toLowerCase() === 'roll'); // Columna del Rol
+                    const keyRoll = keys.find(k => k.trim().toLowerCase() === 'roll');
+                    // CORRECCIÓN: Búsqueda flexible para evitar problemas de acentos (Decoración)
+                    const keyDeco = keys.find(k => k.trim().toLowerCase().includes('decoraci'));
 
                     const rawUrl = keyFoto ? (usuarioReciente[keyFoto] || '') : '';
                     const avatarUrl = convertirUrlDrive(rawUrl);
                     const nombreUsuario = usuarioReciente[keyNombre] || userVal;
                     
-                    // Si el rol está vacío, se asigna "Basico" por defecto
                     let userRoll = (keyRoll ? (usuarioReciente[keyRoll] || '') : '').toString().trim();
                     if (!userRoll) userRoll = 'Basico';
+
+                    // Extraer ID de decoración
+                    let decoID = keyDeco ? (usuarioReciente[keyDeco] || '').toString().trim() : '';
 
                     localStorage.setItem('sesion_activa', 'true');
                     localStorage.setItem('usuario_nombre', nombreUsuario);
                     localStorage.setItem('usuario_avatar', avatarUrl);
-                    localStorage.setItem('usuario_roll', userRoll); // Guardamos el rol
+                    localStorage.setItem('usuario_roll', userRoll); 
 
+                    // Asignar Avatar
                     userAvatar.src = avatarUrl;
-                    welcomeText.innerHTML = `¡Bienvenido de vuelta,<br><span style="color:var(--setup-blue);">${nombreUsuario}</span>!`;
 
+                    // Asignar Decoración
+                    if (decoID && decoracionesMap[decoID]) {
+                        userDecoration.src = decoracionesMap[decoID].src;
+                        userDecoration.style.cssText = decoracionesMap[decoID].css;
+                        userDecoration.style.display = 'block';
+                        localStorage.setItem('usuario_decoracion', decoID);
+                    } else {
+                        userDecoration.style.display = 'none';
+                        localStorage.removeItem('usuario_decoracion');
+                    }
+
+                    welcomeText.innerHTML = `¡Bienvenido al gremio,<br><span style="color:var(--setup-blue);">${nombreUsuario}</span>!`;
+
+                    // =====================================
+                    // SECUENCIA DE 7 SEGUNDOS
+                    // =====================================
+                    
                     loginCard.classList.add('fade-out');
+                    bgMusic.pause(); 
+                    
+                    thunderSound.play().catch(e => console.log(e));
+
+                    setTimeout(() => {
+                        thunderFlash.classList.add('strike');
+                    }, 1000);
+
                     setTimeout(() => {
                         successOverlay.classList.add('active');
-                        setTimeout(() => { window.location.href = 'index.html'; }, 2500);
-                    }, 400);
+                    }, 1200);
+
+                    // Redirigir al inicio después de 7 SEGUNDOS EXACTOS
+                    setTimeout(() => { 
+                        window.location.href = 'index.html'; 
+                    }, 7000);
 
                 } else {
                     errorMsg.innerText = "Usuario o contraseña incorrectos.";
@@ -203,6 +327,7 @@
             }
         });
 
+        // Si ya hay sesión activa, salta el login
         if (localStorage.getItem('sesion_activa') === 'true') {
             window.location.href = 'index.html';
         }

@@ -4,55 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noticias - Mi Casita</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* TEMA OSCURO (Default) */
         :root {
-            --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
-            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #f9f5ed;
-            --card-bg: #ffffff; --text-dark: #201b2a; --text-muted: #7d7889;
-            --accent-red: #d84d65; --border-color: #e8e4dc; --transition-speed: 0.3s;
+            --sidebar-bg: #15131f; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #221e2d; 
+            --sidebar-btn: #ff8c00; 
+            --main-bg: #121017;
+            --card-bg: #191622; 
+            --text-dark: #f0eef5; 
+            --text-muted: #888299;
+            --border-color: #272235; 
+            --accent-red: #ff5722;
+            --halloween-orange: #ff8c00; 
+            --halloween-purple: #7b1fa2;
+            --poison-green: #39ff14; 
+            --kamazon-gold: #ffcf00; 
             --setup-blue: #4299f6;
+            --transition-speed: 0.3s;
         }
 
-        [data-theme="dark"] {
-            --main-bg: #181521; --card-bg: #221e2d; --text-dark: #f0eef5;
-            --text-muted: #a39eb5; --border-color: #353045; --sidebar-bg: #14111c;
+        /* TEMA CLARO */
+        [data-theme="light"] {
+            --sidebar-bg: #292437; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; 
+            --sidebar-btn: #ff8800; 
+            --main-bg: linear-gradient(135deg, #f9f5ed 0%, #f0eae1 100%);
+            --card-bg: #ffffff; 
+            --text-dark: #201b2a; 
+            --text-muted: #7d7889;
+            --border-color: #e8e4dc;
+            --halloween-orange: #ff6600;
+            --kamazon-gold: #d4ac0d;
+        }
+
+        /* TEMA BLANCO Y NEGRO */
+        [data-theme="bn"] {
+            --sidebar-bg: #1a1a1a; 
+            --sidebar-text: #b0b0b0; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #333333; 
+            --sidebar-btn: #ffffff; 
+            --main-bg: #ffffff;
+            --card-bg: #f2f2f2; 
+            --text-dark: #000000; 
+            --text-muted: #555555;
+            --border-color: #cccccc; 
+            --kamazon-gold: #333333; 
+            --halloween-orange: #000000;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
 
         /* BARRA LATERAL Y PERFIL */
-        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; z-index: 100; border-right: 1px solid var(--border-color); }
         .sidebar.collapsed { width: 0; padding: 0; }
-        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
-        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
+        .sidebar-header { padding: 22px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--halloween-orange); }
         .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
-        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--halloween-orange); font-weight: 700; }
         
-        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
-        .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
-        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--setup-blue); object-fit: cover; }
-        .profile-info-wrap span { color: white; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;}
-        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; min-width: 260px; background: rgba(25, 22, 34, 0.5); }
+        .profile-info-wrap { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--halloween-orange); object-fit: cover; flex-shrink: 0; }
+        .user-meta { display: flex; flex-direction: column; overflow: hidden; }
+        .user-meta span { color: white; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+        .user-meta p { font-size: 11px; color: var(--kamazon-gold); font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 1px; white-space: nowrap; }
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
 
-        .nav-group { margin-bottom: 10px; min-width: 260px; }
-        .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .nav-group { margin-bottom: 5px; min-width: 260px; }
+        .nav-title { padding: 10px 22px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; color: var(--text-muted); font-weight: 700; }
         .nav-title:hover { color: var(--sidebar-text-active); }
         .nav-title i { transition: transform 0.3s ease; }
         .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
         .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
         .nav-group.collapsed-group .nav-items-container { max-height: 0; }
         
-        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
-        .nav-item:hover { color: var(--sidebar-text-active); }
-        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
+        .nav-item { padding: 10px 22px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
+        .nav-item:hover { color: var(--sidebar-text-active); background: rgba(255, 140, 0, 0.05); }
+        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--halloween-orange); }
 
         /* CANDADOS ANIMADOS */
-        .lock-icon { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
+        .lock-icon { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
         .nav-item.locked { cursor: not-allowed; opacity: 0.6; }
         .nav-item.locked:hover .lock-icon { color: var(--accent-red); filter: drop-shadow(0 0 8px rgba(216, 77, 101, 0.8)); }
         
@@ -78,29 +120,44 @@
 
         /* CONTENIDO PRINCIPAL */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; position: relative; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); }
         .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
-        .toggle-btn, .theme-btn { background: none; border: none; color: var(--text-dark); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; background-color: var(--card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
-        .dashboard-container { padding: 20px 60px 60px 60px; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .toggle-btn, .theme-btn { background: none; border: none; color: var(--halloween-orange); font-size: 18px; cursor: pointer; padding: 8px 12px; border-radius: 10px; background-color: var(--card-bg); border: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
+        .toggle-btn:hover, .theme-btn:hover { background: rgba(255,140,0,0.1); }
         
-        .welcome-header { margin-bottom: 40px; }
-        .welcome-header h1 { font-size: 42px; font-weight: 800; margin-bottom: 12px; }
-        .welcome-header h1 span { color: var(--accent-red); }
-        .welcome-header p { color: var(--text-muted); max-width: 600px; line-height: 1.6; }
+        .dashboard-container { padding: 30px 40px 60px 40px; max-width: 1200px; margin: 0 auto; width: 100%; }
+        
+        .welcome-header { margin-bottom: 35px; }
+        .welcome-header h1 { font-size: 36px; font-weight: 900; margin-bottom: 8px; color: var(--text-dark); }
+        .welcome-header h1 span { color: var(--halloween-orange); }
+        .welcome-header p { color: var(--text-muted); max-width: 600px; line-height: 1.6; font-size: 14px; }
 
-        .card { background-color: var(--card-bg); border-radius: 24px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid var(--border-color); }
-        .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 30px; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;}
+        .card { background-color: var(--card-bg); border-radius: 20px; padding: 30px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); border: 1px solid var(--border-color); margin-bottom: 25px; }
+        .section-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--halloween-orange); margin-bottom: 25px; font-weight: 800; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; display: flex; align-items: center; gap: 8px;}
 
-        .news-article { padding-bottom: 30px; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); }
+        .news-article { padding-bottom: 25px; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); }
         .news-article:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
-        .news-meta { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; font-size: 12px; font-weight: 600; }
-        .news-tag { background: #fdeaea; color: var(--accent-red); padding: 6px 12px; border-radius: 12px; }
-        [data-theme="dark"] .news-tag { background: #3a2529; }
+        .news-meta { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; font-size: 12px; font-weight: 700; }
+        .news-tag { background: rgba(255, 87, 34, 0.15); color: var(--accent-red); padding: 5px 12px; border-radius: 10px; }
         .news-date { color: var(--text-muted); }
-        .news-article h2 { font-size: 22px; font-weight: 700; margin-bottom: 12px; color: var(--text-dark); }
-        .news-article p { font-size: 15px; line-height: 1.7; color: var(--text-muted); max-width: 900px; }
-        .news-article a { color: var(--accent-red); font-weight: 600; text-decoration: none; }
+        .news-article h2 { font-size: 20px; font-weight: 800; margin-bottom: 10px; color: var(--text-dark); }
+        .news-article p { font-size: 14px; line-height: 1.6; color: var(--text-muted); max-width: 900px; }
+        .news-article a { color: var(--halloween-orange); font-weight: 700; text-decoration: none; }
         .news-article a:hover { text-decoration: underline; }
+
+        /* ESTILOS DEL ACERTIJO DESPLEGABLE */
+        .riddle-toggle-btn { background: rgba(123, 31, 162, 0.15); border: 2px solid var(--halloween-purple); color: var(--halloween-orange); width: 100%; padding: 14px 20px; border-radius: 14px; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; font-size: 14px; text-transform: uppercase; }
+        .riddle-toggle-btn:hover { background: rgba(123, 31, 162, 0.3); }
+        .riddle-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; }
+        .riddle-content.open { max-height: 300px; margin-top: 15px; }
+        .riddle-box { background: rgba(18, 16, 23, 0.6); border: 1px dashed var(--halloween-purple); border-radius: 14px; padding: 20px; text-align: center; }
+        .riddle-box p { color: var(--text-muted); font-size: 13px; margin-bottom: 15px; line-height: 1.5; font-style: italic; }
+        .riddle-input-group { display: flex; gap: 10px; max-width: 380px; margin: 0 auto; justify-content: center; }
+        .riddle-input-group input { flex: 1; padding: 10px 14px; border-radius: 10px; background: var(--main-bg); color: var(--text-dark); border: 2px solid var(--border-color); font-weight: 700; outline: none; font-size: 13px; }
+        .riddle-input-group input:focus { border-color: var(--halloween-orange); }
+        .riddle-btn { background: linear-gradient(135deg, #ff8c00, #e65100); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 11px; transition: 0.2s; }
+        .riddle-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4); }
+        .riddle-msg { margin-top: 10px; font-size: 12px; font-weight: 700; }
 
         @media (max-width: 900px) { .sidebar { position: absolute; height: 100%; z-index: 100; } }
     </style>
@@ -124,25 +181,28 @@
     <aside class="sidebar" id="sidebar">
         <!-- HEADER PRINCIPAL -->
         <div class="sidebar-header">
-            <img src="logo.jpg" alt="Logo">
+            <img src="logo.jpg" alt="Logo" onerror="this.src='logo.jpg';">
             <div>
                 <h2>Mi Casita</h2>
                 <p>Gremio de Guardian Tales</p>
             </div>
         </div>
 
-        <!-- PERFIL DEL USUARIO DINÁMICO CON BOTÓN ROJO -->
+        <!-- PERFIL DEL USUARIO DINÁMICO CON PUNTOS TOTALES -->
         <div class="user-profile-sidebar" id="user-profile-sidebar">
             <div class="profile-info-wrap">
                 <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
-                <span id="sidebar-name">Usuario</span>
+                <div class="user-meta">
+                    <span id="sidebar-name">Usuario</span>
+                    <p><i class="fa-solid fa-coins" style="color:var(--kamazon-gold);"></i> <span id="sidebarTotalPower">0</span> pts</p>
+                </div>
             </div>
             <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
                 <i class="fa-solid fa-power-off"></i>
             </button>
         </div>
 
-        <!-- MENÚ INICIO (Todos los roles pueden ver) -->
+        <!-- MENÚ INICIO -->
         <div class="nav-group">
             <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -151,7 +211,7 @@
             </div>
         </div>
 
-        <!-- MENÚ GREMIO (Bloqueado para Basico) -->
+        <!-- MENÚ GREMIO -->
         <div class="nav-group">
             <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -167,7 +227,15 @@
             </div>
         </div>
         
-<!-- MENÚ GUARDIANES -->
+        <!-- EVENTOS ESPECIALES -->
+        <div class="nav-group">
+            <div class="nav-title" style="color: var(--halloween-orange);">EVENTOS ESPECIALES <i class="fa-solid fa-ghost"></i></div>
+            <div class="nav-items-container">
+                <a href="eventos.html" class="nav-item"><i class="fa-solid fa-spider"></i> Festival de Halloween</a>
+            </div>
+        </div>
+
+        <!-- MENÚ GUARDIANES -->
         <div class="nav-group">
             <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -192,7 +260,7 @@
                 <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <span>Mi Casita &nbsp; > &nbsp; <b>Noticias del gremio</b></span>
             </div>
-            <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
+            <button class="theme-btn" id="themeToggle" title="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
         </div>
 
         <div class="dashboard-container">
@@ -202,8 +270,26 @@
                 <p>Mantente al día con los últimos avisos, reglas de asalto y actualizaciones importantes para todos los miembros de la posada.</p>
             </div>
 
+            <!-- ACERTIJO OCULTO / DESPLEGABLE EN NOTICIAS -->
+            <div class="card" id="riddleCardContainer">
+                <button class="riddle-toggle-btn" onclick="toggleAcertijo()">
+                    <span><i class="fa-solid fa-ghost"></i> ¿Buscas el acceso a la Ruleta de Lorraine? (Desplegar Acertijo Oculto)</span>
+                    <i class="fa-solid fa-chevron-down" id="riddleChevron"></i>
+                </button>
+                <div class="riddle-content" id="riddleContent">
+                    <div class="riddle-box">
+                        <p>"En la cocina de Heavenhold me cocinan con temor, si me eliges por descuido te daré un gran ardor. ¿Qué ingrediente prohibido soy?"</p>
+                        <div class="riddle-input-group">
+                            <input type="text" id="riddleInput" placeholder="Escribe tu respuesta...">
+                            <button class="riddle-btn" onclick="resolverAcertijo()">Verificar</button>
+                        </div>
+                        <div class="riddle-msg" id="riddleMsg"></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
-                <h3 class="section-title">Últimos comunicados oficiales</h3>
+                <h3 class="section-title"><i class="fa-solid fa-bullhorn"></i> Últimos comunicados oficiales</h3>
                 
                 <div class="news-article">
                     <div class="news-meta">
@@ -216,7 +302,7 @@
 
                 <div class="news-article">
                     <div class="news-meta">
-                        <span class="news-tag" style="background: #eafdf5; color: #1fb173;"><i class="fa-solid fa-book"></i> Guía</span>
+                        <span class="news-tag" style="background: rgba(57, 255, 20, 0.15); color: var(--poison-green);"><i class="fa-solid fa-book"></i> Guía</span>
                         <span class="news-date" id="sheet-noticia_guia_fecha">Cargando...</span>
                     </div>
                     <h2 id="sheet-noticia_guia_titulo">Cargando...</h2>
@@ -225,7 +311,7 @@
 
                 <div class="news-article">
                     <div class="news-meta">
-                        <span class="news-tag" style="background: #fdf5ea; color: #e59935;"><i class="fa-solid fa-star"></i> Evento</span>
+                        <span class="news-tag" style="background: rgba(255, 207, 0, 0.15); color: var(--kamazon-gold);"><i class="fa-solid fa-star"></i> Evento</span>
                         <span class="news-date" id="sheet-noticia_evento_fecha">Cargando...</span>
                     </div>
                     <h2 id="sheet-noticia_evento_titulo">Cargando...</h2>
@@ -235,19 +321,84 @@
         </div>
     </main>
 
+    <!-- WIDGETBOT DISCORD -->
     <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
-        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#292437', notifications: true })
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#15131f', notifications: true })
     </script>
 
     <script>
+        // ==========================================
+        // GESTIÓN DE TEMAS (Oscuro, Claro, Blanco y Negro)
+        // ==========================================
+        const themeBtn = document.getElementById('themeToggle');
+        const rootElement = document.documentElement;
+
+        function aplicarTema(tema) {
+            if (tema === 'light') {
+                rootElement.setAttribute('data-theme', 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else if (tema === 'bn') {
+                rootElement.setAttribute('data-theme', 'bn');
+                themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>';
+            } else {
+                rootElement.removeAttribute('data-theme');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        }
+
+        let temaActual = localStorage.getItem('tema-casita') || 'dark';
+        aplicarTema(temaActual);
+
+        themeBtn.addEventListener('click', () => {
+            if (!rootElement.hasAttribute('data-theme')) {
+                temaActual = 'light';
+            } else if (rootElement.getAttribute('data-theme') === 'light') {
+                temaActual = 'bn';
+            } else {
+                temaActual = 'dark';
+            }
+            localStorage.setItem('tema-casita', temaActual);
+            aplicarTema(temaActual);
+        });
+
+        // ==========================================
+        // LÓGICA DEL ACERTIJO DESPLEGABLE
+        // ==========================================
+        function toggleAcertijo() {
+            const content = document.getElementById('riddleContent');
+            const chevron = document.getElementById('riddleChevron');
+            content.classList.toggle('open');
+            chevron.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        function resolverAcertijo() {
+            const inputVal = document.getElementById('riddleInput').value.toLowerCase().trim();
+            const msg = document.getElementById('riddleMsg');
+
+            // RESPUESTA DEL ACERTIJO: "pimiento" (o "pimiento picante")
+            if (inputVal === 'pimiento' || inputVal === 'pimiento picante') {
+                localStorage.setItem('ruleta_desbloqueada', 'true');
+                msg.style.color = 'var(--poison-green)';
+                msg.innerHTML = '🎉 ¡Correcto! Has desbloqueado la Ruleta de Lorraine. Ya puedes acceder desde el Festival de Halloween.';
+                
+                setTimeout(() => {
+                    toggleAcertijo();
+                }, 3000);
+            } else {
+                msg.style.color = 'var(--accent-red)';
+                msg.innerHTML = '❌ Respuesta incorrecta. ¡Piénsalo bien!';
+            }
+        }
+
         // =========================================================================
-        // COMPROBAR SESIÓN, CARGAR PERFIL Y GESTIONAR CANDADOS DE ROLES
+        // COMPROBAR SESIÓN, CARGAR PERFIL Y PUNTOS DESDE SHEETDB
         // =========================================================================
-        document.addEventListener("DOMContentLoaded", () => {
+        const API_URL = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
+
+        document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
                 const avatarGuardado = localStorage.getItem('usuario_avatar');
                 const nombreGuardado = localStorage.getItem('usuario_nombre');
-                // Convertimos el rol a minúsculas, si está vacío asume 'basico'
                 const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
                 
                 document.getElementById('user-profile-sidebar').style.display = 'flex';
@@ -257,6 +408,23 @@
                 }
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
+                // Cargar Puntos Totales en la barra lateral
+                try {
+                    const res = await fetch(`${API_URL}&_=${new Date().getTime()}`);
+                    const rawData = await res.json();
+                    const pDataTotal = rawData.map(row => {
+                        let newRow = {};
+                        for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                        return newRow;
+                    });
+                    const miRegistro = pDataTotal.find(r => r.nombre && r.nombre.toLowerCase().trim() === nombreGuardado.toLowerCase().trim());
+                    const miPoderTotal = miRegistro ? (parseInt(miRegistro.total) || 0) : 0;
+                    document.getElementById('sidebarTotalPower').innerText = miPoderTotal.toLocaleString();
+                } catch (e) {
+                    console.error("Error al cargar puntos en sidebar:", e);
+                    document.getElementById('sidebarTotalPower').innerText = "0";
+                }
+
                 // Lógica de Candados según el Rol
                 document.querySelectorAll('.nav-item').forEach(link => {
                     const reqOriginal = link.getAttribute('data-req');
@@ -264,11 +432,9 @@
                         const reqRole = reqOriginal.toLowerCase();
                         let bloqueado = false;
 
-                        // Si requiere Heroe, solo entra Heroe
                         if (reqRole === 'heroe' && rolUsuario !== 'heroe') {
                             bloqueado = true;
                         }
-                        // Si requiere Caballero, entran Caballero y Heroe
                         if (reqRole === 'caballero' && rolUsuario !== 'caballero' && rolUsuario !== 'heroe') {
                             bloqueado = true;
                         }
@@ -282,7 +448,7 @@
                             link.addEventListener('click', (e) => {
                                 e.preventDefault();
                                 candado.classList.remove('lock-shake');
-                                void candado.offsetWidth; // Reflow para reiniciar animación
+                                void candado.offsetWidth; 
                                 candado.classList.add('lock-shake');
 
                                 const toast = document.getElementById('toastAlert');
@@ -294,7 +460,7 @@
                 });
 
             } else {
-                window.location.href = 'login.html'; // Expulsar si no hay sesión
+                window.location.href = 'login.html';
             }
         });
 
@@ -305,16 +471,16 @@
                 localStorage.removeItem('sesion_activa');
                 localStorage.removeItem('usuario_nombre');
                 localStorage.removeItem('usuario_avatar');
-                localStorage.removeItem('usuario_roll'); // Borra el rol
+                localStorage.removeItem('usuario_roll');
                 window.location.href = 'login.html';
             }, 2500);
         });
 
         // API NOTICIAS Y TEXTOS GLOBALES
         const timestamp = new Date().getTime();
-        const apiURL = `https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Datos&_=${timestamp}`;
+        const apiURLNoticias = `https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Datos&_=${timestamp}`;
 
-        fetch(apiURL)
+        fetch(apiURLNoticias)
             .then(response => response.json())
             .then(data => {
                 data.forEach(fila => {
@@ -336,29 +502,6 @@
                 const group = title.closest('.nav-group');
                 group.classList.toggle('collapsed-group');
             });
-        });
-
-        const themeBtn = document.getElementById('themeToggle');
-        const rootElement = document.documentElement;
-        
-        if (localStorage.getItem('tema-casita') === 'dark') {
-            rootElement.setAttribute('data-theme', 'dark');
-            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
-        } else {
-            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
-        }
-
-        themeBtn.addEventListener('click', () => {
-            let isDark = rootElement.hasAttribute('data-theme');
-            if (isDark) {
-                rootElement.removeAttribute('data-theme');
-                localStorage.setItem('tema-casita', 'light');
-                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
-            } else {
-                rootElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('tema-casita', 'dark');
-                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
-            }
         });
     </script>
 </body>

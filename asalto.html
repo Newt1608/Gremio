@@ -3,39 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asalto - Mi Casita</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Mi Casita - Gremio de Guardianes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
             --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
-            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #f9f5ed;
+            --sidebar-bg-active: #3c354e; --sidebar-btn: #ff8800; --main-bg: #f9f5ed;
             --card-bg: #ffffff; --text-dark: #201b2a; --text-muted: #7d7889;
             --accent-red: #d84d65; --border-color: #e8e4dc; --transition-speed: 0.3s;
-            --btn-blue: #2a3b68; --btn-blue-hover: #3b528f;
-            --setup-blue: #3b68ff;
+            --setup-blue: #4299f6; --halloween-orange: #ff6600; --halloween-purple: #4a235a;
         }
-
         [data-theme="dark"] {
-            --main-bg: #1e1b2e; --card-bg: #151520; --text-dark: #ffffff;
-            --text-muted: #8888a5; --border-color: #2a2a3e; --sidebar-bg: #13111c;
+            --main-bg: #120e17; --card-bg: #1d1826; --text-dark: #f0eef5;
+            --text-muted: #a39eb5; --border-color: #353045; --sidebar-bg: #0d0a11;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; position: relative; }
 
-        /* BARRA LATERAL Y PERFIL */
-        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
+        /* ====== DECORACIONES DE HALLOWEEN (CSS ANIMADO) ====== */
+        .bat-bg { position: absolute; font-size: 24px; color: var(--text-dark); opacity: 0.15; pointer-events: none; z-index: 0; animation: flyBat 15s infinite linear; }
+        .bat-1 { top: 10%; left: -50px; animation-duration: 18s; }
+        .bat-2 { top: 40%; left: -50px; animation-duration: 25s; animation-delay: 5s; font-size: 16px; }
+        .bat-3 { top: 70%; left: -50px; animation-duration: 20s; animation-delay: 10s; font-size: 32px; }
+        
+        @keyframes flyBat {
+            0% { transform: translateX(-50px) translateY(0) scale(1); }
+            25% { transform: translateX(25vw) translateY(-30px) scale(1.1); }
+            50% { transform: translateX(50vw) translateY(20px) scale(1); }
+            75% { transform: translateX(75vw) translateY(-20px) scale(0.9); }
+            100% { transform: translateX(110vw) translateY(0) scale(1); }
+        }
+
+        .hanging-spider { position: absolute; top: -50px; font-size: 28px; color: var(--text-dark); opacity: 0.3; pointer-events: none; z-index: 10; display: flex; flex-direction: column; align-items: center; animation: hangSpider 6s infinite ease-in-out; }
+        .hanging-spider::before { content: ''; width: 2px; height: 150px; background: var(--text-dark); margin-bottom: -5px; }
+        .spider-1 { right: 15%; }
+        .spider-2 { right: 40%; animation-delay: 2s; animation-duration: 8s; font-size: 20px;}
+        
+        @keyframes hangSpider {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(40px); }
+        }
+
+        /* ====== BARRA LATERAL ====== */
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; z-index: 20; }
         .sidebar.collapsed { width: 0; padding: 0; }
         .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
-        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); box-shadow: 0 0 10px rgba(255,102,0,0.5); }
         .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
-        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-btn); font-weight: bold;}
         
         .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
         .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
-        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--setup-blue); object-fit: cover; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--halloween-orange); object-fit: cover; }
         .profile-info-wrap span { color: white; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;}
         .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
         .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
@@ -47,7 +69,8 @@
         .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
         .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
         .nav-group.collapsed-group .nav-items-container { max-height: 0; }
-        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative;}
+        
+        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
         .nav-item:hover { color: var(--sidebar-text-active); }
         .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
 
@@ -64,7 +87,61 @@
         .toast-alert { position: fixed; top: 20px; right: -300px; background: rgba(216, 77, 101, 0.95); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 700; font-size: 13px; box-shadow: 0 10px 30px rgba(216, 77, 101, 0.4); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 10px; z-index: 9999; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .toast-alert.show { right: 30px; }
 
-        /* ANIMACIÓN GRIS AL CERRAR SESIÓN */
+        /* CONTENIDO PRINCIPAL */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 10; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
+        .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
+        .toggle-btn, .theme-btn { background: none; border: none; color: var(--text-dark); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; background-color: var(--card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
+        .dashboard-container { padding: 20px 60px 60px 60px; max-width: 1200px; margin: 0 auto; width: 100%; position: relative;}
+
+        .welcome-header { margin-bottom: 30px; }
+        .welcome-tag { font-size: 12px; font-weight: 700; color: var(--halloween-orange); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .welcome-tag i { color: var(--halloween-purple); font-size: 12px; }
+        .welcome-header h1 { font-size: 42px; font-weight: 800; margin-bottom: 12px; }
+        .welcome-header h1 span { color: var(--accent-red); }
+        .welcome-header p { color: var(--text-muted); max-width: 600px; line-height: 1.6; }
+
+        /* ==== LORE CLUE (PISTA DEL JUEGO OCULTO) ==== */
+        .lore-clue-box { background: rgba(255, 102, 0, 0.08); border: 1px solid rgba(255, 102, 0, 0.2); border-left: 4px solid var(--halloween-orange); padding: 15px 20px; margin-bottom: 30px; border-radius: 8px; font-size: 13px; color: var(--text-muted); position: relative; overflow: hidden; line-height: 1.5; }
+        .lore-clue-box i.bg-icon { position: absolute; right: -10px; bottom: -20px; font-size: 80px; opacity: 0.05; color: var(--halloween-orange); transform: rotate(-15deg); pointer-events: none;}
+        
+        .grid-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+
+        /* TEMA OSCURO HALLOWEEN PARA LA TARJETA PRINCIPAL */
+        .hero-card { background: linear-gradient(135deg, var(--halloween-purple), #1f1122); border-radius: 24px; padding: 40px; color: white; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(74, 35, 90, 0.3); border: 1px solid rgba(255, 102, 0, 0.2); }
+        .hero-card::after { content: '\f6e2'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; right: -20px; top: -20px; font-size: 150px; color: var(--halloween-orange); opacity: 0.1; transform: rotate(15deg); pointer-events: none;}
+        .hero-card h2 { font-size: 32px; font-weight: 800; margin: 10px 0 30px; max-width: 300px; line-height: 1.1; }
+        .hero-card-footer { display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
+        .btn-yellow { background-color: var(--sidebar-btn); color: #292437; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: 700; font-size: 14px; transition: 0.2s; box-shadow: 0 0 10px rgba(255, 136, 0, 0.4); }
+        .btn-yellow:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 136, 0, 0.6); }
+
+        .card { background-color: var(--card-bg); border-radius: 24px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid var(--border-color); position: relative;}
+        .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 20px; font-weight: 700; }
+
+        .top5-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--halloween-orange); }
+
+        .progress-number { font-size: 48px; font-weight: 800; margin-bottom: 10px; color: var(--halloween-orange); }
+        .progress-bar { height: 8px; background-color: var(--main-bg); border-radius: 4px; margin: 20px 0 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background-color: var(--halloween-orange); width: 0%; border-radius: 4px; transition: width 0.4s ease; box-shadow: 0 0 10px var(--halloween-orange);}
+        .progress-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); }
+
+        .activity-list { display: flex; flex-direction: column; gap: 15px; }
+        .activity-item { display: flex; align-items: center; padding: 15px; border: 1px solid var(--border-color); border-radius: 12px; gap: 15px; cursor: pointer; transition: 0.2s; text-decoration: none; color: var(--text-dark); background: var(--card-bg);}
+        .activity-item:hover { border-color: var(--halloween-orange); transform: translateX(5px); }
+        .activity-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .icon-red { background-color: rgba(255, 102, 0, 0.1); color: var(--halloween-orange); }
+        .icon-green { background-color: rgba(184, 41, 255, 0.1); color: var(--neon-purple); }
+        .icon-yellow { background-color: rgba(253, 216, 67, 0.1); color: #e59935; }
+        .activity-text { flex: 1; }
+        .activity-text h4 { font-size: 14px; margin-bottom: 4px; }
+        .activity-text p { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
+
+        .next-activity-card { background-color: var(--card-bg); border-radius: 20px; padding: 20px; border: 1px solid var(--border-color); position: relative; overflow: hidden; }
+        .next-activity-card::before { content: ''; position: absolute; right: 0; top: 0; width: 40%; height: 100%; background-color: rgba(255, 102, 0, 0.05); border-radius: 40px 0 0 40px; z-index: 0; }
+        [data-theme="dark"] .next-activity-card::before { background-color: rgba(255, 102, 0, 0.05); }
+        .next-activity-content { position: relative; z-index: 1; }
+
+        /* OVERLAY CERRAR SESIÓN */
         .logout-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #110f17; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 9999; }
         .logout-overlay.active { opacity: 1; pointer-events: auto; }
         .logout-loader-container { position: relative; width: 120px; height: 120px; margin-bottom: 20px; }
@@ -74,120 +151,20 @@
         .logout-overlay.active .spinner-ring-gray { opacity: 1; }
         .logout-text { font-size: 18px; font-weight: 700; color: #888; text-align: center; text-transform: uppercase; letter-spacing: 1px; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s; }
         .logout-overlay.active .logout-text { opacity: 1; transform: translateY(0); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
-        .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
-        .toggle-btn, .theme-btn { background: none; border: none; color: var(--text-dark); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; background-color: var(--card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
-        .dashboard-container { padding: 20px 40px 60px 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
-        
-        .welcome-header { margin-bottom: 30px; }
-        .welcome-header h1 { font-size: 42px; font-weight: 800; margin-bottom: 12px; }
-        .welcome-header h1 span { color: var(--setup-blue); } 
-
-        .search-card { background: var(--card-bg); border-radius: 16px; padding: 25px; margin-bottom: 30px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 20px; }
-        .search-row { display: flex; gap: 20px; flex-wrap: wrap; }
-        .search-group { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 200px; position: relative; }
-        .search-group label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-        .search-select { padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--main-bg); color: var(--text-dark); font-size: 14px; font-weight: 600; outline: none; cursor: pointer; height: 46px; }
-
-        /* Selector personalizado con ícono de elemento */
-        .custom-select-wrapper { position: relative; width: 100%; user-select: none; }
-        .custom-select-trigger {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-color);
-            background: var(--main-bg); color: var(--text-dark); font-size: 14px; font-weight: 600;
-            cursor: pointer; height: 46px; transition: 0.2s;
-        }
-        .custom-select-trigger:hover { border-color: var(--setup-blue); }
-        .custom-select-left { display: flex; align-items: center; gap: 10px; }
-        .custom-select-left img { width: 22px; height: 22px; object-fit: contain; }
-        .custom-select-options {
-            position: absolute; top: calc(100% + 6px); left: 0; right: 0;
-            background: var(--main-bg); border: 1px solid var(--border-color);
-            border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            z-index: 500; display: none; flex-direction: column; overflow: hidden;
-            max-height: 260px; overflow-y: auto;
-        }
-        .custom-select-wrapper.open .custom-select-options { display: flex; }
-        .custom-option {
-            display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-            font-size: 14px; font-weight: 600; color: var(--text-dark);
-            cursor: pointer; transition: 0.15s;
-        }
-        .custom-option img { width: 22px; height: 22px; object-fit: contain; }
-        .custom-option:hover, .custom-option.selected { background: var(--setup-blue); color: #ffffff; }
-        
-        .btn-comenzar { background-color: var(--setup-blue); color: #ffffff; border: none; padding: 15px; border-radius: 10px; font-size: 14px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: 0.2s; width: 100%; }
-        .btn-comenzar:hover { background-color: #2a52d3; }
-        .btn-comenzar:disabled { background-color: #555; cursor: not-allowed; }
-
-        #resultados-equipos { display: none; }
-        .teams-title { font-size: 20px; font-weight: 800; color: var(--setup-blue); margin-bottom: 20px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
-        .teams-title img { width: 24px; height: 24px; object-fit: contain; }
-        
-        .team-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .team-header-main { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(0, 0, 0, 0.15); flex-wrap: wrap; gap: 15px; }
-        .boss-display { display: flex; align-items: center; gap: 15px; }
-        .boss-wrapper { position: relative; display: inline-block; flex-shrink: 0; }
-        .boss-img-container { width: 60px; height: 60px; border-radius: 12px; background: var(--main-bg); border: 2px solid var(--setup-blue); overflow: hidden; }
-        .boss-img-container img { width: 100%; height: 100%; object-fit: cover; }
-        .element-badge { position: absolute; bottom: -6px; right: -6px; width: 26px; height: 26px; background: #201b2a; border-radius: 50%; padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; border: 1px solid #3c354e; }
-        .element-badge img { width: 100%; height: 100%; object-fit: contain; }
-        
-        .damage-info { display: flex; flex-direction: column; }
-        .season { font-size: 10px; color: var(--text-muted); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
-        .damage-val { font-size: 32px; font-weight: 900; color: var(--text-dark); margin-top: -2px; }
-
-        /* Miniaturas superiores limpias */
-        .hero-mini-list { display: flex; gap: 8px; }
-        .hero-mini-list img { width: 45px; height: 45px; border-radius: 8px; border: 1px solid var(--border-color); object-fit: cover; background: #3c354e; }
-
-        .team-tabs { display: flex; background: var(--card-bg); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
-        .tab { flex: 1; text-align: center; padding: 15px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; letter-spacing: 1px; }
-        .tab:hover { color: var(--text-dark); background: rgba(255, 255, 255, 0.03); }
-        .tab.active { background: var(--setup-blue); color: #ffffff; }
-
-        .content-panel { display: none; padding: 25px; background: var(--card-bg); }
-        .content-panel.active { display: block; }
-        .setup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 15px; }
-        .setup-hero-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.15); padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border-color); gap: 12px; }
-
-        /* Perfil del héroe en SETUP */
-        .hero-profile-box { display: flex; align-items: center; gap: 14px; min-width: 0; }
-        .hero-avatar-wrap { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
-        .setup-hero-img { width: 52px; height: 52px; border-radius: 10px; border: 2px solid var(--border-color); background: #3c354e; object-fit: cover; }
-        .badge-elem-hero { position: absolute; bottom: -5px; left: -5px; width: 20px; height: 20px; background: #151520; border-radius: 50%; padding: 2px; border: 1px solid #3c354e; display: flex; align-items: center; justify-content: center; }
-        .badge-elem-hero img { width: 100%; height: 100%; object-fit: contain; }
-        .badge-myth-hero { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; background: #151520; border-radius: 50%; padding: 2px; border: 1px solid #fdd843; box-shadow: 0 0 8px rgba(253, 216, 67, 0.4); display: flex; align-items: center; justify-content: center; }
-        .badge-myth-hero img { width: 100%; height: 100%; object-fit: contain; }
-        
-        .hero-profile-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-        .hero-profile-name { font-size: 14px; font-weight: 800; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .hero-profile-meta { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .hero-profile-meta img { width: 15px; height: 15px; object-fit: contain; }
-        
-        .gear-list { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
-        .gear-item { width: 38px; height: 38px; background: var(--main-bg); border-radius: 6px; border: 1px solid var(--border-color); object-fit: cover; padding: 2px; }
-        .card-placeholder { width: 28px; height: 38px; background: var(--main-bg); border-radius: 4px; display: flex; justify-content: center; align-items: center; color: var(--text-muted); font-size: 12px; border: 1px dashed var(--border-color); }
-
-        .sprite-card { 
-            width: 28px !important; height: 38px !important;
-            background-size: 2625.641% 948.148%; background-repeat: no-repeat; 
-            padding: 0 !important; border-radius: 4px; flex-shrink: 0;
-        }
-
-        #floating-video-container { position: fixed; bottom: 20px; right: 20px; width: 450px; height: 280px; background: #000; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 9999; display: none; flex-direction: column; overflow: hidden; resize: both; min-width: 300px; min-height: 200px; border: 2px solid var(--setup-blue); }
-        .floating-header { background: #13111c; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; cursor: move; user-select: none; border-bottom: 1px solid #2a2a3e; }
-        .floating-header button { background: none; border: none; color: #fff; cursor: pointer; font-size: 16px; transition: 0.2s;}
-        .floating-header button:hover { color: var(--accent-red); }
-        .floating-body { flex: 1; width: 100%; height: 100%; }
-        .floating-body iframe { width: 100%; height: 100%; border: none; }
-
-        @media (max-width: 1100px) { .sidebar { position: absolute; height: 100%; z-index: 100; } }
+        @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } .sidebar { position: absolute; height: 100%; z-index: 100; } }
     </style>
 </head>
-<body data-theme="dark">
+<body>
+
+    <!-- DECORACIONES HALLOWEEN FONDO -->
+    <i class="fa-solid fa-bat bat-bg bat-1"></i>
+    <i class="fa-solid fa-bat bat-bg bat-2"></i>
+    <i class="fa-solid fa-bat bat-bg bat-3"></i>
+    
+    <div class="hanging-spider spider-1"><i class="fa-solid fa-spider"></i></div>
+    <div class="hanging-spider spider-2"><i class="fa-solid fa-spider"></i></div>
 
     <!-- MENSAJE DE PERMISO DENEGADO -->
     <div class="toast-alert" id="toastAlert">
@@ -203,7 +180,6 @@
         <div class="logout-text">Cerrando sesión...</div>
     </div>
 
-    <!-- MENÚ LATERAL -->
     <aside class="sidebar" id="sidebar">
         <!-- HEADER PRINCIPAL -->
         <div class="sidebar-header">
@@ -229,7 +205,7 @@
         <div class="nav-group">
             <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="index.html" class="nav-item"><i class="fa-solid fa-fire"></i> Fogata de bienvenida</a>
+                <a href="index.html" class="nav-item active"><i class="fa-solid fa-fire"></i> Fogata de bienvenida</a>
                 <a href="noticias.html" class="nav-item"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
             </div>
         </div>
@@ -254,12 +230,8 @@
         <div class="nav-group">
             <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="heroes.html" class="nav-item restrict-heroe" data-req="Heroe">
-                    <i class="fa-solid fa-users-viewfinder"></i> Héroes
-                </a>
-                <a href="equipos.html" class="nav-item restrict-heroe" data-req="Heroe">
-                    <i class="fa-solid fa-shield-halved"></i> Equipos
-                </a>
+                <a href="heroes.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
+                <a href="equipos.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
             </div>
         </div>
 
@@ -267,7 +239,7 @@
         <div class="nav-group">
             <div class="nav-title">INCURSIONES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="incursiones.html" class="nav-item active restrict-heroe" data-req="Heroe"><i class="fa-solid fa-ghost"></i> Asalto</a>
+                <a href="incursiones.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-ghost"></i> Asalto</a>
                 <a href="arena.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
             </div>
         </div>
@@ -277,71 +249,140 @@
         <div class="topbar">
             <div class="breadcrumbs">
                 <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
-                <span>Mi Casita &nbsp; > &nbsp; Incursiones &nbsp; > &nbsp; <b>Asalto</b></span>
+                <span>Mi Casita &nbsp; > &nbsp; <b>Fogata de bienvenida</b></span>
             </div>
             <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
         </div>
 
         <div class="dashboard-container">
+            
             <div class="welcome-header">
-                <div class="welcome-tag" style="color: var(--setup-blue); font-weight: 800; font-size: 12px; margin-bottom: 10px; letter-spacing: 1px;"><i class="fa-solid fa-ghost"></i> HERRAMIENTA DE ASALTO</div>
-                <h1>Análisis de <span>Equipos.</span></h1>
-                <p>Selecciona un jefe y su elemento para ver las composiciones de mayor daño, configuraciones y videos.</p>
+                <div class="welcome-tag"><i class="fa-solid fa-ghost"></i> Especial de Halloween</div>
+                <!-- JUEGO OCULTO EN EL PUNTO FINAL DE LA ORACIÓN -->
+                <h1>Bienvenida a <span>Mi Casita</span><a href="Abismo Corrupto.html" style="color: inherit; text-decoration: none; cursor: text; outline: none;" title="">.</a></h1>
+                <p>¡Hola! Estás en la página oficial de Mi casita. 🛡️
+Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros en esta espeluznante temporada.</p>
             </div>
 
-            <div class="search-card">
-                <div class="search-row">
-                    <div class="search-group">
-                        <label>Seleccionar Objetivo</label>
-                        <select class="search-select" id="select-jefe">
-                            <option value="">Cargando base de datos...</option>
-                        </select>
-                    </div>
-                    <div class="search-group">
-                        <label>Elemento del Jefe</label>
-                        <div class="custom-select-wrapper" id="dropdown-elemento">
-                            <div class="custom-select-trigger" id="trigger-elemento">
-                                <div class="custom-select-left" id="elemento-seleccionado-vista">
-                                    <span>---</span>
-                                </div>
-                                <i class="fa-solid fa-chevron-down" style="font-size: 12px; color: var(--text-muted);"></i>
+            <!-- PISTA DE GUARDIAN TALES (LORE) ACTUALIZADA -->
+            <div class="lore-clue-box">
+                <i class="fa-solid fa-skull bg-icon"></i>
+                <b style="color: var(--halloween-orange);"><i class="fa-solid fa-scroll"></i> Diario de la Posada - Registro de Lorraine:</b><br>
+                "Llevo horas buscando a la Princesita por todas partes y no aparece. Solo encontré cristales rotos en el lobby y una fisura oscura pulsando con energía. Parece que ha descubierto una entrada secreta al <b>Abismo Corrupto</b>. Revisando sus garabatos, encontré esta nota: <i>'El portal mágico te espera donde termina la gran bienvenida. No es una letra, ni un dibujo... es ese pequeñísimo detalle que cierra la oración'</i>. Si alguien hace clic en ese punto exacto, temo que será arrastrado tras ella..."
+            </div>
+
+            <div class="grid-layout">
+                <div style="display: flex; flex-direction: column; gap: 40px;">
+                    
+                    <div class="hero-card">
+                        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #dcb8ff;"><i class="fa-solid fa-spider"></i> La fogata está hechizada</div>
+                        <h2 id="sheet-banner_titulo">Cargando...</h2>
+                        <div class="hero-card-footer">
+                            <div>
+                                <p style="font-size: 12px; color: #dcb8ff;">Próximo evento oscuro</p>
+                                <p id="sheet-banner_sub" style="font-size: 14px; font-weight: 600;">Cargando...</p>
                             </div>
-                            <div class="custom-select-options" id="lista-opciones-elemento"></div>
+                            <a href="noticias.html" class="btn-yellow">Ver el gremio &rarr;</a>
                         </div>
-                        <input type="hidden" id="select-elemento" value="">
+                    </div>
+
+                    <div class="card" style="border: 2px solid var(--halloween-orange); box-shadow: 0 0 15px rgba(255, 102, 0, 0.15);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 class="section-title" style="margin:0; color: var(--halloween-orange);"><i class="fa-solid fa-crown"></i> Top 5 - Cazadores de Asalto</h3>
+                            <a href="ranking.html" style="font-size: 12px; color: var(--accent-red); text-decoration: none; font-weight: 600;">Ver los 30 &rarr;</a>
+                        </div>
+                        
+                        <div id="top5-contenedor" style="display: flex; flex-direction: column; gap: 10px;">
+                            <p style="font-size: 13px; color: var(--text-muted); text-align: center;">Invocando Top 5...</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 class="section-title" style="margin:0;">Historias de la posada <br><span style="font-size: 18px; text-transform: none; color: var(--text-dark);">Rumores recientes</span></h3>
+                            <a href="noticias.html" style="font-size: 12px; color: var(--text-muted); text-decoration: none;">Leer pergaminos &rarr;</a>
+                        </div>
+
+                        <div class="activity-list">
+                            <a href="noticias.html" class="activity-item">
+                                <div class="activity-icon icon-red"><i class="fa-solid fa-hand-fist"></i></div>
+                                <div class="activity-text">
+                                    <h4><span id="sheet-noticia_imp_titulo">Cargando...</span> <span style="background: var(--main-bg); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px;">Comunicado</span></h4>
+                                    <p><i class="fa-regular fa-clock"></i> <span id="sheet-noticia_imp_fecha">Cargando...</span></p>
+                                </div>
+                                <i class="fa-solid fa-arrow-right" style="color: var(--text-muted);"></i>
+                            </a>
+                            
+                            <a href="noticias.html" class="activity-item">
+                                <div class="activity-icon icon-green"><i class="fa-solid fa-book-skull"></i></div>
+                                <div class="activity-text">
+                                    <h4 id="sheet-bienvenida_titulo">Cargando...</h4>
+                                    <p><i class="fa-regular fa-clock"></i> <span id="sheet-bienvenida_hora">Cargando...</span></p>
+                                </div>
+                                <i class="fa-solid fa-arrow-right" style="color: var(--text-muted);"></i>
+                            </a>
+
+                            <a href="guia.html" class="activity-item">
+                                <div class="activity-icon icon-yellow"><i class="fa-solid fa-flask-vial"></i></div>
+                                <div class="activity-text">
+                                    <h4 id="sheet-guia_titulo">Cargando...</h4>
+                                    <p><i class="fa-regular fa-clock"></i> <span id="sheet-guia_hora">Cargando...</span></p>
+                                </div>
+                                <i class="fa-solid fa-arrow-right" style="color: var(--text-muted);"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <button class="btn-comenzar" id="btn-comenzar" disabled><i class="fa-solid fa-spinner fa-spin"></i> Conectando...</button>
-            </div>
 
-            <div id="resultados-equipos">
-                <div class="teams-title" id="titulo-resultados">Equipos Encontrados</div>
-                <div id="lista-tarjetas-equipos"></div>
+                <div style="display: flex; flex-direction: column; gap: 40px;">
+                    
+                    <div class="card">
+                        <h3 class="section-title">Asalto al Gremio Oscuro</h3>
+                        <div class="progress-number" id="porcentaje-texto">0%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="barra-progreso"></div>
+                        </div>
+                        <div class="progress-stats">
+                            <span id="dias-texto">Lunas 0/7</span>
+                            <span id="estado-texto">Inactivo</span>
+                        </div>
+                        
+                        <div id="mensaje-sin-asalto" style="display: none; font-size: 13px; color: var(--accent-red); margin-top: 10px; font-weight: 600;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Actualmente no hay monstruos en Asalto.
+                        </div>
+
+                        <br>
+                        <a href="ranking.html" style="font-size: 12px; color: var(--accent-red); text-decoration: none; font-weight: 600;">Ver ranking de la casa &rarr;</a>
+                    </div>
+
+                    <div>
+                        <h3 class="section-title">En las sombras... <br><span style="font-size: 18px; text-transform: none; color: var(--text-dark);">Próxima maldición</span></h3>
+                        <div class="next-activity-card">
+                            <div class="next-activity-content">
+                                <span style="font-size: 10px; color: var(--accent-red); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Próximamente</span>
+                                <h2 id="sheet-prox_titulo" style="font-size: 24px; font-weight: 800; margin: 8px 0;">Cargando...</h2>
+                                <p id="sheet-prox_desc" style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">Cargando...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
-        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#292437', notifications: true })
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#120e17', notifications: true })
     </script>
-
-    <div id="floating-video-container">
-        <div class="floating-header" id="floating-drag-handle">
-            <span id="floating-title"><i class="fa-brands fa-youtube" style="color: #ff0000;"></i> Reproductor de Rotación</span>
-            <button onclick="cerrarVideoFlotante()"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="floating-body" id="floating-video-slot"></div>
-    </div>
 
     <script>
         // =========================================================================
-        // COMPROBAR SESIÓN, CARGAR PERFIL Y GESTIONAR CANDADOS DE ROLES
+        // COMPROBAR SESIÓN Y CANDADOS
         // =========================================================================
         document.addEventListener("DOMContentLoaded", () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
                 const avatarGuardado = localStorage.getItem('usuario_avatar');
                 const nombreGuardado = localStorage.getItem('usuario_nombre');
-                // Convertimos el rol a minúsculas, si está vacío asume 'basico'
                 const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
                 
                 document.getElementById('user-profile-sidebar').style.display = 'flex';
@@ -351,15 +392,18 @@
                 }
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
-                // Lógica de Candados según el Rol
                 document.querySelectorAll('.nav-item').forEach(link => {
                     const reqOriginal = link.getAttribute('data-req');
                     if (reqOriginal) {
                         const reqRole = reqOriginal.toLowerCase();
                         let bloqueado = false;
 
-                        if (reqRole === 'heroe' && rolUsuario !== 'heroe') bloqueado = true;
-                        if (reqRole === 'caballero' && rolUsuario !== 'caballero' && rolUsuario !== 'heroe') bloqueado = true;
+                        if (reqRole === 'heroe' && rolUsuario !== 'heroe') {
+                            bloqueado = true;
+                        }
+                        if (reqRole === 'caballero' && rolUsuario !== 'caballero' && rolUsuario !== 'heroe') {
+                            bloqueado = true;
+                        }
 
                         if (bloqueado) {
                             link.classList.add('locked');
@@ -370,7 +414,7 @@
                             link.addEventListener('click', (e) => {
                                 e.preventDefault();
                                 candado.classList.remove('lock-shake');
-                                void candado.offsetWidth; // Reflow
+                                void candado.offsetWidth; 
                                 candado.classList.add('lock-shake');
 
                                 const toast = document.getElementById('toastAlert');
@@ -380,464 +424,185 @@
                         }
                     }
                 });
+
             } else {
                 window.location.href = 'login.html'; 
             }
         });
 
-        // BOTÓN CERRAR SESIÓN
+        // =========================================================================
+        // CERRAR SESIÓN
+        // =========================================================================
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            document.getElementById('logoutOverlay').classList.add('active'); 
+            const logoutOverlay = document.getElementById('logoutOverlay');
+            logoutOverlay.classList.add('active'); 
+            
             setTimeout(() => {
                 localStorage.removeItem('sesion_activa');
                 localStorage.removeItem('usuario_nombre');
                 localStorage.removeItem('usuario_avatar');
-                localStorage.removeItem('usuario_roll'); // Borra el rol
+                localStorage.removeItem('usuario_roll'); 
                 window.location.href = 'login.html';
             }, 2500);
         });
 
-        // API BASE CONFIGURATION
-        const API_BASE = 'https://sheetdb.io/api/v1/byy514yadr0v0';
-        
-        let dbSistema = [];
-        let mapaHeroes = {};
-        let infoHeroes = {};
-        let mapaArmas = {};
-
-        const selectJefe = document.getElementById("select-jefe");
-        const inputElemento = document.getElementById("select-elemento");
-        const dropdownElemento = document.getElementById("dropdown-elemento");
-        const triggerElemento = document.getElementById("trigger-elemento");
-        const vistaElemento = document.getElementById("elemento-seleccionado-vista");
-        const listaOpcionesElemento = document.getElementById("lista-opciones-elemento");
-
-        const btnComenzar = document.getElementById("btn-comenzar");
-        const contenedorResultados = document.getElementById("resultados-equipos");
-        const listaTarjetas = document.getElementById("lista-tarjetas-equipos");
-        const tituloResultados = document.getElementById("titulo-resultados");
-
-        let textoElementoActual = "";
-        let iconoElementoActual = "";
-
-        const ICON_MYTH = "https://www.gtales.top/assets/icons/myth.svg";
-        const iconosClases = {
-            "melee": "https://www.gtales.top/assets/icons/melee.svg",
-            "ranged": "https://www.gtales.top/assets/icons/ranged.svg",
-            "supp": "https://www.gtales.top/assets/icons/supp.svg",
-            "tank": "https://www.gtales.top/assets/icons/tank.svg"
-        };
-        const nombresClases = {
-            "melee": "Guerrero",
-            "ranged": "Tirador",
-            "supp": "Apoyo",
-            "tank": "Tanque"
-        };
-
-        const nombresElementos = { "luz": "Luz", "agua": "Agua", "tierra": "Tierra", "fuego": "Fuego", "basico": "Básico", "oscuro": "Oscuro", "oscuridad": "Oscuro" };
-        const iconosElementos = {
-            "basico": "https://www.gtales.top/assets/elements/basic.svg",
-            "oscuro": "https://www.gtales.top/assets/elements/dark.svg",
-            "oscuridad": "https://www.gtales.top/assets/elements/dark.svg",
-            "tierra": "https://www.gtales.top/assets/elements/earth.svg",
-            "fuego": "https://www.gtales.top/assets/elements/fire.svg",
-            "luz": "https://www.gtales.top/assets/elements/light.svg",
-            "agua": "https://www.gtales.top/assets/elements/water.svg"
-        };
-
-        const mapaFandomStatic = {
-            "Accessory_Mad_Panda_Brooch.png": "https://static.wikia.nocookie.net/guardian-tales/images/9/94/Accessory_Mad_Panda_Brooch.png",
-            "Accessory_Minotaur's_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/e/e3/Accessory_Minotaur%27s_Necklace.png",
-            "Accessory_Earth_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/9/98/Accessory_Earth_Necklace.png",
-            "Accessory_Ice_Queen_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/6/61/Accessory_Ice_Queen_Ring.png",
-            "Accessory_Martyr_Mirror_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/c/c1/Accessory_Martyr_Mirror_Necklace.png",
-            "Accessory_Shadow_Beast_Confining_Bracelet.png": "https://static.wikia.nocookie.net/guardian-tales/images/a/a1/Accessory_Shadow_Beast_Confining_Bracelet.png",
-            "Accessory_Flame_Dragon_King's_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/4/46/Accessory_Flame_Dragon_King%27s_Necklace.png",
-            "Accessory_Protector's_Brooch.png": "https://static.wikia.nocookie.net/guardian-tales/images/d/de/Accessory_Protector%27s_Brooch.png",
-            "Accessory_Mirror_Necklace_of_Riches.png": "https://static.wikia.nocookie.net/guardian-tales/images/7/74/Accessory_Mirror_Necklace_of_Riches.png",
-            "Accessory_Ruby_Mirror_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/3/38/Accessory_Ruby_Mirror_Ring.png",
-            "Accessory_Mirror_Earring_of_Worship.png": "https://static.wikia.nocookie.net/guardian-tales/images/a/a6/Accessory_Mirror_Earring_of_Worship.png",
-            "Accessory_Mirror_Earring_of_Patience.png": "https://static.wikia.nocookie.net/guardian-tales/images/2/29/Accessory_Mirror_Earring_of_Patience.png",
-            "Accessory_Mirror_Earring_of_Nobility.png": "https://static.wikia.nocookie.net/guardian-tales/images/0/05/Accessory_Mirror_Earring_of_Nobility.png",
-            "Accessory_Mirror_Earring_of_Faith.png": "https://static.wikia.nocookie.net/guardian-tales/images/d/dd/Accessory_Mirror_Earring_of_Faith.png",
-            "Accessory_Sniper_Goggles.png": "https://static.wikia.nocookie.net/guardian-tales/images/a/a5/Accessory_Sniper_Goggles.png",
-            "Accessory_Dusk_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/3/38/Accessory_Dusk_Ring.png",
-            "Accessory_Melody_Earring.png": "https://static.wikia.nocookie.net/guardian-tales/images/8/82/Accessory_Melody_Earring.png",
-            "Accessory_Ring_of_Belief.png": "https://static.wikia.nocookie.net/guardian-tales/images/2/24/Accessory_Ring_of_Belief.png",
-            "Accessory_Black_Crown_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/f/f2/Accessory_Black_Crown_Ring.png",
-            "Accessory_Chaste_Love_Brooch.png": "https://static.wikia.nocookie.net/guardian-tales/images/d/d0/Accessory_Chaste_Love_Brooch.png",
-            "Accessory_Dark_Magic_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/7/78/Accessory_Dark_Magic_Ring.png",
-            "Accessory_Ocean_Earring.png": "https://static.wikia.nocookie.net/guardian-tales/images/9/91/Accessory_Ocean_Earring.png",
-            "Accessory_Honor_Ring.png": "https://static.wikia.nocookie.net/guardian-tales/images/8/85/Accessory_Honor_Ring.png",
-            "Accessory_Cursed_Necklace.png": "https://static.wikia.nocookie.net/guardian-tales/images/5/5e/Accessory_Cursed_Necklace.png",
-            "Accessory_Gold_Pocket_Watch.png": "https://static.wikia.nocookie.net/guardian-tales/images/0/04/Accessory_Gold_Pocket_Watch.png",
-            "Accessory_Sharp_Shooter.png": "https://static.wikia.nocookie.net/guardian-tales/images/a/a4/Accessory_Sharp_Shooter.png"
-        };
-
-        function normalizarUrlImagen(url) {
-            if (!url) return '';
-            let limpia = url.trim();
-            if (limpia.includes("Special:FilePath/")) {
-                const archivo = decodeURIComponent(limpia.split("Special:FilePath/")[1]);
-                if (mapaFandomStatic[archivo]) return mapaFandomStatic[archivo];
+        function convertirUrlDrive(url) {
+            if (!url) return 'logo.jpg';
+            let limpia = String(url).trim().split(',')[0].trim();
+            if (!limpia.includes('drive.google.com')) return limpia;
+            const regexID = /(?:id=|\/d\/|open\?id=)([\w-]+)/i;
+            const match = limpia.match(regexID);
+            if (match && match[1]) { 
+                return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200-h200`; 
             }
             return limpia;
         }
 
-        const urlSpritesheet = "https://static.wikia.nocookie.net/guardian-tales/images/1/10/Spritesheet_Cards.png?format=original";
+        // =========================================================================
+        // API Y DATOS DINÁMICOS
+        // =========================================================================
+        const timestamp = new Date().getTime();
+        const apiURL = `https://sheetdb.io/api/v1/8yzr1sj20zqru?sheet=Datos&_=${timestamp}`;
+        const apiRankingURL = `https://sheetdb.io/api/v1/8yzr1sj20zqru?sheet=Ranking&_=${timestamp}`;
+        const apiUsuariosURL = `https://sheetdb.io/api/v1/8yzr1sj20zqru?sheet=Usuarios&_=${timestamp}`;
 
-        async function inicializarBaseDatos() {
-            try {
-                const [resSistema, resHeroes, resArmas] = await Promise.all([
-                    fetch(`${API_BASE}?sheet=Sistema`).then(r => r.json()),
-                    fetch(`${API_BASE}?sheet=Heroes`).then(r => r.json()),
-                    fetch(`${API_BASE}?sheet=Armas`).then(r => r.json())
-                ]);
+        fetch(apiURL)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(fila => {
+                    const elemento = document.getElementById('sheet-' + fila.clave);
+                    if (elemento) {
+                        elemento.innerHTML = fila.texto;
+                    }
+                    if (fila.clave === 'dias_asalto') {
+                        const diasActuales = parseInt(fila.texto) || 0; 
+                        const diasTotales = 7;
+                        const porcentaje = Math.round((diasActuales / diasTotales) * 100);
+                        
+                        document.getElementById('porcentaje-texto').innerText = porcentaje + '%';
+                        document.getElementById('barra-progreso').style.width = porcentaje + '%';
+                        document.getElementById('dias-texto').innerText = `Lunas ${diasActuales}/${diasTotales}`;
 
-                dbSistema = resSistema;
-                resHeroes.forEach(h => {
-                    const idH = (h.id || '').trim();
-                    if (!idH) return;
-                    const icono = normalizarUrlImagen(h.icono);
-                    const claseKey = (h.clase || '').trim().toLowerCase();
-                    const tieneMito = (h.rareza_max || '').trim().toLowerCase() === 'rarity-myth';
-                    mapaHeroes[idH] = icono;
-                    infoHeroes[idH] = {
-                        nombre: h.nombre || idH,
-                        icono: icono,
-                        elemento: (h.elemento || 'basico').trim().toLowerCase(),
-                        clase: claseKey,
-                        icono_clase: h.icono_clase || iconosClases[claseKey] || '',
-                        tiene_mito: tieneMito,
-                        icono_mito: tieneMito ? ICON_MYTH : ''
-                    };
-                });
-
-                let contadorCartas = 0;
-                resArmas.forEach(a => {
-                    const esCarta = (a.tipo && a.tipo.toLowerCase() === 'carta') || (a.id_arma && a.id_arma.startsWith('carta_'));
-                    if (esCarta) {
-                        if (a.img && (a.img.startsWith('sprite:') || a.img.startsWith('px:'))) {
-                            mapaArmas[a.id_arma] = a.img.trim();
+                        if (diasActuales === 0) {
+                            document.getElementById('porcentaje-texto').style.display = 'none';
+                            document.querySelector('.progress-bar').style.display = 'none';
+                            document.getElementById('dias-texto').style.display = 'none';
+                            document.getElementById('estado-texto').style.display = 'none';
+                            document.getElementById('mensaje-sin-asalto').style.display = 'block';
                         } else {
-                            mapaArmas[a.id_arma] = `sprite:${contadorCartas}`;
+                            document.getElementById('porcentaje-texto').style.display = 'block';
+                            document.querySelector('.progress-bar').style.display = 'block';
+                            document.getElementById('dias-texto').style.display = 'block';
+                            document.getElementById('estado-texto').style.display = 'block';
+                            document.getElementById('estado-texto').innerText = 'Activo';
+                            document.getElementById('mensaje-sin-asalto').style.display = 'none';
                         }
-                        contadorCartas++;
-                    } else {
-                        mapaArmas[a.id_arma] = normalizarUrlImagen(a.img);
                     }
                 });
+            })
+            .catch(error => console.error('Error al conectar:', error));
+        
+        // =========================================================================
+        // TOP 5 ASALTO
+        // =========================================================================
+        const contenedorTop5 = document.getElementById('top5-contenedor');
 
-                poblarSelectJefes();
-                btnComenzar.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Mostrar Equipos';
-                btnComenzar.disabled = false;
-
-            } catch (error) {
-                console.error(error);
-                btnComenzar.innerText = "Error al cargar los datos";
-            }
-        }
-
-        function poblarSelectJefes() {
-            selectJefe.innerHTML = "";
-            const jefesActivos = dbSistema.filter(row => 
-                row.categoria === 'Jefe' && 
-                (!row.notas || row.notas.trim().toLowerCase() === 'si')
-            );
-            const nombresUnicos = [...new Set(jefesActivos.map(j => j.nombre_o_dano.trim()))];
-
-            nombresUnicos.forEach(nombre => {
-                const opt = document.createElement('option');
-                opt.value = nombre;
-                opt.textContent = nombre;
-                selectJefe.appendChild(opt);
-            });
-            actualizarElementos();
-        }
-
-        function seleccionarOpcionElemento(idJefe, nombreElem, svgUrl, elementoDiv) {
-            inputElemento.value = idJefe;
-            textoElementoActual = nombreElem;
-            iconoElementoActual = svgUrl;
-            vistaElemento.innerHTML = `<img src="${svgUrl}" alt="${nombreElem}"> <span>${nombreElem}</span>`;
-            
-            listaOpcionesElemento.querySelectorAll('.custom-option').forEach(op => op.classList.remove('selected'));
-            if (elementoDiv) elementoDiv.classList.add('selected');
-            dropdownElemento.classList.remove('open');
-        }
-
-        function actualizarElementos() {
-            const nombreJefe = selectJefe.value.trim();
-            listaOpcionesElemento.innerHTML = "";
-
-            const variacionesJefe = dbSistema.filter(row => 
-                row.categoria === 'Jefe' && 
-                row.nombre_o_dano && row.nombre_o_dano.trim() === nombreJefe &&
-                (!row.notas || row.notas.trim().toLowerCase() === 'si')
-            );
-            
-            variacionesJefe.forEach((jefe, idx) => {
-                const elemKey = (jefe.elemento || 'basico').trim().toLowerCase();
-                const nombreElem = nombresElementos[elemKey] || jefe.elemento;
-                const svgUrl = iconosElementos[elemKey] || iconosElementos['basico'];
-
-                const opcionDiv = document.createElement('div');
-                opcionDiv.className = 'custom-option' + (idx === 0 ? ' selected' : '');
-                opcionDiv.innerHTML = `<img src="${svgUrl}" alt="${nombreElem}"> <span>${nombreElem}</span>`;
-                opcionDiv.addEventListener('click', () => {
-                    seleccionarOpcionElemento(jefe.id, nombreElem, svgUrl, opcionDiv);
-                });
-
-                listaOpcionesElemento.appendChild(opcionDiv);
-
-                if (idx === 0) {
-                    seleccionarOpcionElemento(jefe.id, nombreElem, svgUrl, opcionDiv);
+        if (contenedorTop5) {
+            Promise.all([
+                fetch(apiRankingURL).then(res => res.json()),
+                fetch(apiUsuariosURL).then(res => res.json())
+            ])
+            .then(([rankingData, usuariosData]) => {
+                
+                const perfilesMap = {};
+                if (!usuariosData.error) {
+                    usuariosData.forEach(row => {
+                        const keys = Object.keys(row);
+                        const keyNombre = keys.find(k => k.trim().toLowerCase() === 'nombre');
+                        const keyFoto = keys.find(k => k.trim().toLowerCase().includes('foto') || k.trim().toLowerCase().includes('perfil'));
+                        
+                        if (keyNombre && row[keyNombre]) {
+                            const nombreUser = String(row[keyNombre]).trim().toLowerCase();
+                            const fotoRaw = keyFoto ? row[keyFoto] : '';
+                            if (fotoRaw) {
+                                perfilesMap[nombreUser] = convertirUrlDrive(fotoRaw);
+                            }
+                        }
+                    });
                 }
+
+                contenedorTop5.innerHTML = ''; 
+                const top5 = rankingData.slice(0, 5);
+                top5.forEach(jugador => {
+                    if (!jugador.nombre) return;
+                    const daño = jugador.asalto ? jugador.asalto : '0';
+                    const nombreBuscado = String(jugador.nombre).trim().toLowerCase();
+                    
+                    let fotoFinal = 'logo.jpg';
+                    if (perfilesMap[nombreBuscado]) {
+                        fotoFinal = perfilesMap[nombreBuscado];
+                    } else if (jugador.foto) {
+                        fotoFinal = convertirUrlDrive(jugador.foto);
+                    }
+
+                    contenedorTop5.innerHTML += `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; background: var(--main-bg); border-radius: 12px; border-left: 4px solid var(--halloween-orange);">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <span style="font-size: 18px; font-weight: 800; color: var(--halloween-orange);">#${jugador.posicion}</span>
+                                <img src="${fotoFinal}" alt="${jugador.nombre}" class="top5-avatar" onerror="this.src='logo.jpg'">
+                                <span style="font-weight: 700; font-size: 14px;">${jugador.nombre}</span>
+                            </div>
+                            <div style="font-size: 14px; font-weight: 800; color: var(--accent-red);">
+                                <i class="fa-solid fa-fire-flame-curved"></i> ${daño}
+                            </div>
+                        </div>
+                    `;
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar el ranking:', error);
+                contenedorTop5.innerHTML = '<p style="color: var(--accent-red); font-size: 12px; padding: 10px;">Error al cargar el Top 5 oscuro.</p>';
             });
         }
 
-        triggerElemento.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownElemento.classList.toggle('open');
-        });
-        document.addEventListener('click', () => {
-            dropdownElemento.classList.remove('open');
-        });
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleSidebar');
+        toggleBtn.addEventListener('click', () => { sidebar.classList.toggle('collapsed'); });
 
-        selectJefe.addEventListener("change", actualizarElementos);
-
-        btnComenzar.addEventListener("click", () => {
-            const idJefeSeleccionado = inputElemento.value; 
-            const nombreJefe = selectJefe.value;
-            
-            tituloResultados.innerHTML = `Resultados: ${nombreJefe} (<img src="${iconoElementoActual}" alt="${textoElementoActual}"> ${textoElementoActual})`;
-            listaTarjetas.innerHTML = ""; 
-
-            const equipos = dbSistema.filter(row => row.categoria === 'Equipo' && row.jefe_asociado === idJefeSeleccionado);
-
-            if (equipos.length === 0) {
-                listaTarjetas.innerHTML = `<p style="color: var(--text-muted); padding: 20px;">No hay equipos registrados para este jefe en la base de datos.</p>`;
-            } else {
-                equipos.forEach((equipo, index) => {
-                    listaTarjetas.innerHTML += crearTarjetaEquipo(equipo, index);
-                });
-            }
-            contenedorResultados.style.display = "block";
+        const navTitles = document.querySelectorAll('.nav-title');
+        navTitles.forEach(title => {
+            title.addEventListener('click', () => {
+                const group = title.closest('.nav-group');
+                group.classList.toggle('collapsed-group');
+            });
         });
 
-        function extraerIDYoutube(url) {
-            if(!url) return null;
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
-        }
-
-        function obtenerColumnaFilaCarta(valorSprite) {
-            const texto = valorSprite.trim();
-            const parts = texto.split(":");
-
-            if (texto.startsWith("px:")) {
-                const pxX = parseFloat(parts[1]) || 0;
-                const pxY = parseFloat(parts[2]) || 0;
-                return { col: Math.round(pxX / 40), row: Math.round(pxY / 54) };
-            }
-
-            if (parts.length >= 3) {
-                return {
-                    col: parseFloat(parts[1]) || 0,
-                    row: parseFloat(parts[2]) || 0
-                };
-            }
-
-            const idx = (parseInt(parts[1]) || 0) % 142;
-            return { col: idx % 16, row: Math.floor(idx / 16) };
-        }
-
-        function crearTarjetaEquipo(eq, index) {
-            const ytID = extraerIDYoutube(eq.link_multimedia);
-            const cardId = `tarjeta-eq-${index}`;
-            const bossInfo = dbSistema.find(row => row.categoria === 'Jefe' && row.id === eq.jefe_asociado);
-            const bossImg = bossInfo && bossInfo.link_multimedia ? bossInfo.link_multimedia.trim() : 'https://via.placeholder.com/60';
-            const bossElemStr = bossInfo ? bossInfo.elemento.trim().toLowerCase() : 'basico';
-            const bossSvg = iconosElementos[bossElemStr] || iconosElementos['basico'];
-
-            // Esquina superior derecha limpia: solo la imagen del héroe
-            const constIconoHeroe = (idH) => {
-                if (!idH) return '';
-                const hData = infoHeroes[idH] || { nombre: idH, icono: mapaHeroes[idH] || 'https://via.placeholder.com/45/3c354e/ffffff?text=?' };
-                return `<img src="${hData.icono}" title="${hData.nombre}" alt="${hData.nombre}" referrerpolicy="no-referrer">`;
-            };
-
-            const constFilaSetup = (idH, idW, idA, idC1, idC2, idR) => {
-                if (!idH) return '';
-                const hData = infoHeroes[idH] || {
-                    nombre: idH,
-                    icono: mapaHeroes[idH] || 'https://via.placeholder.com/50/3c354e/ffffff?text=?',
-                    elemento: 'basico',
-                    clase: '',
-                    icono_clase: '',
-                    tiene_mito: false,
-                    icono_mito: ''
-                };
-                const elemHeroSvg = iconosElementos[hData.elemento] || iconosElementos['basico'];
-                const nombreClase = nombresClases[hData.clase] || 'Héroe';
-
-                const imgW = mapaArmas[idW] || mapaArmas[idW + '_myth'] || mapaArmas[idW + '_std'] || 'https://via.placeholder.com/38/3c354e/ffffff?text=W';
-                const imgA = mapaArmas[idA] || 'https://via.placeholder.com/38/3c354e/ffffff?text=A';
-                const imgR = mapaArmas[idR] || 'https://via.placeholder.com/38/3c354e/ffffff?text=R';
-
-                const renderCard = (idC, num) => {
-                    if (idC && mapaArmas[idC]) {
-                        let imgUrl = mapaArmas[idC];
-                        if (imgUrl.startsWith("sprite:") || imgUrl.startsWith("px:")) {
-                            const { col, row } = obtenerColumnaFilaCarta(imgUrl);
-                            const posX = ((col * 40) / (1024 - 39)) * 100;
-                            const posY = ((row * 54) / (512 - 54)) * 100;
-                            
-                            return `<div class="gear-item sprite-card" title="${idC}" style="background-image: url('${urlSpritesheet}'); background-position: ${posX.toFixed(4)}% ${posY.toFixed(4)}%;"></div>`;
-                        } else {
-                            return `<img src="${imgUrl}" class="gear-item" title="${idC}" referrerpolicy="no-referrer">`;
-                        }
-                    }
-                    return `<div class="card-placeholder" title="Carta ${num}"><i class="fa-regular fa-square"></i></div>`;
-                };
-
-                return `
-                    <div class="setup-hero-row">
-                        <div class="hero-profile-box">
-                            <div class="hero-avatar-wrap">
-                                <img src="${hData.icono}" class="setup-hero-img" title="${hData.nombre}" referrerpolicy="no-referrer">
-                                <div class="badge-elem-hero" title="${nombresElementos[hData.elemento] || hData.elemento}">
-                                    <img src="${elemHeroSvg}" alt="${hData.elemento}">
-                                </div>
-                                ${hData.icono_mito ? `<div class="badge-myth-hero" title="Evolución Mítica"><img src="\${hData.icono_mito}" alt="Myth"></div>` : ''}
-                            </div>
-                            <div class="hero-profile-info">
-                                <span class="hero-profile-name">${hData.nombre}</span>
-                                <div class="hero-profile-meta">
-                                    ${hData.icono_clase ? `<img src="${hData.icono_clase}" alt="${nombreClase}">` : ''}
-                                    <span>${nombreClase}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="gear-list">
-                            <img src="${imgW}" class="gear-item" title="${idW}" referrerpolicy="no-referrer" onerror="if(this.src.includes('/myth/')) this.src=this.src.replace('/myth/','/');">
-                            <img src="${imgA}" class="gear-item" title="${idA}" referrerpolicy="no-referrer">
-                            ${renderCard(idC1, 1)}
-                            ${renderCard(idC2, 2)}
-                            <img src="${imgR}" class="gear-item" title="${idR}" referrerpolicy="no-referrer">
-                        </div>
-                    </div>
-                `;
-            };
-
-            return `
-                <div class="team-card" id="${cardId}">
-                    <div class="team-header-main">
-                        <div class="boss-display">
-                            <div class="boss-wrapper">
-                                <div class="boss-img-container">
-                                    <img src="${bossImg}" alt="Boss" referrerpolicy="no-referrer">
-                                </div>
-                                <div class="element-badge" title="${nombresElementos[bossElemStr]}">
-                                    <img src="${bossSvg}" alt="${bossElemStr}">
-                                </div>
-                            </div>
-                            
-                            <div class="damage-info">
-                                <span class="season">DAÑO REGISTRADO</span>
-                                <span class="damage-val">${eq.nombre_o_dano}</span>
-                            </div>
-                        </div>
-                        <div class="hero-mini-list">
-                            ${constIconoHeroe(eq.h1_id)} ${constIconoHeroe(eq.h2_id)}
-                            ${constIconoHeroe(eq.h3_id)} ${constIconoHeroe(eq.h4_id)}
-                        </div>
-                    </div>
-                    
-                    <div class="team-tabs">
-                        <div class="tab" onclick="${ytID ? `abrirVideoFlotante('${ytID}', '${eq.nombre_o_dano} - Rotación')` : 'null'}" ${!ytID ? 'style="opacity:0.3; cursor:not-allowed;"' : ''}>
-                            <i class="fa-solid fa-play"></i> VIDEO
-                        </div>
-                        <div class="tab active" onclick="cambiarTabMenu(this, 'setup-${index}', '${cardId}')">
-                            <i class="fa-solid fa-list"></i> SETUP
-                        </div>
-                        <div class="tab" onclick="cambiarTabMenu(this, 'notas-${index}', '${cardId}')">
-                            <i class="fa-solid fa-circle-info"></i> INFOS
-                        </div>
-                    </div>
-
-                    <div class="content-panel active" id="setup-${index}">
-                        <div class="setup-grid">
-                            ${constFilaSetup(eq.h1_id, eq.h1_arma, eq.h1_acc, eq.h1_c1, eq.h1_c2, eq.h1_reliquia)}
-                            ${constFilaSetup(eq.h2_id, eq.h2_arma, eq.h2_acc, eq.h2_c1, eq.h2_c2, eq.h2_reliquia)}
-                            ${constFilaSetup(eq.h3_id, eq.h3_arma, eq.h3_acc, eq.h3_c1, eq.h3_c2, eq.h3_reliquia)}
-                            ${constFilaSetup(eq.h4_id, eq.h4_arma, eq.h4_acc, eq.h4_c1, eq.h4_c2, eq.h4_reliquia)}
-                        </div>
-                    </div>
-                    
-                    <div class="content-panel" id="notas-${index}">
-                        <span style="color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Sincronización y Cadenas</span>
-                        <p style="margin-top: 10px; font-weight: 600; line-height: 1.6;">${eq.notas || 'No hay notas registradas para este equipo.'}</p>
-                    </div>
-
-                </div>
-            `;
-        }
-
-        function cambiarTabMenu(btn, tabId, cardId) {
-            const card = document.getElementById(cardId);
-            card.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            card.querySelectorAll('.content-panel').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        }
-
-        function abrirVideoFlotante(youtubeId, titulo) {
-            const container = document.getElementById('floating-video-container');
-            const slot = document.getElementById('floating-video-slot');
-            document.getElementById('floating-title').innerHTML = `<i class="fa-brands fa-youtube" style="color: #ff0000; margin-right: 8px;"></i> ${titulo}`;
-            slot.innerHTML = `<iframe src="https://www.youtube.com/embed/${youtubeId}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-            container.style.display = 'flex';
-        }
-
-        function cerrarVideoFlotante() {
-            document.getElementById('floating-video-slot').innerHTML = ''; 
-            document.getElementById('floating-video-container').style.display = 'none';
-        }
-
-        const floatingContainer = document.getElementById('floating-video-container');
-        const dragHandle = document.getElementById('floating-drag-handle');
-        let isDragging = false, startX, startY, initialX, initialY;
-
-        dragHandle.addEventListener('mousedown', (e) => {
-            isDragging = true; startX = e.clientX; startY = e.clientY;
-            const rect = floatingContainer.getBoundingClientRect();
-            floatingContainer.style.bottom = 'auto'; floatingContainer.style.right = 'auto';
-            floatingContainer.style.top = rect.top + 'px'; floatingContainer.style.left = rect.left + 'px';
-            initialX = rect.left; initialY = rect.top;
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-        });
-        function onMouseMove(e) { if (!isDragging) return; floatingContainer.style.left = (initialX + (e.clientX - startX)) + 'px'; floatingContainer.style.top = (initialY + (e.clientY - startY)) + 'px'; }
-        function onMouseUp() { isDragging = false; document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
-
-        document.getElementById('toggleSidebar').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('collapsed'); });
-        document.querySelectorAll('.nav-title').forEach(title => {
-            title.addEventListener('click', () => { title.closest('.nav-group').classList.toggle('collapsed-group'); });
-        });
-
+        // =========================================================================
+        // TEMA OSCURO (Por defecto en Halloween)
+        // =========================================================================
         const themeBtn = document.getElementById('themeToggle');
         const rootElement = document.documentElement;
-        if (localStorage.getItem('tema-casita') === 'dark') { rootElement.setAttribute('data-theme', 'dark'); themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>'; }
-        else { rootElement.setAttribute('data-theme', 'dark'); }
-        
-        themeBtn.addEventListener('click', () => {
-            if (rootElement.hasAttribute('data-theme')) { rootElement.removeAttribute('data-theme'); localStorage.setItem('tema-casita', 'light'); themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>'; } 
-            else { rootElement.setAttribute('data-theme', 'dark'); localStorage.setItem('tema-casita', 'dark'); themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>'; }
-        });
 
-        inicializarBaseDatos();
+        // Forzar tema oscuro por el evento, a menos que el usuario lo cambie manualmente
+        if (localStorage.getItem('tema-casita') === 'light') {
+            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        } else {
+            rootElement.setAttribute('data-theme', 'dark');
+            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        }
+
+        themeBtn.addEventListener('click', () => {
+            let isDark = rootElement.hasAttribute('data-theme');
+            if (isDark) {
+                rootElement.removeAttribute('data-theme');
+                localStorage.setItem('tema-casita', 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else {
+                rootElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('tema-casita', 'dark');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        });
     </script>
 </body>
 </html>

@@ -4,51 +4,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Casita - Gremio de Guardianes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* TEMA OSCURO (Morado oscuro y naranja) */
         :root {
-            --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
-            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #f9f5ed;
-            --card-bg: #ffffff; --text-dark: #201b2a; --text-muted: #7d7889;
-            --accent-red: #d84d65; --border-color: #e8e4dc; --transition-speed: 0.3s;
+            --sidebar-bg: #15131f; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #221e2d; 
+            --sidebar-btn: #ff8c00; 
+            --main-bg: #121017;
+            --card-bg: #191622; 
+            --text-dark: #f0eef5; 
+            --text-muted: #888299;
+            --border-color: #272235; 
+            --accent-red: #ff5722;
+            --halloween-orange: #ff8c00; 
+            --halloween-purple: #7b1fa2;
+            --poison-green: #39ff14; 
+            --kamazon-gold: #ffcf00;
             --setup-blue: #4299f6;
+            --transition-speed: 0.3s;
         }
-        [data-theme="dark"] {
-            --main-bg: #181521; --card-bg: #221e2d; --text-dark: #f0eef5;
-            --text-muted: #a39eb5; --border-color: #353045; --sidebar-bg: #14111c;
+        /* TEMA CLARO */
+        [data-theme="light"] {
+            --sidebar-bg: #292437; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; 
+            --sidebar-btn: #ff8800; 
+            --main-bg: linear-gradient(135deg, #f9f5ed 0%, #f0eae1 100%);
+            --card-bg: #ffffff; 
+            --text-dark: #201b2a; 
+            --text-muted: #7d7889;
+            --border-color: #e8e4dc;
+            --halloween-orange: #ff6600;
+            --kamazon-gold: #d4ac0d;
+        }
+        /* TEMA BLANCO Y NEGRO */
+        [data-theme="bn"] {
+            --sidebar-bg: #1a1a1a; 
+            --sidebar-text: #b0b0b0; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #333333; 
+            --sidebar-btn: #ffffff; 
+            --main-bg: #ffffff;
+            --card-bg: #f2f2f2; 
+            --text-dark: #000000; 
+            --text-muted: #555555;
+            --border-color: #cccccc; 
+            --kamazon-gold: #333333; 
+            --halloween-orange: #000000;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        body { display: flex; height: 100vh; background: var(--main-bg); color: var(--text-dark); transition: background var(--transition-speed), color var(--transition-speed); overflow: hidden; position: relative; }
 
-        /* BARRA LATERAL Y PERFIL */
-        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
-        .sidebar.collapsed { width: 0; padding: 0; }
-        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
-        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
-        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
-        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        /* ====== DECORACIONES DE HALLOWEEN (CSS ANIMADO) ====== */
+        .bat-bg { position: absolute; font-size: 24px; color: var(--text-dark); opacity: 0.15; pointer-events: none; z-index: 0; animation: flyBat 15s infinite linear; }
+        .bat-1 { top: 10%; left: -50px; animation-duration: 18s; }
+        .bat-2 { top: 40%; left: -50px; animation-duration: 25s; animation-delay: 5s; font-size: 16px; }
+        .bat-3 { top: 70%; left: -50px; animation-duration: 20s; animation-delay: 10s; font-size: 32px; }
         
-        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
-        .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
-        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--setup-blue); object-fit: cover; }
-        .profile-info-wrap span { color: white; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;}
-        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        @keyframes flyBat {
+            0% { transform: translateX(-50px) translateY(0) scale(1); }
+            25% { transform: translateX(25vw) translateY(-30px) scale(1.1); }
+            50% { transform: translateX(50vw) translateY(20px) scale(1); }
+            75% { transform: translateX(75vw) translateY(-20px) scale(0.9); }
+            100% { transform: translateX(110vw) translateY(0) scale(1); }
+        }
+
+        .hanging-spider { position: absolute; top: -50px; font-size: 28px; color: var(--text-dark); opacity: 0.3; pointer-events: none; z-index: 10; display: flex; flex-direction: column; align-items: center; animation: hangSpider 6s infinite ease-in-out; }
+        .hanging-spider::before { content: ''; width: 2px; height: 150px; background: var(--text-dark); margin-bottom: -5px; }
+        .spider-1 { right: 15%; }
+        .spider-2 { right: 40%; animation-delay: 2s; animation-duration: 8s; font-size: 20px;}
+        
+        @keyframes hangSpider {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(40px); }
+        }
+
+        /* ====== BARRA LATERAL ====== */
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; z-index: 20; border-right: 1px solid var(--border-color); }
+        .sidebar.collapsed { width: 0; padding: 0; }
+        .sidebar-header { padding: 22px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--halloween-orange); }
+        .sidebar-header h2 { color: var(--sidebar-text-active); font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--halloween-orange); font-weight: 700; }
+        
+        .user-profile-sidebar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.04); margin-bottom: 10px; min-width: 260px; background: rgba(25, 22, 34, 0.5); }
+        .profile-info-wrap { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--halloween-orange); object-fit: cover; flex-shrink: 0; }
+        .user-meta { display: flex; flex-direction: column; overflow: hidden; }
+        .user-meta span { color: var(--sidebar-text-active); font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+        .user-meta p { font-size: 11px; color: var(--kamazon-gold); font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 1px; white-space: nowrap; }
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
 
-        .nav-group { margin-bottom: 10px; min-width: 260px; }
-        .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .nav-group { margin-bottom: 5px; min-width: 260px; }
+        .nav-title { padding: 10px 22px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; color: var(--text-muted); font-weight: 700; }
         .nav-title:hover { color: var(--sidebar-text-active); }
         .nav-title i { transition: transform 0.3s ease; }
         .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
         .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
         .nav-group.collapsed-group .nav-items-container { max-height: 0; }
         
-        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
-        .nav-item:hover { color: var(--sidebar-text-active); }
-        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
+        .nav-item { padding: 10px 22px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
+        .nav-item:hover { color: var(--sidebar-text-active); background: rgba(255, 140, 0, 0.05); }
+        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--halloween-orange); }
 
         /* CANDADOS ANIMADOS */
         .lock-icon { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
@@ -64,50 +129,71 @@
         .toast-alert.show { right: 30px; }
 
         /* CONTENIDO PRINCIPAL */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative;}
-        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 10; }
+        .topbar { padding: 16px 30px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); z-index: 10; }
         .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
-        .toggle-btn, .theme-btn { background: none; border: none; color: var(--text-dark); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; background-color: var(--card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
-        .dashboard-container { padding: 20px 60px 60px 60px; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .toggle-btn, .theme-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--halloween-orange); font-size: 18px; cursor: pointer; padding: 8px 12px; border-radius: 10px; transition: 0.2s; }
+        .toggle-btn:hover, .theme-btn:hover { background: rgba(255,140,0,0.1); }
+        .dashboard-container { padding: 20px 60px 60px 60px; max-width: 1200px; margin: 0 auto; width: 100%; position: relative;}
 
-        .welcome-header { margin-bottom: 40px; }
-        .welcome-tag { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-        .welcome-tag i { color: var(--accent-red); font-size: 8px; }
+        .welcome-header { margin-bottom: 30px; }
+        .welcome-tag { font-size: 12px; font-weight: 700; color: var(--halloween-orange); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .welcome-tag i { color: var(--halloween-purple); font-size: 12px; }
         .welcome-header h1 { font-size: 42px; font-weight: 800; margin-bottom: 12px; }
         .welcome-header h1 span { color: var(--accent-red); }
         .welcome-header p { color: var(--text-muted); max-width: 600px; line-height: 1.6; }
 
+        /* ESTILOS DEL ACERTIJO DESPLEGABLE EN EL PUNTO */
+        .secret-dot { color: inherit; text-decoration: none; cursor: pointer; outline: none; transition: 0.2s; font-weight: 900; }
+        .secret-dot:hover { color: var(--halloween-orange); text-shadow: 0 0 8px var(--halloween-orange); }
+        
+        .riddle-dropdown { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; margin-top: 0; }
+        .riddle-dropdown.open { max-height: 250px; margin-top: 15px; }
+        .riddle-box-inline { background: rgba(123, 31, 162, 0.15); border: 1px dashed var(--halloween-orange); border-radius: 14px; padding: 20px; max-width: 650px; }
+        .riddle-box-inline p { color: var(--text-dark); font-size: 13px; margin-bottom: 12px; font-style: italic; }
+        .riddle-input-group { display: flex; gap: 10px; max-width: 380px; }
+        .riddle-input-group input { flex: 1; padding: 10px 14px; border-radius: 10px; background: var(--card-bg); color: var(--text-dark); border: 2px solid var(--border-color); font-weight: 700; outline: none; font-size: 13px; }
+        .riddle-input-group input:focus { border-color: var(--halloween-orange); }
+        .riddle-btn { background: linear-gradient(135deg, #ff8c00, #e65100); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 11px; transition: 0.2s; }
+        .riddle-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4); }
+        .riddle-msg { margin-top: 8px; font-size: 12px; font-weight: 700; }
+
+        /* PISTA DE GUARDIAN TALES (LORE) */
+        .lore-clue-box { background: rgba(255, 102, 0, 0.08); border: 1px solid rgba(255, 102, 0, 0.2); border-left: 4px solid var(--halloween-orange); padding: 15px 20px; margin-bottom: 30px; border-radius: 8px; font-size: 13px; color: var(--text-muted); position: relative; overflow: hidden; line-height: 1.5; }
+        .lore-clue-box i.bg-icon { position: absolute; right: -10px; bottom: -20px; font-size: 80px; opacity: 0.05; color: var(--halloween-orange); transform: rotate(-15deg); pointer-events: none;}
+        
         .grid-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
 
-        .hero-card { background: linear-gradient(135deg, #1f1a30, #3a2542); border-radius: 24px; padding: 40px; color: white; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .hero-card { background: linear-gradient(135deg, var(--halloween-purple), #1f1122); border-radius: 24px; padding: 40px; color: white; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(74, 35, 90, 0.3); border: 1px solid rgba(255, 102, 0, 0.2); }
+        .hero-card::after { content: '\f6e2'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; right: -20px; top: -20px; font-size: 150px; color: var(--halloween-orange); opacity: 0.1; transform: rotate(15deg); pointer-events: none;}
         .hero-card h2 { font-size: 32px; font-weight: 800; margin: 10px 0 30px; max-width: 300px; line-height: 1.1; }
         .hero-card-footer { display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
-        .btn-yellow { background-color: var(--sidebar-btn); color: #292437; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: 700; font-size: 14px; transition: 0.2s; }
+        .btn-yellow { background-color: var(--sidebar-btn); color: #292437; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: 700; font-size: 14px; transition: 0.2s; box-shadow: 0 0 10px rgba(255, 136, 0, 0.4); }
+        .btn-yellow:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 136, 0, 0.6); }
 
-        .card { background-color: var(--card-bg); border-radius: 24px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid var(--border-color); }
+        .card { background-color: var(--card-bg); border-radius: 24px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid var(--border-color); position: relative;}
         .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 20px; font-weight: 700; }
 
-        .top5-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #fdd843; }
+        .top5-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--halloween-orange); }
 
-        .progress-number { font-size: 48px; font-weight: 800; margin-bottom: 10px; }
+        .progress-number { font-size: 48px; font-weight: 800; margin-bottom: 10px; color: var(--halloween-orange); }
         .progress-bar { height: 8px; background-color: var(--main-bg); border-radius: 4px; margin: 20px 0 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background-color: var(--accent-red); width: 0%; border-radius: 4px; transition: width 0.4s ease; }
+        .progress-fill { height: 100%; background-color: var(--halloween-orange); width: 0%; border-radius: 4px; transition: width 0.4s ease; box-shadow: 0 0 10px var(--halloween-orange);}
         .progress-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); }
 
         .activity-list { display: flex; flex-direction: column; gap: 15px; }
-        .activity-item { display: flex; align-items: center; padding: 15px; border: 1px solid var(--border-color); border-radius: 12px; gap: 15px; cursor: pointer; transition: 0.2s; text-decoration: none; color: var(--text-dark); }
-        .activity-item:hover { border-color: var(--text-muted); }
+        .activity-item { display: flex; align-items: center; padding: 15px; border: 1px solid var(--border-color); border-radius: 12px; gap: 15px; cursor: pointer; transition: 0.2s; text-decoration: none; color: var(--text-dark); background: var(--card-bg);}
+        .activity-item:hover { border-color: var(--halloween-orange); transform: translateX(5px); }
         .activity-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-        .icon-red { background-color: #fdeaea; color: var(--accent-red); }
-        .icon-green { background-color: #eafdf5; color: #1fb173; }
-        .icon-yellow { background-color: #fdf5ea; color: #e59935; }
+        .icon-red { background-color: rgba(255, 102, 0, 0.1); color: var(--halloween-orange); }
+        .icon-green { background-color: rgba(184, 41, 255, 0.1); color: var(--neon-purple); }
+        .icon-yellow { background-color: rgba(253, 216, 67, 0.1); color: #e59935; }
         .activity-text { flex: 1; }
         .activity-text h4 { font-size: 14px; margin-bottom: 4px; }
         .activity-text p { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
 
         .next-activity-card { background-color: var(--card-bg); border-radius: 20px; padding: 20px; border: 1px solid var(--border-color); position: relative; overflow: hidden; }
-        .next-activity-card::before { content: ''; position: absolute; right: 0; top: 0; width: 40%; height: 100%; background-color: #e5f1f0; border-radius: 40px 0 0 40px; z-index: 0; }
-        [data-theme="dark"] .next-activity-card::before { background-color: #1e3332; }
+        .next-activity-card::before { content: ''; position: absolute; right: 0; top: 0; width: 40%; height: 100%; background-color: rgba(255, 102, 0, 0.05); border-radius: 40px 0 0 40px; z-index: 0; }
         .next-activity-content { position: relative; z-index: 1; }
 
         /* OVERLAY CERRAR SESIÓN */
@@ -126,6 +212,14 @@
     </style>
 </head>
 <body>
+
+    <!-- DECORACIONES HALLOWEEN FONDO -->
+    <i class="fa-solid fa-bat bat-bg bat-1"></i>
+    <i class="fa-solid fa-bat bat-bg bat-2"></i>
+    <i class="fa-solid fa-bat bat-bg bat-3"></i>
+    
+    <div class="hanging-spider spider-1"><i class="fa-solid fa-spider"></i></div>
+    <div class="hanging-spider spider-2"><i class="fa-solid fa-spider"></i></div>
 
     <!-- MENSAJE DE PERMISO DENEGADO -->
     <div class="toast-alert" id="toastAlert">
@@ -151,18 +245,21 @@
             </div>
         </div>
 
-        <!-- PERFIL DEL USUARIO DINÁMICO CON BOTÓN ROJO -->
+        <!-- PERFIL DEL USUARIO DINÁMICO CON MONEDAS RESTAURADAS -->
         <div class="user-profile-sidebar" id="user-profile-sidebar">
             <div class="profile-info-wrap">
                 <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
-                <span id="sidebar-name">Usuario</span>
+                <div class="user-meta">
+                    <span id="sidebar-name">Usuario</span>
+                    <p><i class="fa-solid fa-coins" style="color:var(--kamazon-gold);"></i> <span id="sidebarTotalPower">0</span> pts</p>
+                </div>
             </div>
             <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
                 <i class="fa-solid fa-power-off"></i>
             </button>
         </div>
 
-        <!-- MENÚ INICIO (Todos los roles pueden ver) -->
+        <!-- MENÚ INICIO -->
         <div class="nav-group">
             <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -171,7 +268,7 @@
             </div>
         </div>
 
-        <!-- MENÚ GREMIO (Bloqueado para Basico) -->
+        <!-- MENÚ GREMIO -->
         <div class="nav-group">
             <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -187,7 +284,15 @@
             </div>
         </div>
         
-        <!-- MENÚ GUARDIANES (Bloqueado para Basico y Caballero, Solo Heroe) -->
+        <!-- SECCIÓN DE EVENTOS ESPECIALES -->
+        <div class="nav-group">
+            <div class="nav-title" style="color: var(--halloween-orange);">EVENTOS ESPECIALES <i class="fa-solid fa-ghost"></i></div>
+            <div class="nav-items-container">
+                <a href="eventos.html" class="nav-item"><i class="fa-solid fa-spider"></i> Festival de Halloween</a>
+            </div>
+        </div>
+
+        <!-- MENÚ GUARDIANES -->
         <div class="nav-group">
             <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -212,48 +317,71 @@
                 <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <span>Mi Casita &nbsp; > &nbsp; <b>Fogata de bienvenida</b></span>
             </div>
-            <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
+            <button class="theme-btn" id="themeToggle" title="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
         </div>
 
         <div class="dashboard-container">
             
             <div class="welcome-header">
-                <div class="welcome-tag"><i class="fa-solid fa-square"></i> Temporada 3</div>
-                <h1>Bienvenida a <span>Mi Casita.</span></h1>
-                <p>¡Hola! Estás en la página oficial de Mi casita. 🛡️
-Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.</p>
+                <div class="welcome-tag"><i class="fa-solid fa-ghost"></i> Especial de Halloween</div>
+                <!-- EL PUNTO ACTIVA EL DESPLIEGUE DEL ACERTIJO NUEVO -->
+                <h1>Bienvenida a <span>Mi Casita</span><span class="secret-dot" onclick="toggleAcertijoAbismo()" title="✨ Clic para investigar el punto">.</span></h1>
+                <p>¡Hola! Estás en la página oficial de Mi casita. 🛡️ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros en esta espeluznante temporada.</p>
+                
+                <!-- ACERTIJO DESPLEGABLE EN EL PUNTO CON EL NUEVO TEXTO -->
+                <div class="riddle-dropdown" id="riddleAbismoContainer">
+                    <div class="riddle-box-inline">
+                        <p><i class="fa-solid fa-tree"></i> "Bajo las raíces profundas, el abismo guarda su puerta secreta. Si sabes dónde se ocultaba la entrada, responde: ¿En donde yacía el abismo?"</p>
+                        <div class="riddle-input-group">
+                            <input type="text" id="riddleAbismoInput" placeholder="Escribe tu respuesta...">
+                            <button class="riddle-btn" onclick="resolverAcertijoAbismo()">Desbloquear</button>
+                        </div>
+                        <div class="riddle-msg" id="riddleAbismoMsg"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PISTA DE GUARDIAN TALES (LORE - CONSERVADO INTEGRO) -->
+            <div class="lore-clue-box">
+                <i class="fa-solid fa-skull bg-icon"></i>
+                <b style="color: var(--halloween-orange);"><i class="fa-solid fa-scroll"></i> Diario de la Posada - Registro de Lorraine:</b><br>
+                "¡Esa Princesita rompió otro vidrio en la posada! El Caballero y yo la seguimos cuando la vimos correr para esconderse detrás del gran árbol del patio de Heavenhold. Fingimos marcharnos para darle una lección, pero apenas se sentó a descansar, escuché un crujido espantoso. ¡Las raíces cedieron y la niña cayó directo por un agujero oscuro! Y por supuesto, ese 'cara de tonto' del Caballero se lanzó de cabeza sin pensarlo dos veces para rescatarla.
+
+Los androides de Heavenhold escanearon la grieta y descubrieron que es una anomalía conectada a los servidores de Kamazon, un sector al que llaman el 'Abismo Corrupto'. En sus registros de sistema solo encontraron una vieja pista sobre la entrada: 'El portal mágico te espera donde termina la gran bienvenida. No es una letra, ni un dibujo... es ese pequeñísimo detalle que cierra la oración'.
+
+Supuestamente, si alguien encuentra ese punto exacto, será arrastrado tras ellos... No tengo idea de qué significa ese acertijo, pero más les vale volver enteros antes de la cena... ¡y alguien va a tener que pagarme ese cristal!"
             </div>
 
             <div class="grid-layout">
                 <div style="display: flex; flex-direction: column; gap: 40px;">
                     
                     <div class="hero-card">
-                        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #a8a3b5;">La fogata está encendida</div>
+                        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #dcb8ff;"><i class="fa-solid fa-spider"></i> La fogata está hechizada</div>
                         <h2 id="sheet-banner_titulo">Cargando...</h2>
                         <div class="hero-card-footer">
                             <div>
-                                <p style="font-size: 12px; color: #a8a3b5;">Próximo objetivo</p>
+                                <p style="font-size: 12px; color: #dcb8ff;">Próximo evento oscuro</p>
                                 <p id="sheet-banner_sub" style="font-size: 14px; font-weight: 600;">Cargando...</p>
                             </div>
                             <a href="noticias.html" class="btn-yellow">Ver el gremio &rarr;</a>
                         </div>
                     </div>
 
-                    <div class="card" style="border: 2px solid #fdd843; box-shadow: 0 0 15px rgba(253, 216, 67, 0.15);">
+                    <div class="card" style="border: 2px solid var(--halloween-orange); box-shadow: 0 0 15px rgba(255, 102, 0, 0.15);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3 class="section-title" style="margin:0; color: #d89614;"><i class="fa-solid fa-crown"></i> Top 5 - Asalto de Gremio</h3>
+                            <h3 class="section-title" style="margin:0; color: var(--halloween-orange);"><i class="fa-solid fa-crown"></i> Top 5 - Cazadores de Asalto</h3>
                             <a href="ranking.html" style="font-size: 12px; color: var(--accent-red); text-decoration: none; font-weight: 600;">Ver los 30 &rarr;</a>
                         </div>
                         
                         <div id="top5-contenedor" style="display: flex; flex-direction: column; gap: 10px;">
-                            <p style="font-size: 13px; color: var(--text-muted); text-align: center;">Cargando Top 5...</p>
+                            <p style="font-size: 13px; color: var(--text-muted); text-align: center;">Invocando Top 5...</p>
                         </div>
                     </div>
 
                     <div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3 class="section-title" style="margin:0;">Historias de la posada <br><span style="font-size: 18px; text-transform: none; color: var(--text-dark);">Lo que está pasando</span></h3>
-                            <a href="noticias.html" style="font-size: 12px; color: var(--text-muted); text-decoration: none;">Ver noticias &rarr;</a>
+                            <h3 class="section-title" style="margin:0;">Historias de la posada <br><span style="font-size: 18px; text-transform: none; color: var(--text-dark);">Rumores recientes</span></h3>
+                            <a href="noticias.html" style="font-size: 12px; color: var(--text-muted); text-decoration: none;">Leer pergaminos &rarr;</a>
                         </div>
 
                         <div class="activity-list">
@@ -267,7 +395,7 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
                             </a>
                             
                             <a href="noticias.html" class="activity-item">
-                                <div class="activity-icon icon-green"><i class="fa-solid fa-heart"></i></div>
+                                <div class="activity-icon icon-green"><i class="fa-solid fa-book-skull"></i></div>
                                 <div class="activity-text">
                                     <h4 id="sheet-bienvenida_titulo">Cargando...</h4>
                                     <p><i class="fa-regular fa-clock"></i> <span id="sheet-bienvenida_hora">Cargando...</span></p>
@@ -276,7 +404,7 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
                             </a>
 
                             <a href="guia.html" class="activity-item">
-                                <div class="activity-icon icon-yellow"><i class="fa-solid fa-book-open"></i></div>
+                                <div class="activity-icon icon-yellow"><i class="fa-solid fa-flask-vial"></i></div>
                                 <div class="activity-text">
                                     <h4 id="sheet-guia_titulo">Cargando...</h4>
                                     <p><i class="fa-regular fa-clock"></i> <span id="sheet-guia_hora">Cargando...</span></p>
@@ -290,18 +418,18 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
                 <div style="display: flex; flex-direction: column; gap: 40px;">
                     
                     <div class="card">
-                        <h3 class="section-title">Asalto al Gremio</h3>
+                        <h3 class="section-title">Asalto al Gremio Oscuro</h3>
                         <div class="progress-number" id="porcentaje-texto">0%</div>
                         <div class="progress-bar">
                             <div class="progress-fill" id="barra-progreso"></div>
                         </div>
                         <div class="progress-stats">
-                            <span id="dias-texto">Días 0/7</span>
+                            <span id="dias-texto">Lunas 0/7</span>
                             <span id="estado-texto">Inactivo</span>
                         </div>
                         
                         <div id="mensaje-sin-asalto" style="display: none; font-size: 13px; color: var(--accent-red); margin-top: 10px; font-weight: 600;">
-                            <i class="fa-solid fa-triangle-exclamation"></i> Actualmente no hay Asalto al Gremio activo.
+                            <i class="fa-solid fa-triangle-exclamation"></i> Actualmente no hay monstruos en Asalto.
                         </div>
 
                         <br>
@@ -309,7 +437,7 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
                     </div>
 
                     <div>
-                        <h3 class="section-title">Nos vemos pronto <br><span style="font-size: 18px; text-transform: none; color: var(--text-dark);">Próxima actividad</span></h3>
+                        <h3 class="section-title">En las sombras... <br><span style="font-size: 18px; text-transform: none; color: var(--text-dark);">Próxima maldición</span></h3>
                         <div class="next-activity-card">
                             <div class="next-activity-content">
                                 <span style="font-size: 10px; color: var(--accent-red); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Próximamente</span>
@@ -324,18 +452,95 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
         </div>
     </main>
 
+    <!-- CHAT DE DISCORD WIDGETBOT -->
     <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
-        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#292437', notifications: true })
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#120e17', notifications: true })
     </script>
 
     <script>
+        // ==========================================
+        // LÓGICA DEL ACERTIJO DESPLEGABLE EN EL PUNTO
+        // ==========================================
+        function toggleAcertijoAbismo() {
+            const dropdown = document.getElementById('riddleAbismoContainer');
+            dropdown.classList.toggle('open');
+        }
+
+        function resolverAcertijoAbismo() {
+            const inputVal = document.getElementById('riddleAbismoInput').value.toLowerCase().trim();
+            const msg = document.getElementById('riddleAbismoMsg');
+
+            // RESPUESTA DEL ACERTIJO VALIDADA: "arbol" o "árbol"
+            if (inputVal === 'arbol' || inputVal === 'árbol' || inputVal === 'el arbol' || inputVal === 'el árbol') {
+                localStorage.setItem('abismo_desbloqueada', 'true');
+                msg.style.color = 'var(--poison-green)';
+                msg.innerHTML = '🎉 ¡Correcto! Has desbloqueado el juego "Abismo Corrupto" en el Festival de Halloween.';
+                
+                setTimeout(() => {
+                    toggleAcertijoAbismo();
+                }, 3500);
+            } else {
+                msg.style.color = 'var(--accent-red)';
+                msg.innerHTML = '❌ Respuesta incorrecta. ¡Revisa el diario de Lorraine!';
+            }
+        }
+
         // =========================================================================
-        // COMPROBAR SESIÓN, CARGAR PERFIL Y GESTIONAR CANDADOS DE ROLES
+        // RESTAURAR ESTADO DE LA BARRA LATERAL (LOCALSTORAGE)
         // =========================================================================
-        document.addEventListener("DOMContentLoaded", () => {
+        const sidebar = document.getElementById('sidebar');
+        if (localStorage.getItem('sidebar-colapsada') === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => { 
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebar-colapsada', sidebar.classList.contains('collapsed'));
+        });
+
+        // =========================================================================
+        // GESTIÓN DE TEMAS (Oscuro, Claro, Blanco y Negro) EN LOCALSTORAGE
+        // =========================================================================
+        const themeBtn = document.getElementById('themeToggle');
+        const rootElement = document.documentElement;
+
+        function aplicarTema(tema) {
+            if (tema === 'light') {
+                rootElement.setAttribute('data-theme', 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else if (tema === 'bn') {
+                rootElement.setAttribute('data-theme', 'bn');
+                themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>';
+            } else {
+                rootElement.removeAttribute('data-theme');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        }
+
+        let temaActual = localStorage.getItem('tema-casita') || 'dark';
+        aplicarTema(temaActual);
+
+        themeBtn.addEventListener('click', () => {
+            if (!rootElement.hasAttribute('data-theme')) {
+                temaActual = 'light';
+            } else if (rootElement.getAttribute('data-theme') === 'light') {
+                temaActual = 'bn';
+            } else {
+                temaActual = 'dark';
+            }
+            localStorage.setItem('tema-casita', temaActual);
+            aplicarTema(temaActual);
+        });
+
+        // =========================================================================
+        // COMPROBAR SESIÓN, CANDADOS Y PUNTOS EN SHEETDB (https://sheetdb.io/api/v1/rfy0fba41r17u)
+        // =========================================================================
+        const API_HALLOWEEN = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
+
+        document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
                 const avatarGuardado = localStorage.getItem('usuario_avatar');
-                const nombreGuardado = localStorage.getItem('usuario_nombre');
+                const nombreGuardado = localStorage.getItem('usuario_nombre') || 'Newt';
                 const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
                 
                 document.getElementById('user-profile-sidebar').style.display = 'flex';
@@ -345,18 +550,30 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
                 }
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
-                // Lógica de Candados según el Rol
+                try {
+                    const res = await fetch(`${API_HALLOWEEN}&_=${new Date().getTime()}`);
+                    const rawData = await res.json();
+                    const pDataTotal = rawData.map(row => {
+                        let newRow = {};
+                        for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                        return newRow;
+                    });
+                    const miRegistro = pDataTotal.find(r => r.nombre && r.nombre.toLowerCase().trim() === nombreGuardado.toLowerCase().trim());
+                    const totalPuntos = miRegistro ? (parseInt(miRegistro.total) || 0) : 0;
+                    document.getElementById('sidebarTotalPower').innerText = totalPuntos.toLocaleString();
+                } catch (err) {
+                    console.error("Error al cargar puntos de usuario desde SheetDB:", err);
+                }
+
                 document.querySelectorAll('.nav-item').forEach(link => {
                     const reqOriginal = link.getAttribute('data-req');
                     if (reqOriginal) {
                         const reqRole = reqOriginal.toLowerCase();
                         let bloqueado = false;
 
-                        // Si requiere Heroe, solo entra Heroe
                         if (reqRole === 'heroe' && rolUsuario !== 'heroe') {
                             bloqueado = true;
                         }
-                        // Si requiere Caballero, entran Caballero y Heroe
                         if (reqRole === 'caballero' && rolUsuario !== 'caballero' && rolUsuario !== 'heroe') {
                             bloqueado = true;
                         }
@@ -370,7 +587,7 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
                             link.addEventListener('click', (e) => {
                                 e.preventDefault();
                                 candado.classList.remove('lock-shake');
-                                void candado.offsetWidth; // Reflow para reiniciar animación
+                                void candado.offsetWidth; 
                                 candado.classList.add('lock-shake');
 
                                 const toast = document.getElementById('toastAlert');
@@ -382,22 +599,19 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
                 });
 
             } else {
-                window.location.href = 'login.html'; // Expulsar si no hay sesión
+                window.location.href = 'login.html'; 
             }
         });
 
-        // =========================================================================
-        // LÓGICA DEL BOTÓN ROJO PARA CERRAR SESIÓN
-        // =========================================================================
         document.getElementById('logoutBtn').addEventListener('click', () => {
             const logoutOverlay = document.getElementById('logoutOverlay');
-            logoutOverlay.classList.add('active'); // Activa la animación gris
+            logoutOverlay.classList.add('active'); 
             
             setTimeout(() => {
                 localStorage.removeItem('sesion_activa');
                 localStorage.removeItem('usuario_nombre');
                 localStorage.removeItem('usuario_avatar');
-                localStorage.removeItem('usuario_roll'); // Borra el rol
+                localStorage.removeItem('usuario_roll'); 
                 window.location.href = 'login.html';
             }, 2500);
         });
@@ -414,13 +628,10 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
             return limpia;
         }
 
-        // =========================================================================
-        // API BASE (BANNER Y BARRA DE PROGRESO)
-        // =========================================================================
         const timestamp = new Date().getTime();
-        const apiURL = `https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Datos&_=${timestamp}`;
-        const apiRankingURL = `https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Ranking&_=${timestamp}`;
-        const apiUsuariosURL = `https://sheetdb.io/api/v1/byy514yadr0v0?sheet=Usuarios&_=${timestamp}`;
+        const apiURL = `https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Datos&_=${timestamp}`;
+        const apiRankingURL = `https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Ranking&_=${timestamp}`;
+        const apiUsuariosURL = `https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Usuarios&_=${timestamp}`;
 
         fetch(apiURL)
             .then(response => response.json())
@@ -437,7 +648,7 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
                         
                         document.getElementById('porcentaje-texto').innerText = porcentaje + '%';
                         document.getElementById('barra-progreso').style.width = porcentaje + '%';
-                        document.getElementById('dias-texto').innerText = `Días ${diasActuales}/${diasTotales}`;
+                        document.getElementById('dias-texto').innerText = `Lunas ${diasActuales}/${diasTotales}`;
 
                         if (diasActuales === 0) {
                             document.getElementById('porcentaje-texto').style.display = 'none';
@@ -456,11 +667,8 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
                     }
                 });
             })
-            .catch(error => console.error('Error al conectar con la hoja de cálculo:', error));
+            .catch(error => console.error('Error al conectar:', error));
         
-        // =========================================================================
-        // TOP 5 (CON FOTOS AUTOMÁTICAS PRIORIZANDO USUARIOS Y LUEGO RANKING)
-        // =========================================================================
         const contenedorTop5 = document.getElementById('top5-contenedor');
 
         if (contenedorTop5) {
@@ -494,7 +702,6 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
                     const daño = jugador.asalto ? jugador.asalto : '0';
                     const nombreBuscado = String(jugador.nombre).trim().toLowerCase();
                     
-                    // Prioridad: Perfil de Usuario -> URL en Ranking -> Logo por Defecto
                     let fotoFinal = 'logo.jpg';
                     if (perfilesMap[nombreBuscado]) {
                         fotoFinal = perfilesMap[nombreBuscado];
@@ -503,9 +710,9 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
                     }
 
                     contenedorTop5.innerHTML += `
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; background: var(--main-bg); border-radius: 12px; border-left: 4px solid #fdd843;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; background: var(--main-bg); border-radius: 12px; border-left: 4px solid var(--halloween-orange);">
                             <div style="display: flex; align-items: center; gap: 15px;">
-                                <span style="font-size: 18px; font-weight: 800; color: #d89614;">#${jugador.posicion}</span>
+                                <span style="font-size: 18px; font-weight: 800; color: var(--halloween-orange);">#${jugador.posicion}</span>
                                 <img src="${fotoFinal}" alt="${jugador.nombre}" class="top5-avatar" onerror="this.src='logo.jpg'">
                                 <span style="font-weight: 700; font-size: 14px;">${jugador.nombre}</span>
                             </div>
@@ -518,13 +725,9 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
             })
             .catch(error => {
                 console.error('Error al cargar el ranking:', error);
-                contenedorTop5.innerHTML = '<p style="color: var(--accent-red); font-size: 12px; padding: 10px;">Error al cargar el Top 5 desde Google Sheets.</p>';
+                contenedorTop5.innerHTML = '<p style="color: var(--accent-red); font-size: 12px; padding: 10px;">Error al cargar el Top 5 oscuro.</p>';
             });
         }
-
-        const sidebar = document.getElementById('sidebar');
-        const toggleBtn = document.getElementById('toggleSidebar');
-        toggleBtn.addEventListener('click', () => { sidebar.classList.toggle('collapsed'); });
 
         const navTitles = document.querySelectorAll('.nav-title');
         navTitles.forEach(title => {
@@ -532,29 +735,6 @@ Somos una comunidad unida; mejorar a tus héroes y pasarla genial con nosotros.<
                 const group = title.closest('.nav-group');
                 group.classList.toggle('collapsed-group');
             });
-        });
-
-        const themeBtn = document.getElementById('themeToggle');
-        const rootElement = document.documentElement;
-
-        if (localStorage.getItem('tema-casita') === 'dark') {
-            rootElement.setAttribute('data-theme', 'dark');
-            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
-        } else {
-            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
-        }
-
-        themeBtn.addEventListener('click', () => {
-            let isDark = rootElement.hasAttribute('data-theme');
-            if (isDark) {
-                rootElement.removeAttribute('data-theme');
-                localStorage.setItem('tema-casita', 'light');
-                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
-            } else {
-                rootElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('tema-casita', 'dark');
-                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
-            }
         });
     </script>
 </body>

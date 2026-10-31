@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Ruleta de Pimientos de Lorraine - Mi Casita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* TEMA OSCURO (Default) */
+        :root {
+            --sidebar-bg: #15131f; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #221e2d; 
+            --sidebar-btn: #ff8c00; 
+            --main-bg: #121017;
+            --card-bg: #191622; 
+            --text-dark: #f0eef5; 
+            --text-muted: #888299;
+            --border-color: #272235; 
+            --accent-red: #ff5722;
+            --halloween-orange: #ff8c00; 
+            --halloween-purple: #7b1fa2;
+            --poison-green: #39ff14; 
+            --kamazon-gold: #ffcf00; 
+        }
+
+        /* TEMA CLARO */
+        [data-theme="light"] {
+            --sidebar-bg: #292437; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; 
+            --sidebar-btn: #ff8800; 
+            --main-bg: linear-gradient(135deg, #f9f5ed 0%, #f0eae1 100%);
+            --card-bg: #ffffff; 
+            --text-dark: #201b2a; 
+            --text-muted: #7d7889;
+            --border-color: #e8e4dc;
+            --halloween-orange: #ff6600;
+            --kamazon-gold: #d4ac0d;
+        }
+
+        /* TEMA BLANCO Y NEGRO */
+        [data-theme="bn"] {
+            --sidebar-bg: #1a1a1a; 
+            --sidebar-text: #b0b0b0; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #333333; 
+            --sidebar-btn: #ffffff; 
+            --main-bg: #ffffff;
+            --card-bg: #f2f2f2; 
+            --text-dark: #000000; 
+            --text-muted: #555555;
+            --border-color: #cccccc; 
+            --kamazon-gold: #333333; 
+            --halloween-orange: #000000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); overflow: hidden; position: relative; }
+
+        .dark-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 40%, rgba(40, 0, 15, 0.85) 100%);
+            pointer-events: none; z-index: 10; opacity: 0; transition: opacity 1.5s ease;
+        }
+        .dark-overlay.active { opacity: 1; }
+
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; z-index: 100; border-right: 1px solid var(--border-color); transition: width 0.3s; }
+        .sidebar.collapsed { width: 0; padding: 0; }
+        
+        .sidebar-header { padding: 22px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--halloween-orange); }
+        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--halloween-orange); font-weight: 700; }
+        
+        .user-profile-sidebar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.04); margin-bottom: 10px; min-width: 260px; background: rgba(25, 22, 34, 0.5); }
+        .profile-info-wrap { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--halloween-orange); object-fit: cover; flex-shrink: 0; }
+        .user-meta { display: flex; flex-direction: column; overflow: hidden; }
+        .user-meta span { color: white; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+        .user-meta p { font-size: 11px; color: var(--kamazon-gold); font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 1px; white-space: nowrap; }
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
+        .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
+
+        .nav-group { margin-bottom: 5px; min-width: 260px; }
+        .nav-title { padding: 10px 22px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; color: var(--text-muted); font-weight: 700; }
+        .nav-title:hover { color: var(--sidebar-text-active); }
+        .nav-title i { transition: transform 0.3s ease; }
+        .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
+        .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+        .nav-group.collapsed-group .nav-items-container { max-height: 0; }
+        
+        .nav-item { padding: 10px 22px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; }
+        .nav-item:hover { color: var(--sidebar-text-active); background: rgba(255, 140, 0, 0.05); }
+        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--halloween-orange); }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; overflow-y: auto; z-index: 20; }
+        .topbar { padding: 16px 30px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); z-index: 10; }
+        .toggle-btn, .theme-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--halloween-orange); font-size: 18px; cursor: pointer; padding: 8px 12px; border-radius: 10px; transition: 0.2s; }
+        .toggle-btn:hover, .theme-btn:hover { background: rgba(255,140,0,0.1); }
+
+        .screen { display: none; padding: 25px 30px; flex-direction: column; align-items: center; max-width: 1100px; margin: 0 auto; width: 100%; animation: fadeIn 0.4s ease; position: relative; }
+        .screen.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .lorraine-splash {
+            position: absolute; bottom: -20px; left: -100px; height: 90%; max-height: 420px;
+            object-fit: contain; opacity: 0; transform: translateX(-50px);
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none; z-index: 1; filter: drop-shadow(0 0 20px rgba(0,0,0,0.8));
+        }
+        .lorraine-splash.show { opacity: 0.35; transform: translateX(0); }
+        .lorraine-splash.angry { filter: drop-shadow(0 0 30px var(--accent-red)) sepia(0.8) hue-rotate(-30deg) saturate(3) brightness(0.7); opacity: 0.6; transform: translateX(20px) scale(1.05); }
+
+        .lobby-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; margin-top: 15px; z-index: 5; }
+        .panel-card { background: var(--card-bg); border-radius: 20px; padding: 22px; border: 1px solid var(--border-color); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        .panel-title { font-size: 15px; font-weight: 800; color: var(--halloween-orange); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        
+        .bet-selector { margin-bottom: 15px; display: flex; flex-direction: column; gap: 6px; }
+        .bet-selector label { font-size: 12px; font-weight: 700; color: var(--text-muted); }
+        .bet-selector select { width: 100%; padding: 10px; border-radius: 10px; background: var(--main-bg); color: var(--text-dark); border: 2px solid var(--border-color); font-weight: 700; outline: none; }
+        .bet-selector select:focus { border-color: var(--halloween-orange); }
+
+        .btn-play { background: linear-gradient(135deg, #ff8c00, #e65100); color: white; border: none; padding: 12px 20px; font-size: 14px; font-weight: 900; text-transform: uppercase; border-radius: 12px; cursor: pointer; width: 100%; transition: 0.2s; box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4); }
+        .btn-play:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 140, 0, 0.6); }
+        .btn-play:disabled { background: #333; color: #666; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .game-header { display: flex; justify-content: space-between; width: 100%; margin-bottom: 25px; z-index: 5; }
+        .player-hud { display: flex; flex-direction: column; gap: 6px; background: var(--card-bg); padding: 15px; border-radius: 16px; border: 1px solid var(--border-color); min-width: 220px; transition: 0.3s; }
+        .player-hud.active-hud { border-color: var(--halloween-orange); box-shadow: 0 0 20px rgba(255, 140, 0, 0.25); transform: scale(1.02); }
+        .hud-profile { display: flex; align-items: center; gap: 10px; }
+        .hud-avatar { width: 36px; height: 36px; border-radius: 10px; border: 2px solid var(--border-color); object-fit: cover; transition: 0.3s; }
+        .hud-name { font-size: 15px; font-weight: 800; color: var(--text-dark); }
+        .lives-container { display: flex; gap: 4px; color: var(--accent-red); font-size: 16px; }
+        
+        .table-area { background: #1a1624; width: 100%; max-width: 800px; padding: 40px; border-radius: 80px; border: 6px solid #282138; display: flex; justify-content: center; gap: 15px; box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 20px 50px rgba(0,0,0,0.5); position: relative; z-index: 5; transition: 0.5s; }
+        .table-area.angry-table { border-color: #52000d; background: #22080f; box-shadow: inset 0 0 80px rgba(255,0,0,0.5), 0 20px 50px rgba(0,0,0,0.8); }
+        
+        .plate { width: 90px; height: 90px; background: radial-gradient(circle, #332d42, #1b1724); border-radius: 50%; border: 3px solid #483f5e; cursor: pointer; transition: 0.3s; position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .plate:hover { transform: translateY(-6px); box-shadow: 0 15px 25px rgba(255, 140, 0, 0.3); border-color: var(--halloween-orange); }
+        .plate i { font-size: 30px; color: var(--text-muted); transition: 0.2s; }
+        .plate:hover i { color: var(--halloween-orange); }
+        .plate span.plate-num { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top: 3px; }
+        
+        .turn-indicator { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); background: var(--halloween-orange); color: black; padding: 6px 16px; border-radius: 20px; font-weight: 900; font-size: 12px; text-transform: uppercase; box-shadow: 0 0 15px rgba(255,140,0,0.5); transition: 0.3s; white-space: nowrap; }
+
+        .skills-control-bar { display: flex; gap: 10px; margin-top: 20px; z-index: 5; flex-wrap: wrap; justify-content: center; }
+        .btn-skill { background: var(--card-bg); border: 2px solid var(--border-color); color: var(--text-dark); padding: 9px 14px; border-radius: 12px; font-weight: 800; font-size: 11px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; }
+        .btn-skill:hover:not(:disabled) { border-color: var(--halloween-orange); background: rgba(255,140,0,0.1); transform: translateY(-2px); }
+        .btn-skill:disabled { opacity: 0.35; cursor: not-allowed; border-color: #222; background: #111; color: #555; }
+        .btn-skill:disabled i { color: #555; }
+        .btn-skill i { color: var(--halloween-orange); }
+
+        .btn-surrender { margin-top: 12px; background: rgba(255, 87, 34, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); padding: 7px 18px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; z-index: 5; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
+        .btn-surrender:hover { background: rgba(255, 87, 34, 0.25); }
+    </style>
+</head>
+<body>
+
+    <div class="dark-overlay" id="darkOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.jpg" alt="Logo" onerror="this.src='logo.jpg';">
+            <div>
+                <h2>Mi Casita</h2>
+                <p>Gremio de Guardian Tales</p>
+            </div>
+        </div>
+
+        <div class="user-profile-sidebar" id="user-profile-sidebar">
+            <div class="profile-info-wrap">
+                <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
+                <div class="user-meta">
+                    <span id="sidebar-name">Usuario</span>
+                    <p><i class="fa-solid fa-coins" style="color:var(--kamazon-gold);"></i> <span id="sidebarTotalPower">0</span> pts</p>
+                </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
+                <i class="fa-solid fa-power-off"></i>
+            </button>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-fire"></i> Fogata de bienvenida</a>
+                <a href="noticias.html" class="nav-item"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
+            </div>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="resumen.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
+                <a href="guia.html" class="nav-item"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
+                <a href="ranking.html" class="nav-item"><i class="fa-solid fa-trophy"></i> Ranking de la casa</a>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE EVENTOS ESPECIALES (Filtrada) -->
+        <div class="nav-group">
+            <div class="nav-title" style="color: var(--halloween-orange);">EVENTOS ESPECIALES <i class="fa-solid fa-ghost"></i></div>
+            <div class="nav-items-container">
+                <a href="eventos.html" class="nav-item"><i class="fa-solid fa-spider"></i> Festival de Halloween</a>
+                <a href="Ruleta.html" class="nav-item active"><i class="fa-solid fa-utensils"></i> Ruleta de Lorraine</a>
+            </div>
+        </div>
+        
+        <div class="nav-group">
+            <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="heroes.html" class="nav-item"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
+                <a href="equipos.html" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
+            </div>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">INCURSIONES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="incursiones.html" class="nav-item"><i class="fa-solid fa-ghost"></i> Asalto</a>
+                <a href="arena.html" class="nav-item"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="topbar">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <span style="font-weight: 900; font-size: 16px; color: var(--halloween-orange);"><i class="fa-solid fa-pepper-hot"></i> La Ruleta de Pimientos de Lorraine</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-weight: 700; color: var(--kamazon-gold); font-size: 13px;"><i class="fa-solid fa-coins"></i> Mis Puntos Totales: <span id="myTotalPower">Cargando...</span></span>
+                <button class="theme-btn" id="themeToggle" title="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
+            </div>
+        </div>
+
+        <div class="screen active" id="screen-lobby">
+            <div style="text-align: center; margin-bottom: 12px;">
+                <h1 style="font-size: 26px; font-weight: 900; color: var(--text-dark);">La Cocina de Lorraine</h1>
+                <p style="color: var(--text-muted); margin-top: 4px; font-size: 13px;">Supervivencia extrema en la cocina de Heavenhold. ¡Evita el pimiento picante y derrota a Lorraine!</p>
+            </div>
+            
+            <div class="lobby-grid">
+                <div class="panel-card">
+                    <div class="panel-title"><i class="fa-solid fa-utensils"></i> Iniciar Desafío</div>
+                    <div class="bet-selector">
+                        <label for="selectApuesta">Selecciona tu apuesta base en puntos:</label>
+                        <select id="selectApuesta">
+                            <option value="5000">5,000 Puntos</option>
+                            <option value="10000">10,000 Puntos</option>
+                            <option value="15000">15,000 Puntos</option>
+                        </select>
+                    </div>
+                    <button class="btn-play" id="btnPlay" onclick="iniciarJuegoBot()"><i class="fa-solid fa-play"></i> Jugar contra Lorraine</button>
+                    <p style="color: var(--accent-red); font-size: 11px; margin-top: 8px; text-align: center;" id="warningMsg"></p>
+                </div>
+                
+                <div class="panel-card" style="max-height: 380px; overflow-y: auto;">
+                    <div class="panel-title"><i class="fa-solid fa-book-open"></i> Cómo Jugar y Reglas</div>
+                    <ul style="color: var(--text-muted); font-size: 12px; line-height: 1.6; margin-left: 16px;">
+                        <li><b>Objetivo:</b> Tú y Lorraine empiezan con 5 Vidas. Elige platos por turnos. Quien destape el pimiento picante pierde 1 vida.</li>
+                        <li><b>Habilidades Tácticas (1 Uso por partida):</b>
+                            <ul style="margin-left: 15px; margin-top: 3px;">
+                                <li>❤️ <b>Curación:</b> Recupera 1 vida gastando tu turno.</li>
+                                <li>⚡ <b>Doble Daño:</b> Multiplica x2 la apuesta y recompensa.</li>
+                                <li>👁️ <b>Escáner:</b> Inspecciona un plato sin gastar turno para ver qué hay dentro.</li>
+                                <li>⏭️ <b>Pasar Turno:</b> Cede el turno a Lorraine de forma estratégica.</li>
+                            </ul>
+                        </li>
+                        <li><b>Apuestas:</b> Si ganas, se te suma la apuesta exacta a tu columna de juego. Si pierdes, se acumulará en la columna de Descuentos para que tu Total lo reste automáticamente.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-game">
+            <img src="lustracion_Loraine.png" class="lorraine-splash" id="lorraineSplash">
+
+            <div class="game-header">
+                <div class="player-hud" id="hudMyBox">
+                    <div class="hud-profile">
+                        <img src="" id="hudMyAvatar" class="hud-avatar">
+                        <div class="hud-name" id="hudMyName">Tú</div>
+                    </div>
+                    <div class="lives-container" id="myLives" style="margin-top: 4px;"></div>
+                </div>
+
+                <div class="player-hud" id="hudRivalBox" style="align-items: flex-end; text-align: right;">
+                    <div class="hud-profile" style="flex-direction: row-reverse;">
+                        <img src="Lorraien.jfif" id="hudRivalAvatar" class="hud-avatar">
+                        <div class="hud-name" id="hudRivalName" style="color: var(--accent-red);">Lorraine</div>
+                    </div>
+                    <div class="lives-container" id="rivalLives" style="margin-top: 4px; flex-direction: row-reverse;"></div>
+                </div>
+            </div>
+
+            <div class="table-area" id="plateTable">
+                <div class="turn-indicator" id="turnIndicator">Preparando mesa...</div>
+                <div class="plate" id="plate-0" onclick="abrirPlatillo(0)"><i class="fa-solid fa-bowl-food"></i><span class="plate-num">Plato 1</span></div>
+                <div class="plate" id="plate-1" onclick="abrirPlatillo(1)"><i class="fa-solid fa-bowl-food"></i><span class="plate-num">Plato 2</span></div>
+                <div class="plate" id="plate-2" onclick="abrirPlatillo(2)"><i class="fa-solid fa-bowl-food"></i><span class="plate-num">Plato 3</span></div>
+                <div class="plate" id="plate-3" onclick="abrirPlatillo(3)"><i class="fa-solid fa-bowl-food"></i><span class="plate-num">Plato 4</span></div>
+                <div class="plate" id="plate-4" onclick="abrirPlatillo(4)"><i class="fa-solid fa-bowl-food"></i><span class="plate-num">Plato 5</span></div>
+            </div>
+
+            <div class="skills-control-bar">
+                <button class="btn-skill" id="btnCurar" onclick="habilidadCurar()"><i class="fa-solid fa-heart-pulse"></i> Curar (+1 Vida)</button>
+                <button class="btn-skill" id="btnDoble" onclick="habilidadDobleDano()"><i class="fa-solid fa-bolt"></i> Doble Daño</button>
+                <button class="btn-skill" id="btnEscanear" onclick="habilidadEscanear()"><i class="fa-solid fa-eye"></i> Escanear Plato</button>
+                <button class="btn-skill" id="btnPasar" onclick="habilidadPasarTurno()"><i class="fa-solid fa-forward"></i> Pasar Turno</button>
+            </div>
+
+            <button class="btn-surrender" onclick="rendirse()"><i class="fa-solid fa-flag"></i> Rendirse (Cobrar Derrota)</button>
+        </div>
+    </main>
+
+    <!-- CHAT DE DISCORD WIDGETBOT -->
+    <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#120e17', notifications: true })
+    </script>
+
+    <script>
+        // ==========================================
+        // GESTIÓN DE TEMAS (Oscuro, Claro, Blanco y Negro)
+        // ==========================================
+        const themeBtn = document.getElementById('themeToggle');
+        const rootElement = document.documentElement;
+
+        function aplicarTema(tema) {
+            if (tema === 'light') {
+                rootElement.setAttribute('data-theme', 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else if (tema === 'bn') {
+                rootElement.setAttribute('data-theme', 'bn');
+                themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>';
+            } else {
+                rootElement.removeAttribute('data-theme');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        }
+
+        let temaActual = localStorage.getItem('tema-casita') || 'dark';
+        aplicarTema(temaActual);
+
+        themeBtn.addEventListener('click', () => {
+            if (!rootElement.hasAttribute('data-theme')) {
+                temaActual = 'light';
+            } else if (rootElement.getAttribute('data-theme') === 'light') {
+                temaActual = 'bn';
+            } else {
+                temaActual = 'dark';
+            }
+            localStorage.setItem('tema-casita', temaActual);
+            aplicarTema(temaActual);
+        });
+
+        // ==========================================
+        // DATOS DE USUARIO Y BASE DE DATOS SHEETDB
+        // ==========================================
+        let usuarioActual = { 
+            nombre: localStorage.getItem('usuario_nombre') || 'Newt', 
+            foto: localStorage.getItem('usuario_avatar') || 'logo.jpg' 
+        };
+        let pDataTotal = [];
+        let miRegistroUsuario = null;
+        let miPoderTotal = 0;
+        let apuestaBase = 5000;
+        let apuestaActual = 5000;
+
+        document.getElementById('sidebar-name').innerText = usuarioActual.nombre;
+        document.getElementById('sidebar-avatar').src = usuarioActual.foto;
+        document.getElementById('hudMyName').innerText = usuarioActual.nombre;
+        document.getElementById('hudMyAvatar').src = usuarioActual.foto;
+
+        const API_URL = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
+
+        async function cargarPuntosDesdeBD() {
+            try {
+                const res = await fetch(`${API_URL}&_=${new Date().getTime()}`);
+                const rawData = await res.json();
+                
+                if (rawData.error) throw new Error(rawData.error);
+
+                pDataTotal = rawData.map(row => {
+                    let newRow = {};
+                    for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                    return newRow;
+                });
+                
+                miRegistroUsuario = pDataTotal.find(r => r.nombre && r.nombre.toLowerCase().trim() === usuarioActual.nombre.toLowerCase().trim());
+                miPoderTotal = miRegistroUsuario ? (parseInt(miRegistroUsuario.total) || 0) : 0;
+
+                document.getElementById('myTotalPower').innerText = miPoderTotal.toLocaleString();
+                document.getElementById('sidebarTotalPower').innerText = miPoderTotal.toLocaleString();
+
+                const btnPlay = document.getElementById('btnPlay');
+                const warningMsg = document.getElementById('warningMsg');
+
+                if (miPoderTotal < 5000) {
+                    btnPlay.disabled = true;
+                    warningMsg.innerText = "⚠️ No tienes suficientes puntos (Mínimo requerido: 5,000 puntos).";
+                } else {
+                    btnPlay.disabled = false;
+                    warningMsg.innerText = "";
+                }
+            } catch (error) {
+                console.error("Error al leer SheetDB:", error);
+                document.getElementById('myTotalPower').innerText = "0";
+                document.getElementById('sidebarTotalPower').innerText = "0";
+                document.getElementById('warningMsg').innerText = "❌ Error al conectar con la base de datos.";
+            }
+        }
+        cargarPuntosDesdeBD();
+
+        function guardarEstadoMenus() {
+            const menus = document.querySelectorAll('.nav-group');
+            const estado = [];
+            menus.forEach((m) => { estado.push(m.classList.contains('collapsed-group')); });
+            localStorage.setItem('menus_estado_ruleta', JSON.stringify(estado));
+        }
+
+        function cargarEstadoMenus() {
+            const estadoGuardado = localStorage.getItem('menus_estado_ruleta');
+            if (estadoGuardado) {
+                const estado = JSON.parse(estadoGuardado);
+                const menus = document.querySelectorAll('.nav-group');
+                menus.forEach((m, index) => {
+                    if (estado[index]) m.classList.add('collapsed-group');
+                    else m.classList.remove('collapsed-group');
+                });
+            }
+        }
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => { 
+            document.getElementById('sidebar').classList.toggle('collapsed'); 
+        });
+
+        document.querySelectorAll('.nav-title').forEach(title => {
+            title.addEventListener('click', () => { 
+                title.closest('.nav-group').classList.toggle('collapsed-group'); 
+                guardarEstadoMenus();
+            });
+        });
+
+        cargarEstadoMenus();
+
+        let partidaActiva = false;
+        let miTurno = false;
+        let vidasJugador = 5;
+        let vidasBot = 5;
+        let platilloVeneno = -1;
+        let platillosAbiertos = [];
+        let botEnojado = false;
+
+        let usadoCurar = false;
+        let usadoDoble = false;
+        let usadoEscanear = false;
+        let usadoPasar = false;
+        let dobleDanoActivo = false;
+        let modoEscanearActivo = false;
+
+        function dibujarVidas(idElemento, cantidad) {
+            let html = '';
+            for(let i=0; i<5; i++) {
+                if(i < cantidad) html += '<i class="fa-solid fa-heart"></i>';
+                else html += '<i class="fa-regular fa-heart" style="color:#444;"></i>';
+            }
+            document.getElementById(idElemento).innerHTML = html;
+        }
+
+        function actualizarIndicadorTurno() {
+            const ind = document.getElementById('turnIndicator');
+            const myBox = document.getElementById('hudMyBox');
+            const rivalBox = document.getElementById('hudRivalBox');
+            
+            if (miTurno) {
+                ind.innerText = "¡ES TU TURNO!";
+                ind.style.background = "var(--halloween-orange)";
+                ind.style.boxShadow = "0 0 15px rgba(255,140,0,0.6)";
+                ind.style.color = "black";
+                document.getElementById('plateTable').style.pointerEvents = "auto";
+                myBox.classList.add('active-hud');
+                rivalBox.classList.remove('active-hud');
+            } else {
+                ind.innerText = botEnojado ? "Lorraine está furiosa..." : "Turno de Lorraine...";
+                ind.style.background = botEnojado ? "#7f0000" : "var(--accent-red)";
+                ind.style.boxShadow = botEnojado ? "0 0 20px red" : "0 0 15px var(--accent-red)";
+                ind.style.color = "white";
+                document.getElementById('plateTable').style.pointerEvents = "none";
+                rivalBox.classList.add('active-hud');
+                myBox.classList.remove('active-hud');
+            }
+        }
+
+        function activarModoEnojada() {
+            if(botEnojado) return;
+            botEnojado = true;
+            document.getElementById('hudRivalAvatar').src = 'Lorraine enojada.jfif';
+            document.getElementById('darkOverlay').classList.add('active');
+            document.getElementById('plateTable').classList.add('angry-table');
+            document.getElementById('lorraineSplash').classList.add('angry');
+        }
+
+        function mezclarVeneno() {
+            platilloVeneno = Math.floor(Math.random() * 5);
+            platillosAbiertos = [];
+            for(let i=0; i<5; i++) {
+                const p = document.getElementById(`plate-${i}`);
+                p.innerHTML = `<i class="fa-solid fa-bowl-food"></i><span class="plate-num">Plato ${i+1}</span>`;
+                p.style.pointerEvents = "auto";
+                p.style.borderColor = "#483f5e";
+            }
+        }
+
+        function iniciarJuegoBot() {
+            apuestaBase = parseInt(document.getElementById('selectApuesta').value);
+            apuestaActual = apuestaBase;
+            
+            if (miPoderTotal < apuestaBase) {
+                alert("No tienes suficientes puntos para esta apuesta.");
+                return;
+            }
+
+            vidasJugador = 5;
+            vidasBot = 5;
+            partidaActiva = true;
+            botEnojado = false; 
+
+            usadoCurar = false;
+            usadoDoble = false;
+            usadoEscanear = false;
+            usadoPasar = false;
+            dobleDanoActivo = false;
+            modoEscanearActivo = false;
+
+            document.getElementById('btnCurar').disabled = false;
+            document.getElementById('btnDoble').disabled = false;
+            document.getElementById('btnEscanear').disabled = false;
+            document.getElementById('btnPasar').disabled = false;
+            document.getElementById('btnCurar').innerHTML = `<i class="fa-solid fa-heart-pulse"></i> Curar (+1 Vida)`;
+            document.getElementById('btnDoble').innerHTML = `<i class="fa-solid fa-bolt"></i> Doble Daño`;
+            document.getElementById('btnEscanear').innerHTML = `<i class="fa-solid fa-eye"></i> Escanear Plato`;
+            document.getElementById('btnPasar').innerHTML = `<i class="fa-solid fa-forward"></i> Pasar Turno`;
+            
+            document.getElementById('hudRivalAvatar').src = 'Lorraien.jfif';
+            document.getElementById('darkOverlay').classList.remove('active');
+            document.getElementById('plateTable').classList.remove('angry-table');
+            document.getElementById('lorraineSplash').classList.remove('angry');
+            
+            dibujarVidas('myLives', vidasJugador);
+            dibujarVidas('rivalLives', vidasBot);
+            
+            mezclarVeneno();
+            showScreen('screen-game');
+            setTimeout(() => { document.getElementById('lorraineSplash').classList.add('show'); }, 500);
+            
+            miTurno = true;
+            actualizarIndicadorTurno();
+        }
+
+        function habilidadCurar() {
+            if(!miTurno || !partidaActiva || usadoCurar) return;
+            if(vidasJugador >= 5) {
+                alert("Ya tienes la vida al máximo (5 corazones).");
+                return;
+            }
+            usadoCurar = true;
+            document.getElementById('btnCurar').disabled = true;
+            document.getElementById('btnCurar').innerText = "❤️ Curar (Usado)";
+
+            vidasJugador++;
+            dibujarVidas('myLives', vidasJugador);
+            alert("❤️ ¡Has utilizado tu poción de curación! +1 Vida recuperada.");
+            
+            miTurno = false;
+            actualizarIndicadorTurno();
+            setTimeout(turnoDelBot, 1500);
+        }
+
+        function habilidadDobleDano() {
+            if(!miTurno || !partidaActiva || usadoDoble) return;
+            usadoDoble = true;
+            dobleDanoActivo = true;
+            document.getElementById('btnDoble').disabled = true;
+            document.getElementById('btnDoble').innerText = "⚡ Doble Daño (Activo)";
+            alert("⚡ ¡Doble daño activado! Tu próxima apuesta y recompensa valdrán el doble.");
+        }
+
+        function habilidadEscanear() {
+            if(!miTurno || !partidaActiva || usadoEscanear) return;
+            usadoEscanear = true;
+            modoEscanearActivo = true;
+            document.getElementById('btnEscanear').disabled = true;
+            document.getElementById('btnEscanear').innerText = "👁️ Escanear (Usado)";
+            alert("👁️ Modo Escáner activo: Haz clic en cualquier plato cerrado para inspeccionarlo.");
+        }
+
+        function habilidadPasarTurno() {
+            if(!miTurno || !partidaActiva || usadoPasar) return;
+            if(confirm("¿Estás seguro de pasar tu turno a Lorraine?")) {
+                usadoPasar = true;
+                document.getElementById('btnPasar').disabled = true;
+                document.getElementById('btnPasar').innerText = "⏭️ Pasar Turno (Usado)";
+
+                miTurno = false;
+                actualizarIndicadorTurno();
+                alert("⏭️ Has pasado el turno.");
+                setTimeout(turnoDelBot, 1500);
+            }
+        }
+
+        async function abrirPlatillo(index) {
+            if(!miTurno || !partidaActiva || platillosAbiertos.includes(index)) return;
+
+            const platilloEl = document.getElementById(`plate-${index}`);
+
+            if(modoEscanearActivo) {
+                modoEscanearActivo = false;
+                if(index === platilloVeneno) {
+                    platilloEl.innerHTML = '<i class="fa-solid fa-magnifying-glass" style="color:var(--accent-red);"></i><span class="plate-num" style="color:var(--accent-red);">¡PIMIENTO!</span>';
+                    setTimeout(() => {
+                        platilloEl.innerHTML = `<i class="fa-solid fa-bowl-food"></i><span class="plate-num">Plato ${index+1}</span>`;
+                    }, 2000);
+                } else {
+                    platilloEl.innerHTML = '<i class="fa-solid fa-magnifying-glass" style="color:var(--poison-green);"></i><span class="plate-num" style="color:var(--poison-green);">Seguro</span>';
+                    setTimeout(() => {
+                        platilloEl.innerHTML = `<i class="fa-solid fa-bowl-food"></i><span class="plate-num">Plato ${index+1}</span>`;
+                    }, 2000);
+                }
+                return;
+            }
+            
+            miTurno = false;
+            actualizarIndicadorTurno();
+            platillosAbiertos.push(index);
+            
+            platilloEl.style.pointerEvents = "none";
+
+            if (index === platilloVeneno) {
+                platilloEl.innerHTML = '<i class="fa-solid fa-pepper-hot" style="color:var(--accent-red);"></i><span class="plate-num" style="color:var(--accent-red);">¡PIMIENTO!</span>';
+                platilloEl.style.borderColor = 'var(--accent-red)';
+                
+                vidasJugador--;
+                dibujarVidas('myLives', vidasJugador);
+                
+                if (vidasJugador <= 0) {
+                    await finalizarPartida(false, "¡Te tragaste el pimiento picante! Has perdido la partida.");
+                } else {
+                    setTimeout(() => {
+                        mezclarVeneno();
+                        miTurno = true;
+                        actualizarIndicadorTurno();
+                    }, 1500);
+                }
+            } else {
+                platilloEl.innerHTML = '<i class="fa-solid fa-utensils" style="color:var(--poison-green);"></i><span class="plate-num">Seguro</span>';
+                platilloEl.style.borderColor = 'var(--poison-green)';
+                setTimeout(turnoDelBot, 1500);
+            }
+        }
+
+        function turnoDelBot() {
+            if(!partidaActiva) return;
+
+            if(vidasBot <= 2 && !botEnojado) activarModoEnojada();
+
+            let platilloElegido;
+            let disponibles = [0, 1, 2, 3, 4].filter(p => !platillosAbiertos.includes(p));
+
+            if (botEnojado && disponibles.length > 1) {
+                let opcionesSeguras = disponibles.filter(p => p !== platilloVeneno);
+                platilloElegido = opcionesSeguras.length > 0 ? opcionesSeguras[Math.floor(Math.random() * opcionesSeguras.length)] : disponibles[0];
+            } else {
+                platilloElegido = disponibles[Math.floor(Math.random() * disponibles.length)];
+            }
+            
+            platillosAbiertos.push(platilloElegido);
+            const platilloEl = document.getElementById(`plate-${platilloElegido}`);
+            platilloEl.innerHTML = '<i class="fa-solid fa-robot" style="color:var(--halloween-orange);"></i><span class="plate-num">Lorraine</span>';
+
+            setTimeout(async () => {
+                if (platilloElegido === platilloVeneno) {
+                    platilloEl.innerHTML = '<i class="fa-solid fa-pepper-hot" style="color:var(--accent-red);"></i><span class="plate-num" style="color:var(--accent-red);">¡PIMIENTO!</span>';
+                    platilloEl.style.borderColor = 'var(--accent-red)';
+                    
+                    vidasBot--;
+                    dibujarVidas('rivalLives', vidasBot);
+                    
+                    if (vidasBot <= 0) {
+                        await finalizarPartida(true, "¡Increíble! Lograste vencer a Lorraine en su propio juego.");
+                    } else {
+                        setTimeout(() => {
+                            mezclarVeneno();
+                            setTimeout(turnoDelBot, 1500); 
+                        }, 1500);
+                    }
+                } else {
+                    platilloEl.innerHTML = '<i class="fa-solid fa-utensils" style="color:var(--text-muted);"></i><span class="plate-num">Seguro</span>';
+                    miTurno = true;
+                    actualizarIndicadorTurno();
+                }
+            }, 800);
+        }
+
+        async function finalizarPartida(gano, mensaje) {
+            partidaActiva = false;
+            
+            let multiplicador = dobleDanoActivo ? 2 : 1;
+            let apuestaEfectiva = apuestaBase * multiplicador;
+
+            try {
+                const res = await fetch(`${API_URL}&_=${new Date().getTime()}`);
+                const rawData = await res.json();
+                const freshList = rawData.map(row => {
+                    let newRow = {};
+                    for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                    return newRow;
+                });
+
+                const nombreSeguro = usuarioActual.nombre;
+                const avatarSeguro = usuarioActual.foto;
+                const miRegistroActualizado = freshList.find(r => r.nombre && r.nombre.toLowerCase().trim() === nombreSeguro.toLowerCase().trim());
+
+                let puntajeRuletaActual = miRegistroActualizado && miRegistroActualizado.juego2 ? (parseInt(miRegistroActualizado.juego2) || 0) : 0;
+                let descuentosActuales = miRegistroActualizado && miRegistroActualizado.descuentos ? (parseInt(miRegistroActualizado.descuentos) || 0) : 0;
+                let victoriasActuales = miRegistroActualizado ? (parseInt(miRegistroActualizado.victorias) || 0) : 0;
+                let derrotasActuales = miRegistroActualizado ? (parseInt(miRegistroActualizado.derrotas) || 0) : 0;
+
+                let payloadData = { Foto: avatarSeguro };
+
+                if (gano) {
+                    let nuevoPuntajeRuleta = puntajeRuletaActual + apuestaEfectiva;
+                    victoriasActuales++;
+                    payloadData.Juego2 = nuevoPuntajeRuleta;
+                } else {
+                    let nuevosDescuentos = descuentosActuales + apuestaEfectiva;
+                    derrotasActuales++;
+                    payloadData.Descuentos = nuevosDescuentos;
+                }
+
+                payloadData.Victorias = victoriasActuales;
+                payloadData.Derrotas = derrotasActuales;
+
+                if (miRegistroActualizado) {
+                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ data: payloadData })
+                    });
+                } else {
+                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            data: [{ 
+                                Nombre: nombreSeguro, 
+                                Foto: avatarSeguro, 
+                                Kamazon: 0, 
+                                Juego2: gano ? apuestaEfectiva : 0, 
+                                Juego3: 0,
+                                Juego4: 0,
+                                Descuentos: gano ? 0 : apuestaEfectiva,
+                                Victorias: victoriasActuales, 
+                                Derrotas: derrotasActuales 
+                            }] 
+                        })
+                    });
+                }
+                
+                alert(`${mensaje}\nApuesta ${multiplicador > 1 ? '(¡Doble Daño Activo!)' : ''}: ${apuestaEfectiva.toLocaleString()} puntos.`);
+            } catch (error) {
+                console.error("Error al actualizar SheetDB:", error);
+                alert(`${mensaje}\n(Hubo un problema al sincronizar con la base de datos).`);
+            }
+            
+            location.reload();
+        }
+
+        function rendirse() {
+            if (!confirm("¿Estás seguro de que deseas rendirte? Perderás los puntos apostados.")) return;
+            finalizarPartida(false, "Te has rendido ante Lorraine.");
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('sesion_activa');
+            localStorage.removeItem('usuario_nombre');
+            localStorage.removeItem('usuario_avatar');
+            localStorage.removeItem('usuario_roll');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

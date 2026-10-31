@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abismo Corrupto - Mi Casita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <style>
+        /* TEMA OSCURO (Morado oscuro y naranja) */
+        :root {
+            --sidebar-bg: #15131f; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #221e2d; 
+            --sidebar-btn: #ff8c00; 
+            --main-bg: #121017;
+            --card-bg: #191622; 
+            --text-dark: #f0eef5; 
+            --text-muted: #888299;
+            --border-color: #272235; 
+            --accent-red: #ff5722;
+            --halloween-orange: #ff8c00; 
+            --halloween-purple: #7b1fa2;
+            --poison-green: #39ff14; 
+            --kamazon-gold: #ffcf00; 
+            --setup-blue: #4299f6;
+            --neon-blue: #00ffff;
+            --neon-red: #ff0055;
+            --neon-purple: #b829ff;
+            --neon-green: #4ade80;
+        }
+        /* TEMA CLARO (Morado claro, degradado blanco y acentos naranjas) */
+        [data-theme="light"] {
+            --sidebar-bg: #292437; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; 
+            --sidebar-btn: #ff8800; 
+            --main-bg: linear-gradient(135deg, #f9f5ed 0%, #f0eae1 100%);
+            --card-bg: #ffffff; 
+            --text-dark: #201b2a; 
+            --text-muted: #7d7889;
+            --border-color: #e8e4dc;
+            --halloween-orange: #ff6600;
+            --kamazon-gold: #d4ac0d;
+        }
+        /* TEMA BLANCO Y NEGRO */
+        [data-theme="bn"] {
+            --sidebar-bg: #1a1a1a; 
+            --sidebar-text: #b0b0b0; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #333333; 
+            --sidebar-btn: #ffffff; 
+            --main-bg: #ffffff;
+            --card-bg: #f2f2f2; 
+            --text-dark: #000000; 
+            --text-muted: #555555;
+            --border-color: #cccccc; 
+            --kamazon-gold: #333333; 
+            --halloween-orange: #000000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); overflow: hidden; }
+
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; z-index: 100; transition: width 0.3s; border-right: 1px solid var(--border-color); }
+        .sidebar.collapsed { width: 0; padding: 0; }
+        
+        .sidebar-header { padding: 22px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--halloween-orange); }
+        .sidebar-header h2 { color: var(--sidebar-text-active); font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--halloween-orange); font-weight: 700; }
+        
+        .user-profile-sidebar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.04); margin-bottom: 10px; min-width: 260px; background: rgba(25, 22, 34, 0.5); }
+        .profile-info-wrap { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--halloween-orange); object-fit: cover; flex-shrink: 0; }
+        .user-meta { display: flex; flex-direction: column; overflow: hidden; }
+        .user-meta span { color: var(--sidebar-text-active); font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+        .user-meta p { font-size: 11px; color: var(--kamazon-gold); font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 1px; white-space: nowrap; }
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
+        .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
+
+        .nav-group { margin-bottom: 5px; min-width: 260px; }
+        .nav-title { padding: 10px 22px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; color: var(--text-muted); font-weight: 700; }
+        .nav-title:hover { color: var(--sidebar-text-active); }
+        .nav-title i { transition: transform 0.3s ease; }
+        .nav-group.collapsed-group .nav-items-container { max-height: 0; }
+        .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+        
+        .nav-item { padding: 10px 22px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; }
+        .nav-item:hover { color: var(--sidebar-text-active); background: rgba(255, 140, 0, 0.05); }
+        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--halloween-orange); }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: var(--card-bg); position: relative; z-index: 10; border-bottom: 1px solid var(--border-color); }
+        .toggle-btn, .theme-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--halloween-orange); font-size: 18px; cursor: pointer; padding: 8px 12px; border-radius: 10px; transition: 0.2s; }
+        .toggle-btn:hover, .theme-btn:hover { background: rgba(255,140,0,0.1); }
+        
+        .game-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #050508; overflow: hidden; z-index: 1; cursor: crosshair; }
+
+        .hud-container { position: absolute; top: 75px; left: 0; width: 100%; padding: 0 40px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 10; pointer-events: none; }
+        
+        .hud-left { display: flex; flex-direction: column; gap: 12px; }
+        .score-box { background: rgba(15,15,25,0.75); border: 1.5px solid var(--neon-blue); padding: 14px 22px; border-radius: 14px; backdrop-filter: blur(6px); box-shadow: 0 0 15px rgba(0,255,255,0.2); transition: 0.2s; }
+        .score-title { font-size: 10px; text-transform: uppercase; color: var(--neon-blue); letter-spacing: 2px; font-weight: 800; margin-bottom: 4px; }
+        .score-value { font-size: 32px; font-weight: 900; color: white; line-height: 1; font-variant-numeric: tabular-nums; }
+
+        .combo-box { background: rgba(255, 0, 85, 0.15); border: 1.5px solid var(--neon-red); padding: 10px 18px; border-radius: 12px; backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: space-between; gap: 15px; opacity: 0; transform: translateX(-20px); transition: 0.25s; box-shadow: 0 0 15px rgba(255,0,85,0.3); }
+        .combo-box.active { opacity: 1; transform: translateX(0); }
+        .combo-label { font-size: 11px; font-weight: 900; text-transform: uppercase; color: #ff8da1; letter-spacing: 1px; }
+        .combo-val { font-size: 24px; font-weight: 900; color: var(--kamazon-gold); text-shadow: 0 0 10px var(--neon-red); }
+
+        .hud-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+        .level-box { background: rgba(15,15,25,0.75); border: 1.5px solid var(--kamazon-gold); padding: 14px 22px; border-radius: 14px; backdrop-filter: blur(6px); text-align: right; box-shadow: 0 0 15px rgba(255, 207, 0, 0.2); }
+        .level-title { font-size: 10px; text-transform: uppercase; color: var(--kamazon-gold); letter-spacing: 2px; font-weight: 800; margin-bottom: 4px; }
+        .level-value { font-size: 26px; font-weight: 900; color: white; line-height: 1; }
+
+        .status-Row { display: flex; gap: 10px; align-items: center; }
+        .shield-badge { background: rgba(59, 104, 255, 0.25); border: 1.5px solid var(--setup-blue); color: white; padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 6px; box-shadow: 0 0 12px rgba(59, 104, 255, 0.4); }
+        
+        .skill-box { background: rgba(15,15,25,0.75); border: 1.5px solid #444; padding: 8px 14px; border-radius: 10px; width: 170px; text-align: left; position: relative; overflow: hidden; }
+        .skill-box.ready { border-color: var(--neon-green); box-shadow: 0 0 12px rgba(74, 222, 128, 0.3); }
+        .skill-box.active-skill { border-color: var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); }
+        .skill-header { display: flex; justify-content: space-between; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; color: #ccc; }
+        .skill-bar-bg { width: 100%; height: 6px; background: #222; border-radius: 4px; overflow: hidden; }
+        .skill-bar-fill { width: 100%; height: 100%; background: var(--neon-green); transition: width 0.1s linear; }
+
+        /* RANKING EN VIVO (HUD) */
+        .live-ranking { position: absolute; right: 40px; top: 220px; background: rgba(15,15,25,0.85); border: 1.5px solid #3c354e; border-radius: 14px; padding: 15px; width: 220px; backdrop-filter: blur(8px); z-index: 9; pointer-events: none; transition: 0.3s; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .lr-title { font-size: 11px; text-transform: uppercase; color: var(--setup-blue); font-weight: 900; margin-bottom: 12px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; letter-spacing: 1px; }
+        .lr-item { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 6px; color: #9691a5; font-weight: 600; padding: 4px 6px; border-radius: 6px; }
+        .lr-item.me { background: rgba(255, 207, 0, 0.15); color: var(--kamazon-gold); font-weight: 900; border-left: 3px solid var(--kamazon-gold); text-shadow: 0 0 5px rgba(255,207,0,0.5); }
+        .lr-rank { width: 20px; text-align: left; opacity: 0.7; }
+        .lr-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
+        .lr-score { color: white; }
+
+        /* CARRUSEL DE INSTRUCCIONES */
+        .instructions-slider { display: flex; align-items: center; justify-content: space-between; margin: 15px 0 20px 0; gap: 15px; min-height: 100px; }
+        .slide-btn { background: rgba(0, 255, 255, 0.05); border: 1px solid var(--neon-blue); color: var(--neon-blue); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: 0.2s; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .slide-btn:hover:not(:disabled) { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); transform: scale(1.1); }
+        .slide-btn:disabled { border-color: #444; color: #444; background: transparent; cursor: not-allowed; }
+        .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: left; padding: 0 5px; }
+        .slide-text { display: none; animation: fadeIn 0.3s ease; }
+        .slide-text.active { display: block; }
+        .slide-text h3 { font-size: 15px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+        .slide-text p { font-size: 13px; margin-bottom: 0 !important; color: #aaa; line-height: 1.4; }
+        .slide-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .dot { width: 8px; height: 8px; background: #444; border-radius: 50%; transition: 0.3s; }
+        .dot.active { background: var(--neon-blue); box-shadow: 0 0 8px var(--neon-blue); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+        .center-alerts { position: absolute; top: 28%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; z-index: 15; width: 100%; }
+        .level-up-msg { font-size: 50px; font-weight: 900; color: var(--kamazon-gold); text-transform: uppercase; text-shadow: 0 0 20px var(--kamazon-gold), 0 5px 15px rgba(0,0,0,0.9); opacity: 0; transform: scale(0.5); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .level-up-msg.show { opacity: 1; transform: scale(1); }
+        
+        .curse-alert { font-size: 22px; font-weight: 900; color: var(--neon-purple); background: rgba(15, 5, 25, 0.85); border: 1px solid var(--neon-purple); padding: 8px 25px; border-radius: 30px; display: inline-block; margin-top: 10px; opacity: 0; transform: translateY(10px); transition: 0.3s; box-shadow: 0 0 20px rgba(184, 41, 255, 0.5); text-transform: uppercase; letter-spacing: 1px; }
+        .curse-alert.show { opacity: 1; transform: translateY(0); }
+
+        .near-miss-popup { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); pointer-events: none; opacity: 0; z-index: 14; transition: 0.2s; }
+        .near-miss-popup.pop { opacity: 1; transform: translate(-50%, -80%) scale(1.2); }
+
+        .game-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.88); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; transition: 0.3s; }
+        .game-screen.hidden { opacity: 0; pointer-events: none; }
+        
+        .screen-box { background: rgba(20, 20, 30, 0.95); border: 2px solid var(--neon-blue); padding: 35px; border-radius: 20px; text-align: center; max-width: 520px; width: 90%; box-shadow: 0 0 30px rgba(0,255,255,0.2); position: relative; }
+        .screen-box h1 { font-size: 34px; font-weight: 900; color: white; text-transform: uppercase; margin-bottom: 10px; text-shadow: 0 0 10px var(--neon-blue); }
+        .screen-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+        
+        .btn-game { background: var(--neon-blue); color: #000; border: none; padding: 14px 38px; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; border-radius: 10px; cursor: pointer; transition: 0.2s; box-shadow: 0 0 15px rgba(0,255,255,0.4); }
+        .btn-game:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(0,255,255,0.6); }
+
+        .artifact-box { max-width: 780px; border-color: var(--kamazon-gold); box-shadow: 0 0 40px rgba(255, 207, 0, 0.25); }
+        .artifact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px; }
+        .artifact-card { background: #1a1829; border: 2px solid #35304d; border-radius: 14px; padding: 20px 15px; cursor: pointer; transition: 0.25s; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .artifact-card:hover { transform: translateY(-6px); border-color: var(--kamazon-gold); background: #242038; box-shadow: 0 10px 25px rgba(255, 207, 0, 0.2); }
+        .artifact-icon { font-size: 36px; color: var(--kamazon-gold); margin-bottom: 12px; filter: drop-shadow(0 0 8px rgba(255,207,0,0.5)); }
+        .artifact-title { font-size: 15px; font-weight: 800; color: white; margin-bottom: 8px; text-transform: uppercase; }
+        .artifact-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+        #gameOverScreen .screen-box { border-color: var(--neon-red); box-shadow: 0 0 30px rgba(255,0,85,0.2); }
+        #gameOverScreen h1 { color: var(--neon-red); text-shadow: 0 0 10px var(--neon-red); }
+        #gameOverScreen .btn-game { background: var(--neon-red); color: white; box-shadow: 0 0 15px rgba(255,0,85,0.4); }
+
+        .leaderboard-mini { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; text-align: left; }
+        .leaderboard-mini h3 { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .ld-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 7px 12px; border-radius: 8px; margin-bottom: 4px; }
+        .ld-name { font-size: 13px; font-weight: 700; color: white; }
+        .ld-score { font-size: 13px; font-weight: 900; color: var(--neon-blue); }
+
+        .sys-msg { font-size: 12px; font-weight: 700; margin-top: 12px; color: #4ade80; display: none; }
+
+        @media (max-width: 768px) { .artifact-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.jpg" alt="Logo" onerror="this.src='logo.jpg';">
+            <div>
+                <h2>Mi Casita</h2>
+                <p>Gremio de Guardian Tales</p>
+            </div>
+        </div>
+
+        <div class="user-profile-sidebar" id="user-profile-sidebar">
+            <div class="profile-info-wrap">
+                <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
+                <div class="user-meta">
+                    <span id="sidebar-name">Usuario</span>
+                    <p><i class="fa-solid fa-coins" style="color:var(--kamazon-gold);"></i> <span id="sidebarTotalPower">0</span> pts</p>
+                </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
+                <i class="fa-solid fa-power-off"></i>
+            </button>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-fire"></i> Fogata de bienvenida</a>
+                <a href="noticias.html" class="nav-item"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
+            </div>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="resumen.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
+                <a href="guia.html" class="nav-item"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
+                <a href="ranking.html" class="nav-item"><i class="fa-solid fa-trophy"></i> Ranking de la casa</a>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE EVENTOS ESPECIALES -->
+        <div class="nav-group">
+            <div class="nav-title" style="color: var(--halloween-orange);">EVENTOS ESPECIALES <i class="fa-solid fa-ghost"></i></div>
+            <div class="nav-items-container">
+                <a href="eventos.html" class="nav-item"><i class="fa-solid fa-spider"></i> Festival de Halloween</a>
+                <a href="Abismo Corrupto.html" class="nav-item active"><i class="fa-solid fa-microchip"></i> Abismo Corrupto</a>
+            </div>
+        </div>
+        
+        <div class="nav-group">
+            <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="heroes.html" class="nav-item"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
+                <a href="equipos.html" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
+            </div>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">INCURSIONES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="incursiones.html" class="nav-item"><i class="fa-solid fa-ghost"></i> Asalto</a>
+                <a href="arena.html" class="nav-item"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="topbar">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <span style="font-weight: 800; letter-spacing: 1px; color: var(--neon-blue); text-transform: uppercase;">
+                    <i class="fa-solid fa-microchip"></i> Abismo Corrupto • Modo Experto
+                </span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <button class="theme-btn" id="themeToggle" title="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
+            </div>
+        </div>
+
+        <div class="game-wrapper" id="game-container"></div>
+
+        <div class="hud-container">
+            <div class="hud-left">
+                <div class="score-box" id="hudScore">
+                    <div class="score-title">Chapas Recolectadas</div>
+                    <div class="score-value" id="scoreDisplay">0</div>
+                </div>
+                <div class="combo-box" id="comboBox">
+                    <span class="combo-label"><i class="fa-solid fa-bolt"></i> ¡Al Límite!</span>
+                    <span class="combo-val" id="comboDisplay">x1</span>
+                </div>
+            </div>
+
+            <div class="hud-right">
+                <div class="level-box" id="hudLevel">
+                    <div class="level-title">Zona Actual</div>
+                    <div class="level-value">Piso <span id="levelDisplay">1</span></div>
+                </div>
+                
+                <div class="status-Row">
+                    <div class="shield-badge" id="shieldBadge" style="display: none;">
+                        <i class="fa-solid fa-shield-halved"></i> <span id="shieldCount">0</span>
+                    </div>
+                    <div class="skill-box ready" id="skillBox">
+                        <div class="skill-header">
+                            <span><i class="fa-solid fa-baseball-bat-ball"></i> Bate (Clic)</span>
+                            <span id="skillStatusText">LISTO</span>
+                        </div>
+                        <div class="skill-bar-bg">
+                            <div class="skill-bar-fill" id="skillBar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="live-ranking" id="liveRankingBoard"></div>
+
+        <div class="center-alerts">
+            <div class="level-up-msg" id="levelUpMessage">¡PISO 2 ALCANZADO!</div>
+            <div class="curse-alert" id="curseAlert"><i class="fa-solid fa-skull"></i> Maldición Activa</div>
+        </div>
+        <div class="near-miss-popup" id="nearMissPopup">¡ROCE PERFECTO!</div>
+
+        <!-- PANTALLA DE INICIO CON CARRUSEL DE INSTRUCCIONES -->
+        <div class="game-screen" id="startScreen">
+            <div class="screen-box">
+                <h1 style="color: var(--kamazon-gold); text-shadow: 0 0 10px var(--kamazon-gold);">Abismo Corrupto</h1>
+                
+                <div class="instructions-slider">
+                    <button class="slide-btn" id="prevBtn" onclick="changeSlide(-1)" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                    
+                    <div class="slide-content">
+                        <div class="slide-text active" id="slide0">
+                            <h3 style="color: white;">1. El Descenso</h3>
+                            <p>Mueve el <b>ratón</b> para guiar a la <b style="color:#00ffff;">Princesita</b>. Esquiva los bloques corruptos y láseres.</p>
+                        </div>
+                        <div class="slide-text" id="slide1">
+                            <h3 style="color: var(--neon-green);">2. Bate Rompe-Ventanas</h3>
+                            <p>Haz <b>Clic Izquierdo</b> para activar la invulnerabilidad invisible. ¡Choca contra los obstáculos y destrúyelos!</p>
+                        </div>
+                        <div class="slide-text" id="slide2">
+                            <h3 style="color: var(--kamazon-gold);">3. Riesgo y Recompensa</h3>
+                            <p>Pasa rozando los peligros para subir tu combo y elige artefactos especiales al subir de zona.</p>
+                        </div>
+                    </div>
+
+                    <button class="slide-btn" id="nextBtn" onclick="changeSlide(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                
+                <div class="slide-dots">
+                    <div class="dot active" id="dot0"></div>
+                    <div class="dot" id="dot1"></div>
+                    <div class="dot" id="dot2"></div>
+                </div>
+
+                <button class="btn-game" id="btnStartGame" style="background:var(--kamazon-gold); box-shadow: 0 0 15px rgba(255,207,0,0.4);" onclick="startGame()">Iniciar Simulación</button>
+            </div>
+        </div>
+
+        <div class="game-screen hidden" id="artifactScreen">
+            <div class="screen-box artifact-box">
+                <h1 style="color: var(--kamazon-gold); text-shadow: 0 0 12px var(--kamazon-gold); font-size: 28px;">¡Piso Superado! Elige un Artefacto</h1>
+                <p style="margin-bottom: 10px;">Selecciona una mejora de Kamazon para continuar descendiendo:</p>
+                
+                <div class="artifact-grid">
+                    <div class="artifact-card" onclick="selectArtifact('magnet')">
+                        <div class="artifact-icon"><i class="fa-solid fa-magnet"></i></div>
+                        <div class="artifact-title">Imán de Agatha</div>
+                        <div class="artifact-desc">Atrae las Chapas Doradas automáticamente hacia la Princesita desde lejos.</div>
+                    </div>
+                    <div class="artifact-card" onclick="selectArtifact('shield')">
+                        <div class="artifact-icon" style="color: #60a5fa;"><i class="fa-solid fa-flask"></i></div>
+                        <div class="artifact-title">Poción de Lorraine</div>
+                        <div class="artifact-desc">Otorga <b>+1 Escudo Protector</b> contra choques mortales, pero aumenta la velocidad un 10%.</div>
+                    </div>
+                    <div class="artifact-card" onclick="selectArtifact('greed')">
+                        <div class="artifact-icon" style="color: #4ade80;"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div class="artifact-title">Monedero Real</div>
+                        <div class="artifact-desc">Cada Chapa Dorada recolectada otorga <b>+50 puntos base adicionales</b>.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-screen hidden" id="gameOverScreen">
+            <div class="screen-box">
+                <h1>Desincronizado</h1>
+                <p>La Princesita ha colapsado. Chapas Totales: <span id="finalScore" style="color: white; font-weight: 900; font-size: 22px;">0</span><br>Llegaste hasta el <b>Piso <span id="finalLevel">1</span></b></p>
+                
+                <button class="btn-game" id="btnRestart" onclick="startGame()">Reconectar</button>
+                <div class="sys-msg" id="saveMsg">Guardando en la base de datos...</div>
+
+                <div class="leaderboard-mini">
+                    <h3>Top Exploradores (Abismo)</h3>
+                    <div id="ld-list">Cargando...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- CHAT DE DISCORD WIDGETBOT -->
+    <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#120e17', notifications: true })
+    </script>
+
+    <script>
+        // =========================================================================
+        // RESTAURAR ESTADO DE LA BARRA LATERAL (LOCALSTORAGE)
+        // =========================================================================
+        const sidebar = document.getElementById('sidebar');
+        if (localStorage.getItem('sidebar-colapsada') === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => { 
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebar-colapsada', sidebar.classList.contains('collapsed'));
+        });
+
+        document.querySelectorAll('.nav-title').forEach(title => {
+            title.addEventListener('click', () => { 
+                const group = title.closest('.nav-group');
+                group.classList.toggle('collapsed-group'); 
+            });
+        });
+
+        // =========================================================================
+        // GESTIÓN DE TEMAS (Oscuro, Claro, Blanco y Negro) EN LOCALSTORAGE
+        // =========================================================================
+        const themeBtn = document.getElementById('themeToggle');
+        const rootElement = document.documentElement;
+
+        function aplicarTema(tema) {
+            if (tema === 'light') {
+                rootElement.setAttribute('data-theme', 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else if (tema === 'bn') {
+                rootElement.setAttribute('data-theme', 'bn');
+                themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>';
+            } else {
+                rootElement.removeAttribute('data-theme');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        }
+
+        let temaActual = localStorage.getItem('tema-casita') || 'dark';
+        aplicarTema(temaActual);
+
+        themeBtn.addEventListener('click', () => {
+            if (!rootElement.hasAttribute('data-theme')) {
+                temaActual = 'light';
+            } else if (rootElement.getAttribute('data-theme') === 'light') {
+                temaActual = 'bn';
+            } else {
+                temaActual = 'dark';
+            }
+            localStorage.setItem('tema-casita', temaActual);
+            aplicarTema(temaActual);
+        });
+
+        // =========================================================================
+        // DATOS DE USUARIO Y SHEETDB (Halloween)
+        // =========================================================================
+        let usuarioActual = { 
+            nombre: localStorage.getItem('usuario_nombre') || 'Newt', 
+            foto: localStorage.getItem('usuario_avatar') || 'logo.jpg' 
+        };
+        let miKamazonActual = 0;
+        let pDataTotal = [];
+        
+        document.getElementById('sidebar-name').innerText = usuarioActual.nombre;
+        document.getElementById('sidebar-avatar').src = usuarioActual.foto;
+
+        const API_URL = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
+
+        async function cargarLeaderboard() {
+            try {
+                const t = new Date().getTime();
+                const res = await fetch(`${API_URL}&_=${t}`);
+                const rawData = await res.json();
+                
+                if(rawData.error) throw new Error(rawData.error);
+                
+                pDataTotal = rawData.map(row => {
+                    let newRow = {};
+                    for(let key in row) { 
+                        newRow[key.trim().toLowerCase()] = row[key]; 
+                    }
+                    return newRow;
+                });
+                
+                const miRegistro = pDataTotal.find(r => r.nombre && r.nombre.toLowerCase() === usuarioActual.nombre.toLowerCase());
+                if(miRegistro) { 
+                    miKamazonActual = parseInt(miRegistro.kamazon) || 0; 
+                    const totalGeneral = parseInt(miRegistro.total) || 0;
+                    document.getElementById('sidebarTotalPower').innerText = totalGeneral.toLocaleString();
+                }
+                
+                renderLeaderboard();
+            } catch (error) {
+                console.warn("No se pudo cargar el ranking en vivo (API falló). El juego continuará normalmente.");
+                pDataTotal = []; 
+                document.getElementById('ld-list').innerText = "Aún no hay puntuaciones registradas.";
+            }
+        }
+
+        // ==========================================
+        // CARRUSEL DE INSTRUCCIONES
+        // ==========================================
+        let currentSlide = 0;
+        const totalSlides = 3;
+
+        function changeSlide(direction) {
+            document.getElementById(`slide${currentSlide}`).classList.remove('active');
+            document.getElementById(`dot${currentSlide}`).classList.remove('active');
+            
+            currentSlide += direction;
+            
+            document.getElementById(`slide${currentSlide}`).classList.add('active');
+            document.getElementById(`dot${currentSlide}`).classList.add('active');
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        // ==========================================
+        // SISTEMA DE AUDIO (Música Principal y SFX)
+        // ==========================================
+        const audioLobby = new Audio('Lobby Halloween.mp3');
+        audioLobby.loop = false; 
+        const audioGame = new Audio('Lilith Tower.mp3');
+        audioGame.loop = true;   
+
+        const sfxCristales = new Audio('Efectos/Cristales rotos.mp3');
+        sfxCristales.volume = 0.8;
+        const sfxGameOver = new Audio('Efectos/Game over.mp3');
+        const sfxMaldicion = new Audio('Efectos/Maldicion.mp3');
+        sfxMaldicion.volume = 0.9;
+        const sfxMoneda = new Audio('Efectos/Moneda.mp3');
+        sfxMoneda.volume = 0.7;
+        const sfxViento = new Audio('Efectos/Viento caida.mp3');
+        sfxViento.loop = true; 
+        sfxViento.volume = 0.4;
+        const sfxObstaculo = new Audio('Efectos/Obstaculo.mp3');
+        sfxObstaculo.volume = 0.6;
+        const sfxSubirPiso = new Audio('Efectos/Subir de piso.mp3');
+        const sfxCartas = new Audio('Efectos/Cartas efectos.mp3');
+
+        let lobbyMusicStarted = false;
+        document.body.addEventListener('click', () => {
+            if (!lobbyMusicStarted && !isPlaying) {
+                audioLobby.volume = 0.5;
+                audioLobby.play().catch(e => console.warn("Autoplay bloqueado"));
+                lobbyMusicStarted = true;
+            }
+        });
+
+        const kamazonLevels = [
+            { threshold: 0,    fog: 0x050508, obs: 0xff0055, speed: 0.60, name: "Piso 1", aura: 0x00ffff },
+            { threshold: 500,  fog: 0x1a0b2e, obs: 0xff00ff, speed: 0.72, name: "Piso 2", aura: 0xff00ff },
+            { threshold: 1500, fog: 0x330000, obs: 0xffaa00, speed: 0.85, name: "Piso 3", aura: 0xff3300 },
+            { threshold: 3000, fog: 0x002200, obs: 0x00ff00, speed: 0.95, name: "Piso 4", aura: 0x00ff00 },
+            { threshold: 5000, fog: 0x1a000d, obs: 0xff0055, speed: 1.10, name: "Piso 5 (JEFE)", aura: 0xffcf00 }
+        ];
+
+        let currentLevelIdx = 0;
+        let mixer;
+        const clock = new THREE.Clock();
+
+        const container = document.getElementById('game-container');
+        let width = container.clientWidth;
+        let height = container.clientHeight;
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(kamazonLevels[0].fog, 0.012);
+
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+        camera.position.z = 8;  
+        camera.position.y = 2;  
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(width, height);
+        container.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(0, 10, 5);
+        scene.add(dirLight);
+
+        const player = new THREE.Group();
+        scene.add(player);
+
+        const playerAura = new THREE.PointLight(kamazonLevels[0].aura, 2.5, 10);
+        playerAura.position.set(0, 0.5, 0);
+        player.add(playerAura);
+
+        const loader = new THREE.GLTFLoader();
+        let isModelLoaded = false;
+        
+        loader.load('modelo/Princesa caida 1.glb', function(gltf) {
+            const model = gltf.scene;
+            model.scale.set(1.7, 1.7, 1.7); 
+            model.rotation.y = Math.PI; 
+            model.position.y = -0.15; 
+            
+            player.add(model);
+            isModelLoaded = true;
+
+            if (gltf.animations && gltf.animations.length > 0) {
+                mixer = new THREE.AnimationMixer(model);
+                const action = mixer.clipAction(gltf.animations[0]);
+                action.play();
+            }
+        }, undefined, function(error) {
+            console.error('Error al cargar el modelo:', error);
+            const backupGeo = new THREE.SphereGeometry(0.8, 16, 16);
+            const backupMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, wireframe: true });
+            player.add(new THREE.Mesh(backupGeo, backupMat));
+            isModelLoaded = true;
+        });
+
+        const obstacles = [];
+        const coins = [];
+        const lasers = [];
+        const impacts = []; 
+
+        let obsGeo = new THREE.BoxGeometry(2, 2, 2);
+        let obsMat = new THREE.MeshStandardMaterial({ color: kamazonLevels[0].obs, roughness: 0.3, metalness: 0.8 });
+        let chaserMat = new THREE.MeshStandardMaterial({ color: 0xb829ff, roughness: 0.1, metalness: 0.9, emissive: 0x3a0057 });
+        
+        const coinGeo = new THREE.SphereGeometry(0.8, 16, 16);
+        const coinMat = new THREE.MeshStandardMaterial({ color: 0xffcf00, roughness: 0.1, metalness: 1.0, emissive: 0x443300 });
+
+        const laserGeo = new THREE.BoxGeometry(16, 0.55, 0.55);
+        const laserMat = new THREE.MeshBasicMaterial({ color: 0xff0055 });
+
+        const impactGeo = new THREE.IcosahedronGeometry(1.5, 0);
+
+        const bossGeo = new THREE.OctahedronGeometry(4.5, 0);
+        const bossMat = new THREE.MeshStandardMaterial({ color: 0xff0055, wireframe: true, emissive: 0x880022 });
+        const bossMesh = new THREE.Mesh(bossGeo, bossMat);
+        bossMesh.position.set(0, 0, -45);
+        bossMesh.visible = false;
+        scene.add(bossMesh);
+
+        const starGeo = new THREE.BufferGeometry();
+        const starCount = 600;
+        const starPos = new Float32Array(starCount * 3);
+        for(let i=0; i<starCount*3; i++) { starPos[i] = (Math.random() - 0.5) * 100; }
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.2 });
+        const stars = new THREE.Points(starGeo, starMat);
+        scene.add(stars);
+
+        let isPlaying = false;
+        let isPausedForArtifact = false;
+        let isSafeMode = false;
+        let safeTimer = 0;
+        let score = 0;
+        let baseSpeed = kamazonLevels[0].speed;
+        let speedMultiplier = 1.0;
+        let animationId;
+        
+        let mouseX = 0, mouseY = 0;
+        const boundsX = 8.0; 
+        const boundsY = 5.0;
+
+        let magnetLevel = 0;
+        let shields = 0;
+        let coinBaseValue = 50;
+
+        let skillActive = false;
+        let skillTimer = 0;
+        let skillCooldown = 0;
+        const SKILL_DURATION = 2.5;
+        const SKILL_CD_TIME = 10.0;
+
+        let comboMult = 1;
+        let comboTimer = 0;
+
+        let curseIntervalTimer = 18.0;
+        let activeCurse = null;
+        let curseDurationTimer = 0;
+        let targetCamRoll = 0;
+
+        let bossShootTimer = 0;
+        let liveRankingUpdateTimer = 0; 
+
+        container.addEventListener('mousemove', (e) => {
+            if(!isPlaying || isPausedForArtifact) return;
+            const rect = container.getBoundingClientRect();
+            mouseX = ((e.clientX - rect.left) / width) * 2 - 1;
+            mouseY = -((e.clientY - rect.top) / height) * 2 + 1;
+        });
+
+        container.addEventListener('mousedown', (e) => {
+            if (e.button === 0 && isPlaying && !isPausedForArtifact) {
+                activateBatSkill();
+            }
+        });
+
+        function activateBatSkill() {
+            if (skillCooldown <= 0 && !skillActive) {
+                skillActive = true;
+                skillTimer = SKILL_DURATION;
+                playerAura.color.setHex(0x00ffff);
+                playerAura.intensity = 5;
+                document.getElementById('skillBox').classList.remove('ready');
+                document.getElementById('skillBox').classList.add('active-skill');
+                document.getElementById('skillStatusText').innerText = "¡ACTIVO!";
+            }
+        }
+
+        function spawnImpact(pos) {
+            const mat = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true, transparent: true, opacity: 1 });
+            const mesh = new THREE.Mesh(impactGeo, mat);
+            mesh.position.copy(pos);
+            mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+            scene.add(mesh);
+            impacts.push({ mesh: mesh, life: 1.0 });
+        }
+
+        function spawnEntity(type) {
+            if (type === 'coin') {
+                const mesh = new THREE.Mesh(coinGeo, coinMat);
+                mesh.position.set((Math.random() - 0.5) * boundsX * 2, (Math.random() - 0.5) * boundsY * 2, -100 - Math.random() * 150);
+                scene.add(mesh);
+                coins.push(mesh);
+            } else if (type === 'obs') {
+                const mesh = new THREE.Mesh(obsGeo, obsMat);
+                mesh.userData = { isChaser: false, nearMissed: false };
+                mesh.position.set((Math.random() - 0.5) * boundsX * 2, (Math.random() - 0.5) * boundsY * 2, -100 - Math.random() * 150);
+                scene.add(mesh);
+                obstacles.push(mesh);
+            } else if (type === 'laser') {
+                const mesh = new THREE.Mesh(laserGeo, laserMat);
+                mesh.userData = { soundPlayed: false }; 
+                mesh.position.set(0, (Math.random() - 0.5) * boundsY, -140 - Math.random() * 60);
+                mesh.rotation.z = Math.random() * Math.PI;
+                mesh.visible = false;
+                scene.add(mesh);
+                lasers.push(mesh);
+            }
+        }
+
+        function resetObstacle(obs, zOffset = -120) {
+            obs.position.set((Math.random() - 0.5) * boundsX * 2, (Math.random() - 0.5) * boundsY * 2, zOffset - Math.random() * 100);
+            obs.userData.nearMissed = false;
+            if (currentLevelIdx >= 2 && Math.random() < 0.25) {
+                obs.userData.isChaser = true;
+                obs.material = chaserMat;
+            } else {
+                obs.userData.isChaser = false;
+                obs.material = obsMat;
+            }
+        }
+
+        function initGameEnvironment() {
+            obstacles.forEach(o => scene.remove(o)); obstacles.length = 0;
+            coins.forEach(c => scene.remove(c)); coins.length = 0;
+            lasers.forEach(l => scene.remove(l)); lasers.length = 0;
+            impacts.forEach(imp => scene.remove(imp.mesh)); impacts.length = 0;
+            
+            for(let i=0; i<14; i++) { spawnEntity('obs'); }
+            for(let i=0; i<4; i++)  { spawnEntity('coin'); }
+            for(let i=0; i<2; i++)  { spawnEntity('laser'); }
+            
+            player.position.set(0,0,0);
+            player.rotation.set(0,0,0); 
+            
+            score = 0;
+            currentLevelIdx = 0;
+            magnetLevel = 0;
+            shields = 0;
+            coinBaseValue = 50;
+            speedMultiplier = 1.0;
+
+            skillActive = false;
+            skillCooldown = 0;
+            
+            isSafeMode = false;
+            safeTimer = 0;
+
+            comboMult = 1;
+            comboTimer = 0;
+            updateComboUI();
+            updateShieldUI();
+
+            clearCurse();
+            curseIntervalTimer = 18.0;
+            bossMesh.visible = false;
+
+            liveRankingUpdateTimer = 0;
+
+            updateLevelVisuals(0);
+            document.getElementById('scoreDisplay').innerText = "0";
+        }
+
+        function checkLevelUp() {
+            if (currentLevelIdx < kamazonLevels.length - 1) {
+                const nextLevel = kamazonLevels[currentLevelIdx + 1];
+                if (score >= nextLevel.threshold) {
+                    currentLevelIdx++;
+                    updateLevelVisuals(currentLevelIdx);
+                    showLevelUpMessage(nextLevel.name);
+                    
+                    sfxSubirPiso.currentTime = 0;
+                    sfxSubirPiso.play().catch(e=>console.warn(e));
+
+                    isPausedForArtifact = true;
+                    document.getElementById('artifactScreen').classList.remove('hidden');
+
+                    sfxCartas.currentTime = 0;
+                    sfxCartas.play().catch(e=>console.warn(e));
+                    
+                    sfxViento.pause();
+                }
+            }
+        }
+
+        function selectArtifact(type) {
+            if (type === 'magnet') {
+                magnetLevel++;
+            } else if (type === 'shield') {
+                shields++;
+                speedMultiplier *= 1.10;
+                updateShieldUI();
+            } else if (type === 'greed') {
+                coinBaseValue += 50;
+            }
+
+            document.getElementById('artifactScreen').classList.add('hidden');
+            
+            obstacles.forEach(obs => resetObstacle(obs, -150 - Math.random() * 100));
+            lasers.forEach(laser => { laser.position.z = -200 - Math.random() * 50; laser.userData.soundPlayed = false; });
+
+            isSafeMode = true;
+            safeTimer = 2.0;
+            isPausedForArtifact = false;
+            clock.getDelta(); 
+
+            sfxViento.play().catch(e=>console.warn(e));
+        }
+
+        function updateShieldUI() {
+            const badge = document.getElementById('shieldBadge');
+            if (shields > 0) {
+                badge.style.display = 'flex';
+                document.getElementById('shieldCount').innerText = shields;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function updateLevelVisuals(idx) {
+            const lvl = kamazonLevels[idx];
+            scene.fog.color.setHex(lvl.fog);
+            obsMat.color.setHex(lvl.obs);
+            if(!isSafeMode && !skillActive) playerAura.color.setHex(lvl.aura); 
+            baseSpeed = lvl.speed;
+            document.getElementById('levelDisplay').innerText = idx + 1;
+
+            lasers.forEach(l => l.visible = (idx >= 1));
+            bossMesh.visible = (idx === 4);
+        }
+
+        function showLevelUpMessage(text) {
+            const msgBox = document.getElementById('levelUpMessage');
+            msgBox.innerText = `¡${text} ALCANZADO!`;
+            msgBox.classList.add('show');
+            setTimeout(() => { msgBox.classList.remove('show'); }, 2200);
+        }
+
+        function triggerRandomCurse() {
+            sfxMaldicion.currentTime = 0;
+            sfxMaldicion.play().catch(e=>console.warn(e));
+
+            const curseAlert = document.getElementById('curseAlert');
+            activeCurse = Math.random() < 0.5 ? 'darkness' : 'invert';
+            curseDurationTimer = 5.5;
+
+            if (activeCurse === 'darkness') {
+                ambientLight.intensity = 0.02;
+                dirLight.intensity = 0.03;
+                playerAura.distance = 16;
+                curseAlert.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Maldición: Oscuridad Total';
+            } else {
+                targetCamRoll = Math.PI;
+                curseAlert.innerHTML = '<i class="fa-solid fa-rotate"></i> Maldición: Vórtice Invertido';
+            }
+            curseAlert.classList.add('show');
+        }
+
+        function clearCurse() {
+            activeCurse = null;
+            ambientLight.intensity = 0.6;
+            dirLight.intensity = 0.8;
+            playerAura.distance = 10;
+            targetCamRoll = 0;
+            document.getElementById('curseAlert').classList.remove('show');
+        }
+
+        function triggerNearMiss() {
+            comboMult = Math.min(5, comboMult + 1);
+            comboTimer = 4.0;
+            score += 10 * comboMult;
+            updateComboUI();
+
+            const pop = document.getElementById('nearMissPopup');
+            pop.innerText = `¡AL LÍMITE! x${comboMult}`;
+            pop.classList.add('pop');
+            setTimeout(() => pop.classList.remove('pop'), 350);
+        }
+
+        function updateComboUI() {
+            const box = document.getElementById('comboBox');
+            if (comboMult > 1) {
+                box.classList.add('active');
+                document.getElementById('comboDisplay').innerText = `x${comboMult}`;
+            } else {
+                box.classList.remove('active');
+            }
+        }
+
+        function handlePlayerHit(obstacleMesh) {
+            if (skillActive) {
+                score += 25 * comboMult;
+                spawnImpact(obstacleMesh.position); 
+                
+                sfxCristales.currentTime = 0;
+                sfxCristales.play().catch(e=>console.warn(e));
+                
+                if (obstacleMesh.geometry === laserGeo) {
+                    obstacleMesh.position.set(0, (Math.random() - 0.5) * boundsY, -150 - Math.random() * 50);
+                    obstacleMesh.userData.soundPlayed = false;
+                } else {
+                    resetObstacle(obstacleMesh, -120);
+                }
+
+                document.getElementById('game-container').style.filter = 'brightness(150%) hue-rotate(-20deg)';
+                setTimeout(() => { document.getElementById('game-container').style.filter = 'none'; }, 100);
+                return false;
+            }
+
+            if (shields > 0) {
+                shields--;
+                updateShieldUI();
+                spawnImpact(obstacleMesh.position);
+                
+                if (obstacleMesh.geometry === laserGeo) {
+                    obstacleMesh.position.set(0, (Math.random() - 0.5) * boundsY, -150 - Math.random() * 50);
+                    obstacleMesh.userData.soundPlayed = false;
+                } else {
+                    resetObstacle(obstacleMesh, -120);
+                }
+
+                document.getElementById('game-container').style.filter = 'brightness(200%) sepia(100%) hue-rotate(180deg)';
+                setTimeout(() => { document.getElementById('game-container').style.filter = 'none'; }, 250);
+                return false;
+            }
+            
+            gameOver();
+            return true;
+        }
+
+        function updateInGameLeaderboard() {
+            if (!Array.isArray(pDataTotal)) {
+                pDataTotal = [];
+            }
+
+            let currentList = pDataTotal.map(p => ({...p}));
+            let currentDisplayScore = Math.floor(score);
+            let me = currentList.find(p => p.nombre && p.nombre.toLowerCase() === usuarioActual.nombre.toLowerCase());
+
+            let previewKamazon = miKamazonActual + currentDisplayScore;
+            if (me) {
+                me.kamazon = previewKamazon;
+                me.isMe = true;
+            } else {
+                currentList.push({ nombre: usuarioActual.nombre, kamazon: previewKamazon, isMe: true });
+            }
+
+            currentList.sort((a, b) => (parseInt(b.kamazon) || 0) - (parseInt(a.kamazon) || 0));
+
+            let html = '<div class="lr-title">Top 10 Gremio</div>';
+            for (let i = 0; i < Math.min(10, currentList.length); i++) {
+                let p = currentList[i];
+                let isMeClass = p.isMe ? ' me' : '';
+                html += `
+                    <div class="lr-item${isMeClass}">
+                        <span class="lr-rank">${i+1}</span>
+                        <span class="lr-name">${p.nombre}</span>
+                        <span class="lr-score">${p.kamazon}</span>
+                    </div>
+                `;
+            }
+            document.getElementById('liveRankingBoard').innerHTML = html;
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('artifactScreen').classList.add('hidden');
+            document.getElementById('saveMsg').style.display = 'none';
+            document.getElementById('btnRestart').disabled = false;
+            document.getElementById('liveRankingBoard').style.display = 'block'; 
+            
+            audioLobby.pause();
+            audioLobby.currentTime = 0;
+            
+            audioGame.volume = 0.4;
+            audioGame.currentTime = 0;
+            audioGame.play().catch(e => console.warn("Audio bloqueado", e));
+
+            sfxViento.currentTime = 0;
+            sfxViento.play().catch(e => console.warn(e));
+
+            initGameEnvironment();
+            isPlaying = true;
+            isPausedForArtifact = false;
+            clock.start();
+            animate();
+        }
+
+        function gameOver() {
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+            clearCurse();
+            document.getElementById('liveRankingBoard').style.display = 'none'; 
+            
+            audioGame.pause();
+            sfxViento.pause();
+            sfxGameOver.currentTime = 0;
+            sfxGameOver.play().catch(e => console.warn(e));
+
+            playerAura.color.setHex(0xff0055); 
+            document.getElementById('game-container').style.filter = 'contrast(200%) hue-rotate(90deg)';
+            setTimeout(() => { document.getElementById('game-container').style.filter = 'none'; }, 300);
+
+            document.getElementById('finalScore').innerText = Math.floor(score);
+            document.getElementById('finalLevel').innerText = currentLevelIdx + 1;
+            document.getElementById('gameOverScreen').classList.remove('hidden');
+            
+            guardarPuntos(Math.floor(score));
+        }
+
+        function animate() {
+            if (!isPlaying) return;
+            animationId = requestAnimationFrame(animate);
+
+            if (isPausedForArtifact) {
+                renderer.render(scene, camera);
+                return;
+            }
+
+            const dt = Math.min(clock.getDelta(), 0.1);
+            if (mixer) { mixer.update(dt); }
+
+            const currentSpeed = baseSpeed * speedMultiplier;
+
+            liveRankingUpdateTimer += dt;
+            if (liveRankingUpdateTimer >= 0.5) {
+                updateInGameLeaderboard();
+                liveRankingUpdateTimer = 0;
+            }
+
+            for (let i = impacts.length - 1; i >= 0; i--) {
+                let imp = impacts[i];
+                imp.life -= dt * 2.5; 
+                imp.mesh.scale.addScalar(dt * 15); 
+                imp.mesh.rotation.y += dt * 5; 
+                imp.mesh.material.opacity = imp.life;
+                if (imp.life <= 0) {
+                    scene.remove(imp.mesh);
+                    impacts.splice(i, 1);
+                }
+            }
+
+            if (isSafeMode && !skillActive) {
+                safeTimer -= dt;
+                playerAura.color.setHex(0xffffff);
+                playerAura.intensity = (Math.sin(clock.getElapsedTime() * 15) * 2) + 3;
+                if (safeTimer <= 0) {
+                    isSafeMode = false;
+                    playerAura.intensity = 2.5;
+                    playerAura.color.setHex(kamazonLevels[currentLevelIdx].aura);
+                }
+            }
+
+            if (skillActive) {
+                skillTimer -= dt;
+                document.getElementById('skillBar').style.width = `${(skillTimer / SKILL_DURATION) * 100}%`;
+                if (skillTimer <= 0) {
+                    skillActive = false;
+                    skillCooldown = SKILL_CD_TIME;
+                    if(!isSafeMode) playerAura.color.setHex(kamazonLevels[currentLevelIdx].aura);
+                    playerAura.intensity = 2.5;
+                    document.getElementById('skillBox').classList.remove('active-skill');
+                }
+            } else if (skillCooldown > 0) {
+                skillCooldown -= dt;
+                const progress = ((SKILL_CD_TIME - skillCooldown) / SKILL_CD_TIME) * 100;
+                document.getElementById('skillBar').style.width = `${progress}%`;
+                document.getElementById('skillStatusText').innerText = `${Math.ceil(skillCooldown)}s`;
+                if (skillCooldown <= 0) {
+                    document.getElementById('skillBox').classList.add('ready');
+                    document.getElementById('skillStatusText').innerText = "LISTO";
+                }
+            }
+
+            if (comboMult > 1) {
+                comboTimer -= dt;
+                if (comboTimer <= 0) {
+                    comboMult = 1;
+                    updateComboUI();
+                }
+            }
+
+            if (currentLevelIdx >= 1) {
+                if (activeCurse) {
+                    curseDurationTimer -= dt;
+                    if (curseDurationTimer <= 0) clearCurse();
+                } else {
+                    curseIntervalTimer -= dt;
+                    if (curseIntervalTimer <= 0) {
+                        triggerRandomCurse();
+                        curseIntervalTimer = 18.0;
+                    }
+                }
+            }
+            camera.rotation.z += (targetCamRoll - camera.rotation.z) * 0.06;
+
+            player.position.x += (mouseX * boundsX - player.position.x) * 0.15;
+            player.position.y += (mouseY * boundsY - player.position.y) * 0.15;
+            player.rotation.z = -(mouseX * 0.5); 
+            player.rotation.x = (mouseY * 0.5);
+
+            const positions = stars.geometry.attributes.position.array;
+            for(let i=2; i<starCount*3; i+=3) {
+                positions[i] += currentSpeed * 2;
+                if(positions[i] > 10) { positions[i] = -100; }
+            }
+            stars.geometry.attributes.position.needsUpdate = true;
+
+            const playerBox = new THREE.Box3().setFromObject(player);
+            playerBox.expandByScalar(-0.6); 
+            const nearMissBox = playerBox.clone().expandByScalar(1.5); 
+
+            for (let i = 0; i < obstacles.length; i++) {
+                const obs = obstacles[i];
+                obs.position.z += currentSpeed;
+                obs.rotation.x += 0.02; obs.rotation.y += 0.02;
+
+                if (obs.userData.isChaser && obs.position.z > -70 && obs.position.z < 0) {
+                    obs.position.x += Math.sign(player.position.x - obs.position.x) * 0.035;
+                    obs.position.y += Math.sign(player.position.y - obs.position.y) * 0.035;
+                }
+
+                const obsBox = new THREE.Box3().setFromObject(obs);
+                obsBox.expandByScalar(-0.5); 
+
+                if (playerBox.intersectsBox(obsBox)) {
+                    if (!isSafeMode) {
+                        if (handlePlayerHit(obs)) return;
+                    }
+                } else if (!obs.userData.nearMissed && nearMissBox.intersectsBox(obsBox)) {
+                    obs.userData.nearMissed = true;
+                    triggerNearMiss();
+                }
+                
+                if (obs.position.z > 10) { resetObstacle(obs); }
+            }
+
+            if (currentLevelIdx >= 1) {
+                for (let i = 0; i < lasers.length; i++) {
+                    const laser = lasers[i];
+                    laser.position.z += currentSpeed * 0.9;
+                    laser.rotation.z += 0.025;
+
+                    if (laser.position.z > -35 && !laser.userData.soundPlayed) {
+                        sfxObstaculo.currentTime = 0;
+                        sfxObstaculo.play().catch(e=>{});
+                        laser.userData.soundPlayed = true; 
+                    }
+
+                    if (Math.abs(laser.position.z - player.position.z) < 0.9) {
+                        const dx = player.position.x - laser.position.x;
+                        const dy = player.position.y - laser.position.y;
+                        const angle = -laser.rotation.z;
+                        const localX = dx * Math.cos(angle) - dy * Math.sin(angle);
+                        const localY = dx * Math.sin(angle) + dy * Math.cos(angle);
+
+                        if (Math.abs(localX) < 8.0 && Math.abs(localY) < 0.75) {
+                            if (!isSafeMode) {
+                                if (handlePlayerHit(laser)) return;
+                            }
+                        }
+                    }
+                    if (laser.position.z > 10) {
+                        laser.position.set(0, (Math.random() - 0.5) * boundsY, -150 - Math.random() * 50);
+                        laser.userData.soundPlayed = false; 
+                    }
+                }
+            }
+
+            if (currentLevelIdx === 4) {
+                bossMesh.rotation.y += 0.03;
+                bossMesh.rotation.x += 0.015;
+                bossMesh.position.x = Math.sin(clock.getElapsedTime() * 1.5) * 5;
+                bossMesh.position.y = Math.cos(clock.getElapsedTime() * 1.2) * 3;
+
+                bossShootTimer -= dt;
+                if (bossShootTimer <= 0) {
+                    bossShootTimer = 1.2;
+                    const proj = obstacles[Math.floor(Math.random() * obstacles.length)];
+                    proj.position.copy(bossMesh.position);
+                    proj.userData.isChaser = true;
+                    proj.material = chaserMat;
+                }
+            }
+
+            for (let i = 0; i < coins.length; i++) {
+                const coin = coins[i];
+                coin.position.z += currentSpeed;
+                coin.rotation.y += 0.1; 
+
+                if (magnetLevel > 0) {
+                    const magnetRange = 4.5 + (magnetLevel * 3.5);
+                    if (player.position.distanceTo(coin.position) < magnetRange) {
+                        coin.position.lerp(player.position, 0.14);
+                    }
+                }
+
+                const coinBox = new THREE.Box3().setFromObject(coin);
+
+                if (playerBox.intersectsBox(coinBox)) {
+                    score += coinBaseValue * comboMult; 
+                    
+                    sfxMoneda.currentTime = 0;
+                    sfxMoneda.play().catch(e=>{});
+
+                    coin.position.set((Math.random() - 0.5) * boundsX * 2, (Math.random() - 0.5) * boundsY * 2, -100 - Math.random() * 100);
+                    document.getElementById('hudScore').style.borderColor = "#ffcf00";
+                    setTimeout(() => { document.getElementById('hudScore').style.borderColor = "var(--neon-blue)"; }, 200);
+                } else if (coin.position.z > 10) {
+                    coin.position.set((Math.random() - 0.5) * boundsX * 2, (Math.random() - 0.5) * boundsY * 2, -100 - Math.random() * 100);
+                }
+            }
+
+            score += 0.05 * comboMult;
+            document.getElementById('scoreDisplay').innerText = Math.floor(score);
+            baseSpeed += 0.00004; 
+            
+            checkLevelUp();
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            width = container.clientWidth;
+            height = container.clientHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+
+        function renderLeaderboard() {
+            const list = document.getElementById('ld-list');
+            list.innerHTML = '';
+            
+            if (!Array.isArray(pDataTotal)) return;
+
+            const sorted = [...pDataTotal].sort((a, b) => (parseInt(b.kamazon) || 0) - (parseInt(a.kamazon) || 0));
+            const top5 = sorted.slice(0, 5);
+
+            top5.forEach((row, i) => {
+                if(!row.nombre) return;
+                list.innerHTML += `
+                    <div class="ld-item">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="color:#888; font-weight:900;">${i+1}</span>
+                            <span class="ld-name">${row.nombre}</span>
+                        </div>
+                        <span class="ld-score">${row.kamazon} <i class="fa-solid fa-coins" style="font-size:10px;"></i></span>
+                    </div>
+                `;
+            });
+        }
+
+        // ==========================================
+        // GUARDADO DE PUNTOS (Suma acumulativa a Kamazon y recalculo correcto del Total)
+        // ==========================================
+        async function guardarPuntos(puntosPartida) {
+            const saveMsg = document.getElementById('saveMsg');
+            const btnRes = document.getElementById('btnRestart');
+            btnRes.disabled = true;
+
+            saveMsg.style.display = 'block';
+            saveMsg.style.color = '#4ade80';
+            saveMsg.innerText = "Sincronizando puntos...";
+
+            try {
+                const nombreSeguro = usuarioActual.nombre;
+                const avatarSeguro = usuarioActual.foto;
+                
+                // Volver a consultar los datos más frescos antes de guardar
+                const t = new Date().getTime();
+                const res = await fetch(`${API_URL}&_=${t}`);
+                const rawData = await res.json();
+                const freshList = rawData.map(row => {
+                    let newRow = {};
+                    for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                    return newRow;
+                });
+
+                const miRegistro = freshList.find(r => r.nombre && r.nombre.toLowerCase() === nombreSeguro.toLowerCase());
+                
+                let kamazonAnterior = miRegistro ? (parseInt(miRegistro.kamazon) || 0) : miKamazonActual;
+                let j2 = miRegistro && miRegistro.juego2 ? (parseInt(miRegistro.juego2) || 0) : 0;
+                let j3 = miRegistro && miRegistro.juego3 ? (parseInt(miRegistro.juego3) || 0) : 0;
+                let j4 = miRegistro && miRegistro.juego4 ? (parseInt(miRegistro.juego4) || 0) : 0;
+                let j5 = miRegistro && miRegistro.juego5 ? (parseInt(miRegistro.juego5) || 0) : 0;
+
+                // Sumar los puntos obtenidos en esta partida al acumulado de Kamazon
+                let nuevoKamazon = kamazonAnterior + puntosPartida;
+                
+                // Recalcular el total sumando las columnas de juegos actualizadas
+                let nuevoTotal = nuevoKamazon + j2 + j3 + j4 + j5;
+
+                if (miRegistro) {
+                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
+                        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ data: { Kamazon: nuevoKamazon, Foto: avatarSeguro, Total: nuevoTotal } })
+                    });
+                } else {
+                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ data: [{ Nombre: nombreSeguro, Foto: avatarSeguro, Kamazon: puntosPartida, Juego2: 0, Juego3: 0, Juego4: 0, Juego5: 0, Total: puntosPartida, Victorias: 0, Derrotas: 0 }] })
+                    });
+                    nuevoKamazon = puntosPartida;
+                    nuevoTotal = puntosPartida;
+                }
+                
+                miKamazonActual = nuevoKamazon;
+                document.getElementById('sidebarTotalPower').innerText = nuevoTotal.toLocaleString();
+                await cargarLeaderboard();
+                saveMsg.innerText = `¡Guardado! +${puntosPartida} sumados a Kamazon.`;
+            } catch (e) {
+                console.error(e);
+                saveMsg.style.color = 'var(--accent-red)';
+                saveMsg.innerText = "Error de sincronización.";
+            }
+            btnRes.disabled = false;
+        }
+
+        cargarLeaderboard();
+        renderer.render(scene, camera);
+    </script>
+</body>
+</html>

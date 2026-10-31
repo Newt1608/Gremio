@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Laberinto Espectral - Mi Casita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* TEMA OSCURO (Morado oscuro y naranja) */
+        :root {
+            --sidebar-bg: #15131f; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #221e2d; 
+            --sidebar-btn: #ff8c00; 
+            --main-bg: #121017;
+            --card-bg: #191622; 
+            --text-dark: #f0eef5; 
+            --text-muted: #888299;
+            --border-color: #272235; 
+            --accent-red: #ff5722;
+            --halloween-orange: #ff8c00; 
+            --halloween-purple: #7b1fa2;
+            --poison-green: #39ff14; 
+            --kamazon-gold: #ffcf00; 
+        }
+        /* TEMA CLARO (Morado claro, degradado blanco y acentos naranjas) */
+        [data-theme="light"] {
+            --sidebar-bg: #292437; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; 
+            --sidebar-btn: #ff8800; 
+            --main-bg: linear-gradient(135deg, #f9f5ed 0%, #f0eae1 100%);
+            --card-bg: #ffffff; 
+            --text-dark: #201b2a; 
+            --text-muted: #7d7889;
+            --border-color: #e8e4dc;
+            --halloween-orange: #ff6600;
+            --kamazon-gold: #d4ac0d;
+        }
+        /* TEMA BLANCO Y NEGRO */
+        [data-theme="bn"] {
+            --sidebar-bg: #1a1a1a; 
+            --sidebar-text: #b0b0b0; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #333333; 
+            --sidebar-btn: #ffffff; 
+            --main-bg: #ffffff;
+            --card-bg: #f2f2f2; 
+            --text-dark: #000000; 
+            --text-muted: #555555;
+            --border-color: #cccccc; 
+            --kamazon-gold: #333333; 
+            --halloween-orange: #000000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        body { display: flex; height: 100vh; background: var(--main-bg); color: var(--text-dark); overflow: hidden; position: relative; }
+
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; z-index: 100; border-right: 1px solid var(--border-color); transition: width 0.3s; }
+        .sidebar.collapsed { width: 0; padding: 0; }
+        
+        .sidebar-header { padding: 22px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--halloween-orange); }
+        .sidebar-header h2 { color: var(--sidebar-text-active); font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--halloween-orange); font-weight: 700; }
+        
+        .user-profile-sidebar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.04); margin-bottom: 10px; min-width: 260px; background: rgba(25, 22, 34, 0.5); }
+        .profile-info-wrap { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--halloween-orange); object-fit: cover; flex-shrink: 0; }
+        .user-meta { display: flex; flex-direction: column; overflow: hidden; }
+        .user-meta span { color: var(--sidebar-text-active); font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+        .user-meta p { font-size: 11px; color: var(--kamazon-gold); font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 1px; white-space: nowrap; }
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
+        .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
+
+        .nav-group { margin-bottom: 5px; min-width: 260px; }
+        .nav-title { padding: 10px 22px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; color: var(--text-muted); font-weight: 700; }
+        .nav-title:hover { color: var(--sidebar-text-active); }
+        .nav-title i { transition: transform 0.3s ease; }
+        .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
+        .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+        .nav-group.collapsed-group .nav-items-container { max-height: 0; }
+        
+        .nav-item { padding: 10px 22px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; }
+        .nav-item:hover { color: var(--sidebar-text-active); background: rgba(255, 140, 0, 0.05); }
+        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--halloween-orange); }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; overflow-y: auto; z-index: 20; }
+        .topbar { padding: 16px 30px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); z-index: 10; }
+        .toggle-btn, .theme-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--halloween-orange); font-size: 18px; cursor: pointer; padding: 8px 12px; border-radius: 10px; transition: 0.2s; }
+        .toggle-btn:hover, .theme-btn:hover { background: rgba(255,140,0,0.1); }
+
+        .screen { display: none; padding: 25px 30px; flex-direction: column; align-items: center; max-width: 1000px; margin: 0 auto; width: 100%; animation: fadeIn 0.4s ease; position: relative; }
+        .screen.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .lobby-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; margin-top: 15px; z-index: 5; }
+        .panel-card { background: var(--card-bg); border-radius: 20px; padding: 22px; border: 1px solid var(--border-color); box-shadow: 0 8px 30px rgba(0,0,0,0.05); }
+        .panel-title { font-size: 15px; font-weight: 800; color: var(--halloween-orange); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        
+        .btn-play { background: linear-gradient(135deg, #ff8c00, #e65100); color: white; border: none; padding: 14px 20px; font-size: 14px; font-weight: 900; text-transform: uppercase; border-radius: 12px; cursor: pointer; width: 100%; transition: 0.2s; box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4); margin-top: 20px; }
+        .btn-play:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 140, 0, 0.6); }
+
+        .game-container-box { background: var(--card-bg); padding: 20px; border-radius: 20px; border: 2px solid var(--border-color); display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        canvas { background: #0b090f; border-radius: 12px; border: 2px solid #332d42; display: block; }
+        
+        .game-hud-top { display: flex; justify-content: space-between; width: 100%; max-width: 560px; margin-bottom: 12px; font-weight: 800; font-size: 14px; color: var(--kamazon-gold); }
+        .controls-hint { margin-top: 12px; font-size: 12px; color: var(--text-muted); text-align: center; display: flex; justify-content: space-between; width: 100%; max-width: 560px; align-items: center; }
+        
+        .btn-skip { background: rgba(123, 31, 162, 0.3); border: 1px solid var(--halloween-purple); color: var(--text-dark); padding: 6px 12px; font-size: 11px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .btn-skip:hover { background: rgba(123, 31, 162, 0.6); color: white; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.jpg" alt="Logo" onerror="this.src='logo.jpg';">
+            <div>
+                <h2>Mi Casita</h2>
+                <p>Gremio de Guardian Tales</p>
+            </div>
+        </div>
+
+        <div class="user-profile-sidebar" id="user-profile-sidebar">
+            <div class="profile-info-wrap">
+                <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
+                <div class="user-meta">
+                    <span id="sidebar-name">Usuario</span>
+                    <p><i class="fa-solid fa-coins" style="color:var(--kamazon-gold);"></i> <span id="sidebarTotalPower">0</span> pts</p>
+                </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
+                <i class="fa-solid fa-power-off"></i>
+            </button>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-fire"></i> Fogata de bienvenida</a>
+                <a href="noticias.html" class="nav-item"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
+            </div>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="resumen.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
+                <a href="guia.html" class="nav-item"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
+                <a href="ranking.html" class="nav-item"><i class="fa-solid fa-trophy"></i> Ranking de la casa</a>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE EVENTOS ESPECIALES (Solo Festival de Halloween y Laberinto Espectral) -->
+        <div class="nav-group">
+            <div class="nav-title" style="color: var(--halloween-orange);">EVENTOS ESPECIALES <i class="fa-solid fa-ghost"></i></div>
+            <div class="nav-items-container">
+                <a href="eventos.html" class="nav-item"><i class="fa-solid fa-spider"></i> Festival de Halloween</a>
+                <a href="laberinto.html" class="nav-item active"><i class="fa-solid fa-chess-board"></i> Laberinto Espectral</a>
+            </div>
+        </div>
+        
+        <div class="nav-group">
+            <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="heroes.html" class="nav-item"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
+                <a href="equipos.html" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
+            </div>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">INCURSIONES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="incursiones.html" class="nav-item"><i class="fa-solid fa-ghost"></i> Asalto</a>
+                <a href="arena.html" class="nav-item"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="topbar">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <span style="font-weight: 900; font-size: 16px; color: var(--halloween-orange);"><i class="fa-solid fa-chess-board"></i> El Laberinto Espectral</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-weight: 700; color: var(--kamazon-gold); font-size: 13px;"><i class="fa-solid fa-coins"></i> Puntaje Juego 3: <span id="myGameScore">0</span> pts</span>
+                <button class="theme-btn" id="themeToggle" title="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
+            </div>
+        </div>
+
+        <div class="screen active" id="screen-lobby">
+            <div style="text-align: center; margin-bottom: 12px;">
+                <h1 style="font-size: 26px; font-weight: 900;">Huida de la Mazmorra Oscura</h1>
+                <p style="color: var(--text-muted); margin-top: 4px; font-size: 13px;">Guía a la <b>Princesita</b> en el laberinto continuo. Usa el botón de saltar fase para probar rápido.</p>
+            </div>
+            
+            <div class="lobby-grid">
+                <div class="panel-card">
+                    <div class="panel-title"><i class="fa-solid fa-play"></i> Iniciar Desafío</div>
+                    <p style="color: var(--text-muted); font-size: 13px; line-height: 1.6; margin-bottom: 15px;">
+                        Usa las <b>flechas del teclado</b> para moverte. Presiona <b>Espacio</b> para agarrar o lanzar slimes.
+                    </p>
+                    <button class="btn-play" onclick="iniciarJuego()"><i class="fa-solid fa-ghost"></i> Entrar al Laberinto</button>
+                </div>
+                
+                <div class="panel-card">
+                    <div class="panel-title"><i class="fa-solid fa-book-open"></i> Reglas del Evento</div>
+                    <ul style="color: var(--text-muted); font-size: 12px; line-height: 1.6; margin-left: 16px;">
+                        <li>🟡 <b>Fase 1:</b> Recoge 8 cofres con fantasmas vigilando.</li>
+                        <li>🧟 <b>Fase 2:</b> Aparecen zombis y slimes.</li>
+                        <li>🎃 <b>Fase 3:</b> El Jefe Calabaza se mueve lento rompiendo muros comunes (respeta puertas moradas).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-game">
+            <div class="game-container-box">
+                <div class="game-hud-top">
+                    <span>🏰 Fase: <span id="levelDisplay">1</span> / 3</span>
+                    <span>⏱️ Tiempo: <span id="timerDisplay">90</span>s</span>
+                    <span>💰 Puntos: <span id="scoreDisplay">0</span></span>
+                </div>
+                
+                <canvas id="mazeCanvas" width="560" height="560"></canvas>
+                
+                <div class="controls-hint">
+                    <span>Flechas: Mover | <b>Espacio</b>: Slime</span>
+                    <button class="btn-skip" onclick="saltarFase()"><i class="fa-solid fa-forward"></i> ⚡ Saltar Fase</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- CHAT DE DISCORD WIDGETBOT -->
+    <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#120e17', notifications: true })
+    </script>
+
+    <script>
+        // =========================================================================
+        // RESTAURAR ESTADO DE LA BARRA LATERAL (LOCALSTORAGE)
+        // =========================================================================
+        const sidebar = document.getElementById('sidebar');
+        if (localStorage.getItem('sidebar-colapsada') === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => { 
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebar-colapsada', sidebar.classList.contains('collapsed'));
+        });
+
+        document.querySelectorAll('.nav-title').forEach(title => {
+            title.addEventListener('click', () => { title.closest('.nav-group').classList.toggle('collapsed-group'); });
+        });
+
+        // =========================================================================
+        // GESTIÓN DE TEMAS EN LOCALSTORAGE (Oscuro, Claro, Blanco y Negro)
+        // =========================================================================
+        const themeBtn = document.getElementById('themeToggle');
+        const rootElement = document.documentElement;
+
+        function aplicarTema(tema) {
+            if (tema === 'light') {
+                rootElement.setAttribute('data-theme', 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else if (tema === 'bn') {
+                rootElement.setAttribute('data-theme', 'bn');
+                themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>';
+            } else {
+                rootElement.removeAttribute('data-theme');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        }
+
+        let temaActual = localStorage.getItem('tema-casita') || 'dark';
+        aplicarTema(temaActual);
+
+        themeBtn.addEventListener('click', () => {
+            if (!rootElement.hasAttribute('data-theme')) {
+                temaActual = 'light';
+            } else if (rootElement.getAttribute('data-theme') === 'light') {
+                temaActual = 'bn';
+            } else {
+                temaActual = 'dark';
+            }
+            localStorage.setItem('tema-casita', temaActual);
+            aplicarTema(temaActual);
+        });
+
+        // =========================================================================
+        // CARGAR DATOS DE USUARIO Y SHEETDB (Columna E -> Juego 3, Total)
+        // =========================================================================
+        let usuarioActual = { 
+            nombre: localStorage.getItem('usuario_nombre') || 'Newt', 
+            foto: localStorage.getItem('usuario_avatar') || 'logo.jpg' 
+        };
+        let pDataTotal = [];
+        let miRegistroUsuario = null;
+        let puntajeJuego3Actual = 0;
+        let totalGeneralActual = 0;
+
+        document.getElementById('sidebar-name').innerText = usuarioActual.nombre;
+        document.getElementById('sidebar-avatar').src = usuarioActual.foto;
+
+        const API_URL = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
+
+        async function cargarDatosBD() {
+            try {
+                const res = await fetch(`${API_URL}&_=${new Date().getTime()}`);
+                const rawData = await res.json();
+                pDataTotal = rawData.map(row => {
+                    let newRow = {};
+                    for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                    return newRow;
+                });
+                
+                miRegistroUsuario = pDataTotal.find(r => r.nombre && r.nombre.toLowerCase().trim() === usuarioActual.nombre.toLowerCase().trim());
+                
+                // Lee columna E (juego3) y la cantidad total de la columna correspondiente
+                puntajeJuego3Actual = miRegistroUsuario ? (parseInt(miRegistroUsuario.juego3) || 0) : 0;
+                totalGeneralActual = miRegistroUsuario ? (parseInt(miRegistroUsuario.total) || 0) : 0;
+
+                document.getElementById('myGameScore').innerText = puntajeJuego3Actual.toLocaleString();
+                document.getElementById('sidebarTotalPower').innerText = totalGeneralActual.toLocaleString();
+            } catch (error) {
+                console.error("Error al leer SheetDB:", error);
+            }
+        }
+        cargarDatosBD();
+
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const tileSize = 35;
+        const cols = 16;
+        const rows = 16;
+
+        const escalaPersonaje = 1.8; 
+        const escalaFantasma = 0.85;
+
+        let faseActual = 1;
+        let jugador = { x: 1, y: 1, dir: 'right' };
+        let cofres = [];
+        let fantasmas = [];
+        let zombis = [];
+        let slimes = [];
+        let slimeCargado = null; 
+        let contadorSlimeInterval = null;
+        let jefe = null;
+        
+        let scorePartida = 0;
+        let tiempoRestante = 90;
+        let juegoActivo = false;
+        let intervaloTiempo = null;
+        let animacionFrameId = null;
+        let contadorFramesMovimiento = 0;
+        let frameAnimacion = 0;
+
+        const imgCorrer1 = new Image(); imgCorrer1.src = 'img/sprites/correr 1.png';
+        const imgCorrer2 = new Image(); imgCorrer2.src = 'img/sprites/correr 2.png';
+        const imgAsustada1 = new Image(); imgAsustada1.src = 'img/sprites/asustada 1.png';
+        const imgAsustada2 = new Image(); imgAsustada2.src = 'img/sprites/asustada 2.png';
+
+        const imgFantasma = new Image(); imgFantasma.src = 'img/gifs/fantasma.gif';
+        const imgZombie = new Image(); imgZombie.src = 'img/gifs/zombie.gif';
+        const imgSlime = new Image(); imgSlime.src = 'img/gifs/slime.gif';
+        const imgCalabaza = new Image(); imgCalabaza.src = 'img/gifs/Jefe.gif';
+
+        const mapaUnico = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
+            [1,0,1,0,1,0,2,1,1,0,1,0,1,1,0,1],
+            [1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,1],
+            [1,0,1,1,1,1,1,0,1,1,1,1,0,1,0,1],
+            [1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1],
+            [1,1,1,2,1,0,1,1,1,1,0,1,1,1,0,1],
+            [1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,1],
+            [1,0,1,0,1,1,1,1,0,1,1,1,0,1,0,1],
+            [1,0,1,0,0,0,0,1,0,0,0,1,0,0,0,1],
+            [1,0,1,1,1,1,0,1,1,1,0,1,1,1,1,1],
+            [1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1],
+            [1,1,1,1,0,1,1,1,0,1,1,1,1,1,0,1],
+            [1,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1],
+            [1,0,0,0,0,1,0,0,0,1,1,1,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        function iniciarJuego() {
+            faseActual = 1;
+            scorePartida = 0;
+            jugador = { x: 1, y: 1, dir: 'right' };
+            tiempoRestante = 90;
+            juegoActivo = true;
+            slimeCargado = null;
+
+            if (animacionFrameId) cancelAnimationFrame(animacionFrameId);
+            if (intervaloTiempo) clearInterval(intervaloTiempo);
+            if (contadorSlimeInterval) clearInterval(contadorSlimeInterval);
+
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-game').classList.add('active');
+
+            document.getElementById('levelDisplay').innerText = faseActual;
+            document.getElementById('scoreDisplay').innerText = scorePartida;
+            document.getElementById('timerDisplay').innerText = tiempoRestante;
+
+            generarElementosFase();
+
+            intervaloTiempo = setInterval(() => {
+                tiempoRestante--;
+                document.getElementById('timerDisplay').innerText = tiempoRestante;
+                if(tiempoRestante <= 0) {
+                    finalizarLaberinto(false, "⏱️ ¡Tiempo agotado!");
+                }
+            }, 1000);
+
+            loopLaberinto();
+        }
+
+        function saltarFase() {
+            if(!juegoActivo) return;
+            if(faseActual < 3) {
+                faseActual++;
+                document.getElementById('levelDisplay').innerText = faseActual;
+                generarElementosFase();
+            } else {
+                scorePartida += 500;
+                finalizarLaberinto(true, "🎉 ¡Has completado todas las fases saltando!");
+            }
+        }
+
+        function generarElementosFase() {
+            cofres = [];
+            let cColocados = 0;
+            while(cColocados < 8) {
+                let rx = Math.floor(Math.random() * (cols - 2)) + 1;
+                let ry = Math.floor(Math.random() * (rows - 2)) + 1;
+                if(mapaUnico[ry][rx] === 0 && !(rx === jugador.x && ry === jugador.y)) {
+                    if(!cofres.some(c => c.x === rx && c.y === ry)) {
+                        cofres.push({x: rx, y: ry});
+                        cColocados++;
+                    }
+                }
+            }
+
+            fantasmas = [
+                {x: 7, y: 1, dirX: 1, dirY: 0},
+                {x: 10, y: 7, dirX: -1, dirY: 0},
+                {x: 3, y: 11, dirX: 0, dirY: -1}
+            ];
+
+            if (faseActual >= 2) {
+                zombis = [
+                    {x: 13, y: 2, dirX: 0, dirY: 1},
+                    {x: 2, y: 13, dirX: 1, dirY: 0}
+                ];
+
+                let sColocados = 0;
+                while(sColocados < 3) {
+                    let sx = Math.floor(Math.random() * (cols - 2)) + 1;
+                    let sy = Math.floor(Math.random() * (rows - 2)) + 1;
+                    if(mapaUnico[sy][sx] === 0 && !(sx === jugador.x && sy === jugador.y)) {
+                        if(!slimes.some(s => s.x === sx && s.y === sy)) {
+                            slimes.push({x: sx, y: sy});
+                            sColocados++;
+                        }
+                    }
+                }
+            } else {
+                zombis = [];
+                slimes = [];
+            }
+
+            if (faseActual === 3) {
+                jefe = { x: 14, y: 13, vida: 3, dirX: 0, dirY: -1 };
+            } else {
+                jefe = null;
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(!juegoActivo) return;
+
+            if(e.code === 'Space') {
+                e.preventDefault();
+                if(slimeCargado) {
+                    let lx = jugador.x;
+                    let ly = jugador.y;
+                    if(jugador.dir === 'right') lx++; else lx--;
+
+                    let impactoF = fantasmas.findIndex(f => f.x === lx && f.y === ly);
+                    let impactoZ = zombis.findIndex(z => z.x === lx && z.y === ly);
+
+                    if(impactoF !== -1) {
+                        fantasmas.splice(impactoF, 1);
+                    } else if(impactoZ !== -1) {
+                        zombis.splice(impactoZ, 1);
+                    } else if(jefe && jefe.x === lx && jefe.y === ly) {
+                        jefe.vida--;
+                        if(jefe.vida <= 0) jefe = null;
+                    } else {
+                        slimes.push({x: lx, y: ly});
+                    }
+
+                    slimeCargado = null;
+                    if(contadorSlimeInterval) clearInterval(contadorSlimeInterval);
+                } else {
+                    let slimeIndex = slimes.findIndex(s => s.x === jugador.x && s.y === jugador.y);
+                    if(slimeIndex !== -1) {
+                        slimes.splice(slimeIndex, 1);
+                        slimeCargado = { segundosRestantes: 5 };
+                        
+                        contadorSlimeInterval = setInterval(() => {
+                            if(!slimeCargado) return;
+                            slimeCargado.segundosRestantes--;
+                            if(slimeCargado.segundosRestantes <= 0) {
+                                clearInterval(contadorSlimeInterval);
+                                finalizarLaberinto(false, "💥 ¡El Slime explotó en tus manos!");
+                            }
+                        }, 1000);
+                    }
+                }
+                return;
+            }
+            
+            let nx = jugador.x;
+            let ny = jugador.y;
+
+            if(e.key === 'ArrowUp') ny--;
+            else if(e.key === 'ArrowDown') ny++;
+            else if(e.key === 'ArrowLeft') {
+                nx--;
+                jugador.dir = 'left';
+            }
+            else if(e.key === 'ArrowRight') {
+                nx++;
+                jugador.dir = 'right';
+            }
+            else return;
+
+            if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
+                if (mapaUnico[ny][nx] !== 1) {
+                    jugador.x = nx;
+                    jugador.y = ny;
+                    frameAnimacion = 1 - frameAnimacion;
+
+                    cofres = cofres.filter(c => {
+                        if(c.x === jugador.x && c.y === jugador.y) {
+                            scorePartida += 100;
+                            document.getElementById('scoreDisplay').innerText = scorePartida;
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    if(cofres.length === 0) {
+                        if(faseActual < 3) {
+                            faseActual++;
+                            document.getElementById('levelDisplay').innerText = faseActual;
+                            generarElementosFase();
+                        } else {
+                            scorePartida += 500;
+                            finalizarLaberinto(true, "🎉 ¡Has completado todas las fases!");
+                        }
+                    }
+                }
+            }
+        });
+
+        function loopLaberinto() {
+            if(!juegoActivo) return;
+
+            contadorFramesMovimiento++;
+            let velocidad = Math.max(10, 26 - (faseActual * 4));
+            
+            if (contadorFramesMovimiento % velocidad === 0) {
+                fantasmas.forEach(f => {
+                    let posibles = [
+                        {x: 0, y: -1}, {x: 0, y: 1}, {x: -1, y: 0}, {x: 1, y: 0}
+                    ].filter(d => {
+                        let px = f.x + d.x;
+                        let py = f.y + d.y;
+                        return px >= 0 && px < cols && py >= 0 && py < rows && 
+                               (mapaUnico[py][px] === 0 || mapaUnico[py][px] === 3);
+                    });
+
+                    if (posibles.length > 0) {
+                        let actualValida = posibles.some(p => p.x === f.dirX && p.y === f.dirY);
+                        if (!actualValida || Math.random() < 0.25) {
+                            let nueva = posibles[Math.floor(Math.random() * posibles.length)];
+                            f.dirX = nueva.x;
+                            f.dirY = nueva.y;
+                        }
+                    }
+
+                    let nx = f.x + f.dirX;
+                    let ny = f.y + f.dirY;
+                    if (nx >= 0 && nx < cols && ny >= 0 && ny < rows && (mapaUnico[ny][nx] === 0 || mapaUnico[ny][nx] === 3)) {
+                        f.x = nx;
+                        f.y = ny;
+                    }
+
+                    if(f.x === jugador.x && f.y === jugador.y) {
+                        finalizarLaberinto(false, "👻 ¡Un fantasma te ha atrapado!");
+                    }
+                });
+
+                zombis.forEach(z => {
+                    let nx = z.x + z.dirX;
+                    let ny = z.y + z.dirY;
+                    if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
+                        z.x = nx; z.y = ny;
+                    } else {
+                        z.dirX *= -1; z.dirY *= -1;
+                    }
+                    if(z.x === jugador.x && z.y === jugador.y) {
+                        finalizarLaberinto(false, "🧟 ¡Un zombi te ha atrapado!");
+                    }
+                });
+            }
+
+            if (jefe && contadorFramesMovimiento % 22 === 0) {
+                let posiblesJefe = [
+                    {x: 0, y: -1}, {x: 0, y: 1}, {x: -1, y: 0}, {x: 1, y: 0}
+                ].filter(d => {
+                    let px = jefe.x + d.x;
+                    let py = jefe.y + d.y;
+                    return px >= 0 && px < cols && py >= 0 && py < rows && mapaUnico[py][px] !== 2;
+                });
+
+                if (posiblesJefe.length > 0) {
+                    let actualValidaJ = posiblesJefe.some(p => p.x === jefe.dirX && p.y === jefe.dirY);
+                    if (!actualValidaJ || Math.random() < 0.4) {
+                        let nuevaJ = posiblesJefe[Math.floor(Math.random() * posiblesJefe.length)];
+                        jefe.dirX = nuevaJ.x;
+                        jefe.dirY = nuevaJ.y;
+                    }
+                }
+
+                let jnx = jefe.x + jefe.dirX;
+                let jny = jefe.y + jefe.dirY;
+                if (jnx >= 0 && jnx < cols && jny >= 0 && jny < rows && mapaUnico[jny][jnx] !== 2) {
+                    if(mapaUnico[jny][jnx] === 1) {
+                        mapaUnico[jny][jnx] = 3;
+                    }
+                    jefe.x = jnx;
+                    jefe.y = jny;
+                } else {
+                    jefe.dirX *= -1;
+                    jefe.dirY *= -1;
+                }
+
+                if(jefe.x === jugador.x && jefe.y === jugador.y) {
+                    finalizarLaberinto(false, "🎃 ¡El Jefe Calabaza te atrapó!");
+                }
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for(let r=0; r<rows; r++) {
+                for(let c=0; c<cols; c++) {
+                    if(mapaUnico[r][c] === 1) {
+                        ctx.fillStyle = '#1e1a2b';
+                        ctx.fillRect(c*tileSize, r*tileSize, tileSize, tileSize);
+                    } else if(mapaUnico[r][c] === 2) {
+                        ctx.fillStyle = 'rgba(123, 31, 162, 0.4)';
+                        ctx.fillRect(c*tileSize, r*tileSize, tileSize, tileSize);
+                    } else if(mapaUnico[r][c] === 3) {
+                        ctx.fillStyle = '#ff8c00';
+                        ctx.fillRect(c*tileSize, r*tileSize, tileSize, tileSize);
+                    } else {
+                        ctx.fillStyle = '#0b090f';
+                        ctx.fillRect(c*tileSize, r*tileSize, tileSize, tileSize);
+                    }
+                }
+            }
+
+            ctx.fillStyle = '#ffcf00';
+            cofres.forEach(c => {
+                ctx.beginPath();
+                ctx.arc(c.x*tileSize + tileSize/2, c.y*tileSize + tileSize/2, 7, 0, Math.PI*2);
+                ctx.fill();
+            });
+
+            slimes.forEach(s => {
+                if (imgSlime.complete && imgSlime.naturalWidth !== 0) {
+                    ctx.drawImage(imgSlime, s.x*tileSize, s.y*tileSize, tileSize, tileSize);
+                } else {
+                    ctx.fillStyle = '#39ff14';
+                    ctx.beginPath();
+                    ctx.arc(s.x*tileSize + tileSize/2, s.y*tileSize + tileSize/2, 8, 0, Math.PI*2);
+                    ctx.fill();
+                }
+            });
+
+            let offsetF = (tileSize * (1 - escalaFantasma)) / 2;
+            fantasmas.forEach(f => {
+                if (imgFantasma.complete && imgFantasma.naturalWidth !== 0) {
+                    ctx.drawImage(imgFantasma, (f.x * tileSize) + offsetF, (f.y * tileSize) + offsetF, tileSize * escalaFantasma, tileSize * escalaFantasma);
+                } else {
+                    ctx.fillStyle = '#b39ddb';
+                    ctx.fillRect(f.x*tileSize + 6, f.y*tileSize + 6, tileSize - 12, tileSize - 12);
+                }
+            });
+
+            zombis.forEach(z => {
+                if (imgZombie.complete && imgZombie.naturalWidth !== 0) {
+                    ctx.drawImage(imgZombie, z.x*tileSize, z.y*tileSize, tileSize, tileSize);
+                } else {
+                    ctx.fillStyle = '#558b2f';
+                    ctx.fillRect(z.x*tileSize + 5, z.y*tileSize + 5, tileSize - 10, tileSize - 10);
+                }
+            });
+
+            if(jefe) {
+                if (imgCalabaza.complete && imgCalabaza.naturalWidth !== 0) {
+                    ctx.drawImage(imgCalabaza, jefe.x*tileSize, jefe.y*tileSize, tileSize, tileSize);
+                } else {
+                    ctx.fillStyle = '#ff6d00';
+                    ctx.fillRect(jefe.x*tileSize + 3, jefe.y*tileSize + 3, tileSize - 6, tileSize - 6);
+                }
+            }
+
+            let fantasmaCercano = fantasmas.some(f => Math.abs(f.x - jugador.x) + Math.abs(f.y - jugador.y) <= 2) ||
+                                  zombis.some(z => Math.abs(z.x - jugador.x) + Math.abs(z.y - jugador.y) <= 2);
+            let spriteActual = fantasmaCercano ? (frameAnimacion === 0 ? imgAsustada1 : imgAsustada2) : (frameAnimacion === 0 ? imgCorrer1 : imgCorrer2);
+
+            const anchoSprite = tileSize * escalaPersonaje;
+            const altoSprite = tileSize * escalaPersonaje;
+            const centroX = (jugador.x * tileSize) + (tileSize / 2);
+            const centroY = (jugador.y * tileSize) + (tileSize / 2);
+
+            ctx.save();
+            ctx.translate(centroX, centroY);
+            if (jugador.dir === 'left') {
+                ctx.scale(-1, 1);
+            }
+            if (spriteActual.complete && spriteActual.naturalWidth !== 0) {
+                ctx.drawImage(spriteActual, -anchoSprite / 2, -altoSprite / 2, anchoSprite, altoSprite);
+            } else {
+                ctx.fillStyle = '#ff8c00';
+                ctx.fillRect(-anchoSprite/4, -altoSprite/4, anchoSprite/2, altoSprite/2);
+            }
+            ctx.restore();
+
+            if(slimeCargado) {
+                ctx.fillStyle = '#39ff14';
+                ctx.font = 'bold 12px Inter';
+                ctx.fillText(`Slime: ${slimeCargado.segundosRestantes}s`, jugador.x * tileSize, jugador.y * tileSize - 6);
+            }
+
+            if (juegoActivo) {
+                animacionFrameId = requestAnimationFrame(loopLaberinto);
+            }
+        }
+
+        async function finalizarLaberinto(victoria, mensaje) {
+            if (!juegoActivo) return;
+            juegoActivo = false;
+            clearInterval(intervaloTiempo);
+            if(contadorSlimeInterval) clearInterval(contadorSlimeInterval);
+            if(animacionFrameId) cancelAnimationFrame(animacionFrameId);
+
+            let nuevoPuntajeJuego3 = puntajeJuego3Actual + scorePartida;
+            let nuevoTotalGeneral = totalGeneralActual + scorePartida;
+
+            try {
+                const nombreSeguro = usuarioActual.nombre;
+                const avatarSeguro = usuarioActual.foto;
+
+                if (miRegistroUsuario) {
+                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            data: { 
+                                Juego3: nuevoPuntajeJuego3,
+                                Total: nuevoTotalGeneral,
+                                Foto: avatarSeguro 
+                            } 
+                        })
+                    });
+                } else {
+                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            data: [{ 
+                                Nombre: nombreSeguro, 
+                                Foto: avatarSeguro, 
+                                Kamazon: 0, 
+                                Juego2: 0, 
+                                Juego3: nuevoPuntajeJuego3,
+                                Juego4: 0,
+                                Total: nuevoTotalGeneral, 
+                                Victorias: 0, 
+                                Derrotas: 0 
+                            }] 
+                        })
+                    });
+                }
+            } catch (error) {
+                console.error("Error al actualizar SheetDB:", error);
+            }
+
+            alert(`${mensaje}\nPuntaje obtenido: +${scorePartida} puntos.\nTu puntaje acumulado en Juego 3 ahora es: ${nuevoPuntajeJuego3.toLocaleString()}`);
+            location.reload();
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>
