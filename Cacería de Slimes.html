@@ -304,7 +304,7 @@
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
                 try {
-                    const res = await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween&_=${new Date().getTime()}`);
+                    const res = await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween&_=${new Date().getTime()}`);
                     const rawData = await res.json();
                     const pData = rawData.map(row => {
                         let newRow = {};
@@ -491,7 +491,7 @@
         // =========================================================================
         // CONEXIÓN CON SHEETDB
         // =========================================================================
-        const API_URL = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
+        const API_URL = 'https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween';
 
         function convertirUrlDrive(url) {
             if (!url) return 'logo.jpg';
@@ -586,13 +586,13 @@
                     const nuevoTotal = kamazonPts + puntosNuevos;
 
                     if (miRegistro) {
-                        await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u/Nombre/${nombreSeguro}?sheet=Halloween`, {
+                        await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0/Nombre/${nombreSeguro}?sheet=Halloween`, {
                             method: 'PATCH',
                             headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                             body: JSON.stringify({ data: { Juego2: puntosNuevos, Foto: avatarSeguro, Total: nuevoTotal } })
                         });
                     } else {
-                        await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween`, {
+                        await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween`, {
                             method: 'POST',
                             headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                             body: JSON.stringify({ data: [{ Nombre: nombreSeguro, Foto: avatarSeguro, Kamazon: 0, Juego2: puntosNuevos, Total: nuevoTotal, Victorias: 0, Derrotas: 0 }] })
