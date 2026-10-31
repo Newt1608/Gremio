@@ -506,3 +506,12 @@
     </script>
 </body>
 </html>
+        navTitles.forEach(title => {
+            title.addEventListener('click', () => {
+                const group = title.closest('.nav-group');
+                group.classList.toggle('collapsed-group');
+            });
+        });
+    </script>
+</body>
+</html>
