@@ -404,7 +404,7 @@
         // =========================================================================
         // COMPROBAR SESIÓN, CARGAR PERFIL Y PUNTOS DESDE SHEETDB
         // =========================================================================
-        const API_URL = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
+        const API_URL = 'https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween';
 
         document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
@@ -499,8 +499,8 @@
         const cuerpoTabla = document.getElementById('cuerpo-tabla');
         
         const timestamp = new Date().getTime();
-        const apiRankingURL = `https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Ranking&_=${timestamp}`;
-        const apiUsuariosURL = `https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Usuarios&_=${timestamp}`;
+        const apiRankingURL = `https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Ranking&_=${timestamp}`;
+        const apiUsuariosURL = `https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Usuarios&_=${timestamp}`;
 
         // CARGAMOS RANKING Y USUARIOS AL MISMO TIEMPO
         Promise.all([
