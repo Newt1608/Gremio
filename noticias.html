@@ -232,6 +232,7 @@
             <div class="nav-title" style="color: var(--halloween-orange);">EVENTOS ESPECIALES <i class="fa-solid fa-ghost"></i></div>
             <div class="nav-items-container">
                 <a href="eventos.html" class="nav-item"><i class="fa-solid fa-spider"></i> Festival de Halloween</a>
+                <a href="Abismo Corrupto.html" class="nav-item"><i class="fa-solid fa-microchip"></i> Abismo Corrupto</a>
             </div>
         </div>
 
@@ -375,7 +376,6 @@
             const inputVal = document.getElementById('riddleInput').value.toLowerCase().trim();
             const msg = document.getElementById('riddleMsg');
 
-            // RESPUESTA DEL ACERTIJO: "pimiento" (o "pimiento picante")
             if (inputVal === 'pimiento' || inputVal === 'pimiento picante') {
                 localStorage.setItem('ruleta_desbloqueada', 'true');
                 msg.style.color = 'var(--poison-green)';
@@ -497,15 +497,6 @@
         toggleBtn.addEventListener('click', () => { sidebar.classList.toggle('collapsed'); });
 
         const navTitles = document.querySelectorAll('.nav-title');
-        navTitles.forEach(title => {
-            title.addEventListener('click', () => {
-                const group = title.closest('.nav-group');
-                group.classList.toggle('collapsed-group');
-            });
-        });
-    </script>
-</body>
-</html>
         navTitles.forEach(title => {
             title.addEventListener('click', () => {
                 const group = title.closest('.nav-group');
