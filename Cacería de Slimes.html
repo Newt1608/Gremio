@@ -244,7 +244,7 @@
         <div class="dashboard-container">
             <div class="event-header">
                 <h1>Cacería de <span>Slimes Oscuros</span></h1>
-                <p>¡Tienes 30 segundos para aplastar la mayor cantidad de slimes posible! Suma puntos a tu Poder de Combate Total.</p>
+                <p>¡Tienes 30 segundos para aplastar la mayor cantidad de slimes posible! Cada partida acumula puntos a tu total.</p>
             </div>
 
             <div class="game-layout">
@@ -267,7 +267,7 @@
                 <!-- TABLA DE CLASIFICACIONES -->
                 <div class="leaderboard-card">
                     <div class="leaderboard-title">
-                        <i class="fa-solid fa-ranking-star" style="color: var(--halloween-orange);"></i> Top Cazadores (Juego 2)
+                        <i class="fa-solid fa-ranking-star" style="color: var(--halloween-orange);"></i> Top Cazadores
                     </div>
                     <div class="rank-list" id="leaderboardList">
                         <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 20px;">Cargando clasificaciones...</p>
@@ -284,7 +284,8 @@
 
     <script>
         let usuarioActual = { nombre: '', foto: '' };
-        let miPuntuacionAlta = 0;
+        let miPuntuacionAlta = 0; // Guardará el récord actual (top)
+        let miPuntuacionAcumulada = 0; // Guardará el total de Juego2
         let pDataTotal = []; 
 
         document.addEventListener("DOMContentLoaded", async () => {
@@ -304,7 +305,7 @@
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
                 try {
-                    const res = await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween&_=${new Date().getTime()}`);
+                    const res = await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween&_=${new Date().getTime()}`);
                     const rawData = await res.json();
                     const pData = rawData.map(row => {
                         let newRow = {};
@@ -489,9 +490,9 @@
         }
 
         // =========================================================================
-        // CONEXIÓN CON SHEETDB
+        // CONEXIÓN CON SHEETDB (ACUMULA EN JUEGO2, RECORDA EN TOP / COLUMNA L)
         // =========================================================================
-        const API_URL = 'https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween';
+        const API_URL = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
 
         function convertirUrlDrive(url) {
             if (!url) return 'logo.jpg';
@@ -521,7 +522,8 @@
 
                 const miRegistro = pDataTotal.find(r => r.nombre && r.nombre.toLowerCase() === usuarioActual.nombre.toLowerCase());
                 if(miRegistro) {
-                    miPuntuacionAlta = parseInt(miRegistro.juego2) || 0;
+                    miPuntuacionAcumulada = parseInt(miRegistro.juego2) || 0;
+                    miPuntuacionAlta = parseInt(miRegistro.top) || 0;
                 }
 
                 renderLeaderboard();
@@ -538,7 +540,12 @@
             
             if (!Array.isArray(pDataTotal)) return;
 
-            const sorted = [...pDataTotal].sort((a, b) => (parseInt(b.juego2) || 0) - (parseInt(a.juego2) || 0));
+            // Ordena por el mejor récord en la columna top (L)
+            const sorted = [...pDataTotal].sort((a, b) => {
+                const valA = parseInt(a.top) || parseInt(a.juego2) || 0;
+                const valB = parseInt(b.top) || parseInt(b.juego2) || 0;
+                return valB - valA;
+            });
 
             if(sorted.length === 0) {
                 list.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 20px;">Aún no hay cazadores registrados.</p>';
@@ -547,9 +554,11 @@
 
             sorted.forEach((row, index) => {
                 if(!row.nombre) return;
-                const puntajeActual = parseInt(row.juego2) || 0;
-                const puntajeTotal = parseInt(row.total) || puntajeActual;
-                if(puntajeActual === 0) return;
+                const recordTop = parseInt(row.top) || 0;
+                const j2Acumulado = parseInt(row.juego2) || 0;
+                const puntajeTotal = parseInt(row.total) || j2Acumulado;
+
+                if(j2Acumulado === 0 && recordTop === 0) return;
 
                 const pos = index + 1;
                 const isTop1 = pos === 1 ? 'top-1' : '';
@@ -563,48 +572,61 @@
                             <span class="rank-name">${row.nombre}</span>
                         </div>
                         <div class="rank-scores-wrap">
-                            <span class="rank-score">${puntajeActual} pts</span>
-                            <span class="rank-total">Total: ${puntajeTotal}</span>
+                            <span class="rank-score">Récord: ${recordTop} pts</span>
+                            <span class="rank-total">Acumulado J2: ${j2Acumulado}</span>
                         </div>
                     </div>
                 `;
             });
         }
 
-        async function guardarPuntuacion(puntosNuevos) {
+        async function guardarPuntuacion(puntosPartida) {
             try {
                 const nombreSeguro = usuarioActual.nombre;
                 const avatarSeguro = usuarioActual.foto;
 
-                if (puntosNuevos > miPuntuacionAlta) {
-                    const miRegistro = Array.isArray(pDataTotal) ? pDataTotal.find(r => r.nombre && r.nombre.toLowerCase() === nombreSeguro.toLowerCase()) : null;
-                    
-                    let kamazonPts = 0;
-                    if(miRegistro && miRegistro.kamazon) {
-                        kamazonPts = parseInt(miRegistro.kamazon) || 0;
-                    }
-                    const nuevoTotal = kamazonPts + puntosNuevos;
+                // 1. Suma los puntos a la columna Juego2 (D)
+                const nuevoJuego2 = miPuntuacionAcumulada + puntosPartida;
 
-                    if (miRegistro) {
-                        await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0/Nombre/${nombreSeguro}?sheet=Halloween`, {
-                            method: 'PATCH',
-                            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ data: { Juego2: puntosNuevos, Foto: avatarSeguro, Total: nuevoTotal } })
-                        });
-                    } else {
-                        await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween`, {
-                            method: 'POST',
-                            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ data: [{ Nombre: nombreSeguro, Foto: avatarSeguro, Kamazon: 0, Juego2: puntosNuevos, Total: nuevoTotal, Victorias: 0, Derrotas: 0 }] })
-                        });
-                    }
+                // 2. Compara y actualiza la columna top (L) si es una nueva puntuación más alta
+                let nuevoTop = miPuntuacionAlta;
+                let esNuevoRecord = false;
+                if (puntosPartida > miPuntuacionAlta) {
+                    nuevoTop = puntosPartida;
+                    esNuevoRecord = true;
+                }
 
-                    miPuntuacionAlta = puntosNuevos;
-                    msgDisplay.innerText = "¡Nuevo récord personal guardado!";
+                const miRegistro = Array.isArray(pDataTotal) ? pDataTotal.find(r => r.nombre && r.nombre.toLowerCase() === nombreSeguro.toLowerCase()) : null;
+
+                const datosAEnviar = {
+                    Juego2: nuevoJuego2,
+                    top: nuevoTop,
+                    Foto: avatarSeguro
+                };
+
+                if (miRegistro) {
+                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u/Nombre/${nombreSeguro}?sheet=Halloween`, {
+                        method: 'PATCH',
+                        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ data: datosAEnviar })
+                    });
+                } else {
+                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween`, {
+                        method: 'POST',
+                        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ data: [{ Nombre: nombreSeguro, Foto: avatarSeguro, Kamazon: 0, Juego2: nuevoJuego2, top: nuevoTop, Victorias: 0, Derrotas: 0 }] })
+                    });
+                }
+
+                miPuntuacionAcumulada = nuevoJuego2;
+                miPuntuacionAlta = nuevoTop;
+
+                if (esNuevoRecord) {
+                    msgDisplay.innerText = `¡Sumaste +${puntosPartida} pts a Juego2! 🏆 ¡Nuevo récord personal: ${nuevoTop}!`;
                     msgDisplay.style.color = "#4caf50";
                 } else {
-                    msgDisplay.innerText = `Puntuación: ${puntosNuevos}. No superaste tu récord de ${miPuntuacionAlta}.`;
-                    msgDisplay.style.color = "var(--text-muted)";
+                    msgDisplay.innerText = `¡Sumaste +${puntosPartida} pts a Juego2! (Récord personal: ${nuevoTop})`;
+                    msgDisplay.style.color = "var(--halloween-orange)";
                 }
 
                 setTimeout(() => {
