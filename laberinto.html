@@ -310,7 +310,7 @@
         document.getElementById('sidebar-name').innerText = usuarioActual.nombre;
         document.getElementById('sidebar-avatar').src = usuarioActual.foto;
 
-        const API_URL = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
+        const API_URL = 'https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween';
 
         async function cargarDatosBD() {
             try {
@@ -777,7 +777,7 @@
                 const avatarSeguro = usuarioActual.foto;
 
                 if (miRegistroUsuario) {
-                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -789,7 +789,7 @@
                         })
                     });
                 } else {
-                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
