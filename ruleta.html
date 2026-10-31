@@ -378,7 +378,7 @@
         document.getElementById('hudMyName').innerText = usuarioActual.nombre;
         document.getElementById('hudMyAvatar').src = usuarioActual.foto;
 
-        const API_URL = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
+        const API_URL = 'https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween';
 
         async function cargarPuntosDesdeBD() {
             try {
@@ -748,13 +748,13 @@
                 payloadData.Derrotas = derrotasActuales;
 
                 if (miRegistroActualizado) {
-                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ data: payloadData })
                     });
                 } else {
-                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
