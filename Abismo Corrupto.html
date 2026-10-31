@@ -34,7 +34,7 @@
             --neon-purple: #b829ff;
             --neon-green: #4ade80;
         }
-        /* TEMA CLARO (Morado claro, degradado blanco y acentos naranjas) */
+        /* TEMA CLARO */
         [data-theme="light"] {
             --sidebar-bg: #292437; 
             --sidebar-text: #9691a5; 
@@ -139,6 +139,16 @@
         .lr-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
         .lr-score { color: white; }
 
+        /* PANTALLA DE CARGA DEL MODELO */
+        .loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0b0914; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .loading-screen.active { opacity: 1; pointer-events: auto; }
+        .loading-spinner { width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--neon-blue); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; box-shadow: 0 0 20px rgba(0,255,255,0.4); }
+        .loading-title { font-size: 20px; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; text-shadow: 0 0 10px var(--neon-blue); }
+        .loading-bar-container { width: 300px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; border: 1px solid rgba(0,255,255,0.3); }
+        .loading-bar-fill { width: 0%; height: 100%; background: var(--neon-blue); transition: width 0.2s ease; box-shadow: 0 0 10px var(--neon-blue); }
+        .loading-text { font-size: 12px; color: var(--text-muted); margin-top: 10px; font-weight: 700; letter-spacing: 1px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* CARRUSEL DE INSTRUCCIONES */
         .instructions-slider { display: flex; align-items: center; justify-content: space-between; margin: 15px 0 20px 0; gap: 15px; min-height: 100px; }
         .slide-btn { background: rgba(0, 255, 255, 0.05); border: 1px solid var(--neon-blue); color: var(--neon-blue); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: 0.2s; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -198,6 +208,16 @@
     </style>
 </head>
 <body>
+
+    <!-- PANTALLA DE CARGA DEL MODELO AL INICIAR SIMULACIÓN -->
+    <div class="loading-screen" id="modelLoadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-title">Cargando Abismo Corrupto</div>
+        <div class="loading-bar-container">
+            <div class="loading-bar-fill" id="loadingBarFill"></div>
+        </div>
+        <div class="loading-text" id="loadingText">Sincronizando modelo 3D (0%)...</div>
+    </div>
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -354,7 +374,7 @@
                     <div class="dot" id="dot2"></div>
                 </div>
 
-                <button class="btn-game" id="btnStartGame" style="background:var(--kamazon-gold); box-shadow: 0 0 15px rgba(255,207,0,0.4);" onclick="startGame()">Iniciar Simulación</button>
+                <button class="btn-game" id="btnStartGame" style="background:var(--kamazon-gold); box-shadow: 0 0 15px rgba(255,207,0,0.4);" onclick="iniciarCargaYSimulacion()">Iniciar Simulación</button>
             </div>
         </div>
 
@@ -388,7 +408,7 @@
                 <h1>Desincronizado</h1>
                 <p>La Princesita ha colapsado. Chapas Totales: <span id="finalScore" style="color: white; font-weight: 900; font-size: 22px;">0</span><br>Llegaste hasta el <b>Piso <span id="finalLevel">1</span></b></p>
                 
-                <button class="btn-game" id="btnRestart" onclick="startGame()">Reconectar</button>
+                <button class="btn-game" id="btnRestart" onclick="iniciarCargaYSimulacion()">Reconectar</button>
                 <div class="sys-msg" id="saveMsg">Guardando en la base de datos...</div>
 
                 <div class="leaderboard-mini">
@@ -597,10 +617,67 @@
         playerAura.position.set(0, 0.5, 0);
         player.add(playerAura);
 
+        // ==========================================
+        // CARGADOR 3D Y GESTIÓN DE PANTALLA DE CARGA (Aprox 10s o al completar)
+        // ==========================================
         const loader = new THREE.GLTFLoader();
         let isModelLoaded = false;
-        
-        loader.load('modelo/Princesa caida 1.glb', function(gltf) {
+        const modeloUrl = 'https://files.catbox.moe/fxr87i.glb';
+
+        const modelLoadingScreen = document.getElementById('modelLoadingScreen');
+        const loadingBarFill = document.getElementById('loadingBarFill');
+        const loadingText = document.getElementById('loadingText');
+
+        let pendingStart = false; // Bandera para arrancar al terminar de cargar si el usuario dio clic
+
+        function iniciarCargaYSimulacion() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('artifactScreen').classList.add('hidden');
+
+            if (isModelLoaded) {
+                // Si ya está cargado previamente, inicia de inmediato
+                startGame();
+            } else {
+                // Muestra pantalla de carga y simula progreso de 10s
+                modelLoadingScreen.classList.add('active');
+                pendingStart = true;
+                simularProgresoCarga();
+            }
+        }
+
+        let currentProgress = 0;
+        let progressInterval = null;
+
+        function simularProgresoCarga() {
+            currentProgress = 0;
+            loadingBarFill.style.width = '0%';
+            loadingText.innerText = 'Descargando modelo 3D (0%)...';
+
+            progressInterval = setInterval(() => {
+                if (currentProgress < 90 && !isModelLoaded) {
+                    currentProgress += 1.5; // Llega al 90% en aprox 9-10 segundos
+                    loadingBarFill.style.width = currentProgress + '%';
+                    loadingText.innerText = `Descargando modelo 3D (${Math.floor(currentProgress)}%)...`;
+                }
+            }, 150);
+        }
+
+        function finalizarCargaYArrancar() {
+            if (!pendingStart) return;
+            clearInterval(progressInterval);
+            loadingBarFill.style.width = '100%';
+            loadingText.innerText = '¡Modelo listo!';
+
+            setTimeout(() => {
+                modelLoadingScreen.classList.remove('active');
+                pendingStart = false;
+                startGame();
+            }, 400);
+        }
+
+        // Carga real del archivo GLB
+        loader.load(modeloUrl, function(gltf) {
             const model = gltf.scene;
             model.scale.set(1.7, 1.7, 1.7); 
             model.rotation.y = Math.PI; 
@@ -608,6 +685,7 @@
             
             player.add(model);
             isModelLoaded = true;
+            finalizarCargaYArrancar();
 
             if (gltf.animations && gltf.animations.length > 0) {
                 mixer = new THREE.AnimationMixer(model);
@@ -615,11 +693,12 @@
                 action.play();
             }
         }, undefined, function(error) {
-            console.error('Error al cargar el modelo:', error);
+            console.error('Error al cargar el modelo 3D:', error);
             const backupGeo = new THREE.SphereGeometry(0.8, 16, 16);
             const backupMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, wireframe: true });
             player.add(new THREE.Mesh(backupGeo, backupMat));
             isModelLoaded = true;
+            finalizarCargaYArrancar();
         });
 
         const obstacles = [];
@@ -658,7 +737,7 @@
         let isPlaying = false;
         let isPausedForArtifact = false;
         let isSafeMode = false;
-        let safeTimer = 0;
+        let safeTimerGame = 0;
         let score = 0;
         let baseSpeed = kamazonLevels[0].speed;
         let speedMultiplier = 1.0;
@@ -781,8 +860,9 @@
             skillActive = false;
             skillCooldown = 0;
             
-            isSafeMode = false;
-            safeTimer = 0;
+            // INMUNIDAD TEMPORAL DE 3 SEGUNDOS AL INICIAR LA PARTIDA
+            isSafeMode = true;
+            safeTimerGame = 3.0;
 
             comboMult = 1;
             comboTimer = 0;
@@ -838,7 +918,7 @@
             lasers.forEach(laser => { laser.position.z = -200 - Math.random() * 50; laser.userData.soundPlayed = false; });
 
             isSafeMode = true;
-            safeTimer = 2.0;
+            safeTimerGame = 2.0;
             isPausedForArtifact = false;
             clock.getDelta(); 
 
@@ -1080,10 +1160,10 @@
             }
 
             if (isSafeMode && !skillActive) {
-                safeTimer -= dt;
+                safeTimerGame -= dt;
                 playerAura.color.setHex(0xffffff);
                 playerAura.intensity = (Math.sin(clock.getElapsedTime() * 15) * 2) + 3;
-                if (safeTimer <= 0) {
+                if (safeTimerGame <= 0) {
                     isSafeMode = false;
                     playerAura.intensity = 2.5;
                     playerAura.color.setHex(kamazonLevels[currentLevelIdx].aura);
@@ -1290,9 +1370,6 @@
             });
         }
 
-        // ==========================================
-        // GUARDADO DE PUNTOS (Suma acumulativa a Kamazon y recalculo correcto del Total)
-        // ==========================================
         async function guardarPuntos(puntosPartida) {
             const saveMsg = document.getElementById('saveMsg');
             const btnRes = document.getElementById('btnRestart');
@@ -1306,7 +1383,6 @@
                 const nombreSeguro = usuarioActual.nombre;
                 const avatarSeguro = usuarioActual.foto;
                 
-                // Volver a consultar los datos más frescos antes de guardar
                 const t = new Date().getTime();
                 const res = await fetch(`${API_URL}&_=${t}`);
                 const rawData = await res.json();
@@ -1324,14 +1400,11 @@
                 let j4 = miRegistro && miRegistro.juego4 ? (parseInt(miRegistro.juego4) || 0) : 0;
                 let j5 = miRegistro && miRegistro.juego5 ? (parseInt(miRegistro.juego5) || 0) : 0;
 
-                // Sumar los puntos obtenidos en esta partida al acumulado de Kamazon
                 let nuevoKamazon = kamazonAnterior + puntosPartida;
-                
-                // Recalcular el total sumando las columnas de juegos actualizadas
                 let nuevoTotal = nuevoKamazon + j2 + j3 + j4 + j5;
 
                 if (miRegistro) {
-                    await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
                         method: 'PATCH', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ data: { Kamazon: nuevoKamazon, Foto: avatarSeguro, Total: nuevoTotal } })
                     });
