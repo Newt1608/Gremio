@@ -393,7 +393,7 @@
         // =========================================================================
         // COMPROBAR SESIÓN, CARGAR PERFIL Y PUNTOS DESDE SHEETDB
         // =========================================================================
-        const API_URL = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
+        const API_URL = 'https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween';
 
         document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
@@ -478,7 +478,7 @@
 
         // API NOTICIAS Y TEXTOS GLOBALES
         const timestamp = new Date().getTime();
-        const apiURLNoticias = `https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Datos&_=${timestamp}`;
+        const apiURLNoticias = `https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Datos&_=${timestamp}`;
 
         fetch(apiURLNoticias)
             .then(response => response.json())
