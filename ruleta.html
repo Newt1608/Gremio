@@ -273,14 +273,14 @@
                                 <li>⏭️ <b>Pasar Turno:</b> Cede el turno a Lorraine de forma estratégica.</li>
                             </ul>
                         </li>
-                        <li><b>Apuestas:</b> Si ganas, se te suma la apuesta exacta a tu columna de juego. Si pierdes, se acumulará en la columna de Descuentos para que tu Total lo reste automáticamente.</li>
+                        <li><b>Apuestas:</b> Si ganas, se acumulará en la columna de Ganancias (`M`) para sumar a tu Total. Si pierdes, se acumulará en la columna de Descuentos (`K`) para restarlo automáticamente.</li>
                     </ul>
                 </div>
             </div>
         </div>
 
         <div class="screen" id="screen-game">
-            <img src="lustracion_Loraine.png" class="lorraine-splash" id="lorraineSplash">
+            <img src="lustracion_Lorraine.png" class="lorraine-splash" id="lorraineSplash">
 
             <div class="game-header">
                 <div class="player-hud" id="hudMyBox">
@@ -378,7 +378,7 @@
         document.getElementById('hudMyName').innerText = usuarioActual.nombre;
         document.getElementById('hudMyAvatar').src = usuarioActual.foto;
 
-        const API_URL = 'https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween';
+        const API_URL = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
 
         async function cargarPuntosDesdeBD() {
             try {
@@ -727,7 +727,7 @@
                 const avatarSeguro = usuarioActual.foto;
                 const miRegistroActualizado = freshList.find(r => r.nombre && r.nombre.toLowerCase().trim() === nombreSeguro.toLowerCase().trim());
 
-                let puntajeRuletaActual = miRegistroActualizado && miRegistroActualizado.juego2 ? (parseInt(miRegistroActualizado.juego2) || 0) : 0;
+                let gananciasActuales = miRegistroActualizado && miRegistroActualizado.ganar ? (parseInt(miRegistroActualizado.ganar) || 0) : 0;
                 let descuentosActuales = miRegistroActualizado && miRegistroActualizado.descuentos ? (parseInt(miRegistroActualizado.descuentos) || 0) : 0;
                 let victoriasActuales = miRegistroActualizado ? (parseInt(miRegistroActualizado.victorias) || 0) : 0;
                 let derrotasActuales = miRegistroActualizado ? (parseInt(miRegistroActualizado.derrotas) || 0) : 0;
@@ -735,9 +735,9 @@
                 let payloadData = { Foto: avatarSeguro };
 
                 if (gano) {
-                    let nuevoPuntajeRuleta = puntajeRuletaActual + apuestaEfectiva;
+                    let nuevasGanancias = gananciasActuales + apuestaEfectiva;
                     victoriasActuales++;
-                    payloadData.Juego2 = nuevoPuntajeRuleta;
+                    payloadData.Ganar = nuevasGanancias;
                 } else {
                     let nuevosDescuentos = descuentosActuales + apuestaEfectiva;
                     derrotasActuales++;
@@ -748,13 +748,13 @@
                 payloadData.Derrotas = derrotasActuales;
 
                 if (miRegistroActualizado) {
-                    await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ data: payloadData })
                     });
                 } else {
-                    await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -762,9 +762,7 @@
                                 Nombre: nombreSeguro, 
                                 Foto: avatarSeguro, 
                                 Kamazon: 0, 
-                                Juego2: gano ? apuestaEfectiva : 0, 
-                                Juego3: 0,
-                                Juego4: 0,
+                                Ganar: gano ? apuestaEfectiva : 0, 
                                 Descuentos: gano ? 0 : apuestaEfectiva,
                                 Victorias: victoriasActuales, 
                                 Derrotas: derrotasActuales 
@@ -784,3 +782,21 @@
 
         function rendirse() {
             if (!confirm("¿Estás seguro de que deseas rendirte? Perderás los puntos apostados.")) return;
+            finalizarPartida(false, "Te has rendido ante Lorraine.");
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('sesion_activa');
+            localStorage.removeItem('usuario_nombre');
+            localStorage.removeItem('usuario_avatar');
+            localStorage.removeItem('usuario_roll');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>
