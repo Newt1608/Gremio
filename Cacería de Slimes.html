@@ -305,7 +305,7 @@
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
                 try {
-                    const res = await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween&_=${new Date().getTime()}`);
+                    const res = await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween&_=${new Date().getTime()}`);
                     const rawData = await res.json();
                     const pData = rawData.map(row => {
                         let newRow = {};
@@ -492,7 +492,7 @@
         // =========================================================================
         // CONEXIÓN CON SHEETDB (ACUMULA EN JUEGO2, RECORDA EN TOP / COLUMNA L)
         // =========================================================================
-        const API_URL = 'https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween';
+        const API_URL = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween';
 
         function convertirUrlDrive(url) {
             if (!url) return 'logo.jpg';
@@ -605,13 +605,13 @@
                 };
 
                 if (miRegistro) {
-                    await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0/Nombre/${nombreSeguro}?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo/Nombre/${nombreSeguro}?sheet=Halloween`, {
                         method: 'PATCH',
                         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                         body: JSON.stringify({ data: datosAEnviar })
                     });
                 } else {
-                    await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween`, {
                         method: 'POST',
                         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                         body: JSON.stringify({ data: [{ Nombre: nombreSeguro, Foto: avatarSeguro, Kamazon: 0, Juego2: nuevoJuego2, top: nuevoTop, Victorias: 0, Derrotas: 0 }] })
@@ -644,16 +644,3 @@
                 startBtn.disabled = false;
             }
         }
-
-        const sidebar = document.getElementById('sidebar');
-        if (localStorage.getItem('sidebar-colapsada') === 'true') {
-            sidebar.classList.add('collapsed');
-        }
-
-        document.getElementById('toggleSidebar').addEventListener('click', () => { 
-            sidebar.classList.toggle('collapsed');
-            localStorage.setItem('sidebar-colapsada', sidebar.classList.contains('collapsed'));
-        });
-    </script>
-</body>
-</html>
