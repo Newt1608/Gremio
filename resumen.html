@@ -1,4 +1,18 @@
-r: #e8e4dc; --transition-speed: 0.3s;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen del Gremio - Mi Casita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #f9f5ed;
+            --card-bg: #ffffff; --text-dark: #201b2a; --text-muted: #7d7889;
+            --accent-red: #d84d65; --border-color: #e8e4dc; --transition-speed: 0.3s;
             --setup-blue: #4299f6;
         }
 
@@ -340,9 +354,9 @@ r: #e8e4dc; --transition-speed: 0.3s;
         // APIS (ACTUALIZADAS CON NUEVA URL DE SHEETDB)
         // =========================================================================
         const timestamp = new Date().getTime();
-        const apiURL = `https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Datos&_=${timestamp}`;
-        const apiRankingURL = `https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Ranking&_=${timestamp}`;
-        const apiUsuariosURL = `https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Usuarios&_=${timestamp}`;
+        const apiURL = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Datos&_=${timestamp}`;
+        const apiRankingURL = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Ranking&_=${timestamp}`;
+        const apiUsuariosURL = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Usuarios&_=${timestamp}`;
 
         // Cargar Datos Generales (Estadísticas Superiores)
         fetch(apiURL)
