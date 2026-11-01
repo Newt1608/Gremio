@@ -149,23 +149,23 @@
         .loading-text { font-size: 12px; color: var(--text-muted); margin-top: 10px; font-weight: 700; letter-spacing: 1px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* CARRUSEL DE INSTRUCCIONES */
-        .instructions-slider { display: flex; align-items: center; justify-content: space-between; margin: 15px 0 20px 0; gap: 15px; min-height: 100px; }
-        .slide-btn { background: rgba(0, 255, 255, 0.05); border: 1px solid var(--neon-blue); color: var(--neon-blue); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: 0.2s; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        /* CARRUSEL DE INSTRUCCIONES EXTENDIDO */
+        .instructions-slider { display: flex; align-items: center; justify-content: space-between; margin: 12px 0 15px 0; gap: 15px; min-height: 110px; }
+        .slide-btn { background: rgba(0, 255, 255, 0.05); border: 1px solid var(--neon-blue); color: var(--neon-blue); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.2s; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .slide-btn:hover:not(:disabled) { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); transform: scale(1.1); }
         .slide-btn:disabled { border-color: #444; color: #444; background: transparent; cursor: not-allowed; }
         .slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: left; padding: 0 5px; }
         .slide-text { display: none; animation: fadeIn 0.3s ease; }
         .slide-text.active { display: block; }
-        .slide-text h3 { font-size: 15px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
-        .slide-text p { font-size: 13px; margin-bottom: 0 !important; color: #aaa; line-height: 1.4; }
-        .slide-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .slide-text h3 { font-size: 14px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .slide-text p { font-size: 12px; margin-bottom: 0 !important; color: #aaa; line-height: 1.45; }
+        .slide-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
         .dot { width: 8px; height: 8px; background: #444; border-radius: 50%; transition: 0.3s; }
         .dot.active { background: var(--neon-blue); box-shadow: 0 0 8px var(--neon-blue); }
         @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
 
         .center-alerts { position: absolute; top: 28%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; z-index: 15; width: 100%; }
-        .level-up-msg { font-size: 50px; font-weight: 900; color: var(--kamazon-gold); text-transform: uppercase; text-shadow: 0 0 20px var(--kamazon-gold), 0 5px 15px rgba(0,0,0,0.9); opacity: 0; transform: scale(0.5); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .level-up-msg { font-size: 45px; font-weight: 900; color: var(--kamazon-gold); text-transform: uppercase; text-shadow: 0 0 20px var(--kamazon-gold), 0 5px 15px rgba(0,0,0,0.9); opacity: 0; transform: scale(0.5); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .level-up-msg.show { opacity: 1; transform: scale(1); }
         
         .curse-alert { font-size: 22px; font-weight: 900; color: var(--neon-purple); background: rgba(15, 5, 25, 0.85); border: 1px solid var(--neon-purple); padding: 8px 25px; border-radius: 30px; display: inline-block; margin-top: 10px; opacity: 0; transform: translateY(10px); transition: 0.3s; box-shadow: 0 0 20px rgba(184, 41, 255, 0.5); text-transform: uppercase; letter-spacing: 1px; }
@@ -177,20 +177,32 @@
         .game-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.88); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; transition: 0.3s; }
         .game-screen.hidden { opacity: 0; pointer-events: none; }
         
-        .screen-box { background: rgba(20, 20, 30, 0.95); border: 2px solid var(--neon-blue); padding: 35px; border-radius: 20px; text-align: center; max-width: 520px; width: 90%; box-shadow: 0 0 30px rgba(0,255,255,0.2); position: relative; }
-        .screen-box h1 { font-size: 34px; font-weight: 900; color: white; text-transform: uppercase; margin-bottom: 10px; text-shadow: 0 0 10px var(--neon-blue); }
-        .screen-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+        .screen-box { background: rgba(20, 20, 30, 0.95); border: 2px solid var(--neon-blue); padding: 30px; border-radius: 20px; text-align: center; max-width: 650px; width: 92%; box-shadow: 0 0 30px rgba(0,255,255,0.2); position: relative; }
+        .screen-box h1 { font-size: 26px; font-weight: 900; color: white; text-transform: uppercase; margin-bottom: 8px; text-shadow: 0 0 10px var(--neon-blue); }
+        .screen-box p { color: var(--text-muted); font-size: 13px; margin-bottom: 15px; line-height: 1.5; }
         
+        /* BOTÓN DE CIERRE (X) EN LA ESQUINA DE LA TIENDA Y ARTEFACTOS */
+        .close-screen-btn { position: absolute; top: 15px; right: 18px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; font-weight: 900; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .close-screen-btn:hover { background: var(--accent-red); color: white; transform: scale(1.1); border-color: var(--accent-red); }
+
         .btn-game { background: var(--neon-blue); color: #000; border: none; padding: 14px 38px; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; border-radius: 10px; cursor: pointer; transition: 0.2s; box-shadow: 0 0 15px rgba(0,255,255,0.4); }
         .btn-game:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(0,255,255,0.6); }
 
-        .artifact-box { max-width: 780px; border-color: var(--kamazon-gold); box-shadow: 0 0 40px rgba(255, 207, 0, 0.25); }
+        .artifact-box { max-width: 820px; border-color: var(--kamazon-gold); box-shadow: 0 0 40px rgba(255, 207, 0, 0.25); }
         .artifact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px; }
-        .artifact-card { background: #1a1829; border: 2px solid #35304d; border-radius: 14px; padding: 20px 15px; cursor: pointer; transition: 0.25s; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .artifact-card:hover { transform: translateY(-6px); border-color: var(--kamazon-gold); background: #242038; box-shadow: 0 10px 25px rgba(255, 207, 0, 0.2); }
-        .artifact-icon { font-size: 36px; color: var(--kamazon-gold); margin-bottom: 12px; filter: drop-shadow(0 0 8px rgba(255,207,0,0.5)); }
-        .artifact-title { font-size: 15px; font-weight: 800; color: white; margin-bottom: 8px; text-transform: uppercase; }
-        .artifact-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+        .artifact-card { background: #1a1829; border: 2px solid #35304d; border-radius: 14px; padding: 18px 12px; cursor: pointer; transition: 0.25s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
+        .artifact-card:hover { transform: translateY(-4px); border-color: var(--kamazon-gold); background: #242038; box-shadow: 0 10px 25px rgba(255, 207, 0, 0.2); }
+        .artifact-icon { font-size: 32px; color: var(--kamazon-gold); margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(255,207,0,0.5)); }
+        .artifact-title { font-size: 14px; font-weight: 800; color: white; margin-bottom: 6px; text-transform: uppercase; }
+        .artifact-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+        .price-badge { background: rgba(255, 207, 0, 0.15); border: 1px solid var(--kamazon-gold); color: var(--kamazon-gold); font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; margin-top: 8px; }
+
+        /* DROP ZONE PARA CARTAS INTERCAMBIABLES */
+        .drop-target { border: 2px dashed var(--neon-blue) !important; background: rgba(0, 255, 255, 0.05) !important; }
+        .draggable-card { cursor: grab; user-select: none; }
+        .draggable-card:active { cursor: grabbing; }
+
+        .warning-tag { background: rgba(255, 87, 34, 0.2); border: 1px solid var(--accent-red); color: #ff9e80; font-size: 11px; padding: 8px 14px; border-radius: 8px; margin-bottom: 12px; font-weight: 700; text-align: left; line-height: 1.4; }
 
         #gameOverScreen .screen-box { border-color: var(--neon-red); box-shadow: 0 0 30px rgba(255,0,85,0.2); }
         #gameOverScreen h1 { color: var(--neon-red); text-shadow: 0 0 10px var(--neon-red); }
@@ -209,14 +221,14 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE CARGA DEL MODELO AL INICIAR SIMULACIÓN -->
+    <!-- PANTALLA DE CARGA DEL MODELO 3D REAL -->
     <div class="loading-screen" id="modelLoadingScreen">
         <div class="loading-spinner"></div>
         <div class="loading-title">Cargando Abismo Corrupto</div>
         <div class="loading-bar-container">
             <div class="loading-bar-fill" id="loadingBarFill"></div>
         </div>
-        <div class="loading-text" id="loadingText">Sincronizando modelo 3D (0%)...</div>
+        <div class="loading-text" id="loadingText">Descargando modelo 3D (0%)...</div>
     </div>
 
     <aside class="sidebar" id="sidebar">
@@ -342,7 +354,7 @@
         </div>
         <div class="near-miss-popup" id="nearMissPopup">¡ROCE PERFECTO!</div>
 
-        <!-- PANTALLA DE INICIO CON CARRUSEL DE INSTRUCCIONES -->
+        <!-- PANTALLA DE INICIO CON CARRUSEL DE INSTRUCCIONES DETALLADO -->
         <div class="game-screen" id="startScreen">
             <div class="screen-box">
                 <h1 style="color: var(--kamazon-gold); text-shadow: 0 0 10px var(--kamazon-gold);">Abismo Corrupto</h1>
@@ -352,16 +364,16 @@
                     
                     <div class="slide-content">
                         <div class="slide-text active" id="slide0">
-                            <h3 style="color: white;">1. El Descenso</h3>
-                            <p>Mueve el <b>ratón</b> para guiar a la <b style="color:#00ffff;">Princesita</b>. Esquiva los bloques corruptos y láseres.</p>
+                            <h3 style="color: white;">1. Controles y Descenso</h3>
+                            <p>Mueve el <b>ratón</b> para guiar a la <b style="color:#00ffff;">Princesita</b>. Esquiva los bloques corruptos y láseres mortales mientras desciendes por los pisos.</p>
                         </div>
                         <div class="slide-text" id="slide1">
-                            <h3 style="color: var(--neon-green);">2. Bate Rompe-Ventanas</h3>
-                            <p>Haz <b>Clic Izquierdo</b> para activar la invulnerabilidad invisible. ¡Choca contra los obstáculos y destrúyelos!</p>
+                            <h3 style="color: var(--neon-green);">2. El Bate Rompe-Ventanas</h3>
+                            <p>Haz <b>Clic Izquierdo</b> para activar la invulnerabilidad con el bate. Destruye obstáculos al instante. Puedes mejorar su Área o Duración en la Tienda.</p>
                         </div>
                         <div class="slide-text" id="slide2">
-                            <h3 style="color: var(--kamazon-gold);">3. Riesgo y Recompensa</h3>
-                            <p>Pasa rozando los peligros para subir tu combo y elige artefactos especiales al subir de zona.</p>
+                            <h3 style="color: var(--kamazon-gold);">3. Tienda y Cartas (Piso 3+)</h3>
+                            <p>Entra a la tienda tras los portales. <b>¡Cuidado!</b> Las cartas misteriosas (500 pts) se cambian arrastrándolas sobre tus cartas y pueden traer maldiciones temporales inmediatas.</p>
                         </div>
                     </div>
 
@@ -378,26 +390,99 @@
             </div>
         </div>
 
+        <!-- PANTALLA DE PORTAL Y TRANSICIÓN -->
+        <div class="game-screen hidden" id="portalScreen">
+            <div class="screen-box" style="border-color: var(--neon-purple); box-shadow: 0 0 40px rgba(184,41,255,0.4);">
+                <button class="close-screen-btn" onclick="cerrarMenuYContinuar('portalScreen')" title="Saltar e ignorar">✕</button>
+                <h1 style="color: var(--neon-purple); text-shadow: 0 0 12px var(--neon-purple);">Portal Dimensional</h1>
+                <p id="portalSubText">Has cruzado el umbral hacia los niveles profundos de Kamazon...</p>
+                <div style="font-size: 45px; color: var(--neon-purple); margin: 15px 0; animation: spin 2s linear infinite;"><i class="fa-solid fa-ring"></i></div>
+                <button class="btn-game" style="background: var(--neon-purple); color: white;" onclick="abrirTiendaOArtefactos()">Acceder a la Tienda del Piso</button>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE ARTEFACTOS INICIALES (PISO 1 y 2) -->
         <div class="game-screen hidden" id="artifactScreen">
             <div class="screen-box artifact-box">
-                <h1 style="color: var(--kamazon-gold); text-shadow: 0 0 12px var(--kamazon-gold); font-size: 28px;">¡Piso Superado! Elige un Artefacto</h1>
-                <p style="margin-bottom: 10px;">Selecciona una mejora de Kamazon para continuar descendiendo:</p>
+                <button class="close-screen-btn" onclick="cerrarMenuYContinuar('artifactScreen')" title="Cerrar y continuar">✕</button>
+                <h1 style="color: var(--kamazon-gold); text-shadow: 0 0 12px var(--kamazon-gold); font-size: 26px;">¡Piso Superado! Elige un Artefacto Inicial</h1>
+                <p style="margin-bottom: 10px;">Selecciona una mejora inicial de Kamazon (Gratis en Piso 1/2):</p>
                 
                 <div class="artifact-grid">
                     <div class="artifact-card" onclick="selectArtifact('magnet')">
                         <div class="artifact-icon"><i class="fa-solid fa-magnet"></i></div>
                         <div class="artifact-title">Imán de Agatha</div>
-                        <div class="artifact-desc">Atrae las Chapas Doradas automáticamente hacia la Princesita desde lejos.</div>
+                        <div class="artifact-desc">Atrae las Chapas Doradas automáticamente durante 8 segundos.</div>
                     </div>
                     <div class="artifact-card" onclick="selectArtifact('shield')">
                         <div class="artifact-icon" style="color: #60a5fa;"><i class="fa-solid fa-flask"></i></div>
                         <div class="artifact-title">Poción de Lorraine</div>
-                        <div class="artifact-desc">Otorga <b>+1 Escudo Protector</b> contra choques mortales, pero aumenta la velocidad un 10%.</div>
+                        <div class="artifact-desc">Otorga <b>+1 Escudo Protector</b> contra choques mortales.</div>
                     </div>
                     <div class="artifact-card" onclick="selectArtifact('greed')">
                         <div class="artifact-icon" style="color: #4ade80;"><i class="fa-solid fa-sack-dollar"></i></div>
                         <div class="artifact-title">Monedero Real</div>
-                        <div class="artifact-desc">Cada Chapa Dorada recolectada otorga <b>+50 puntos base adicionales</b>.</div>
+                        <div class="artifact-desc">Cada Chapa Dorada otorga <b>+50 puntos base adicionales</b>.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE TIENDA Y CARTAS INTERCAMBIABLES (PISO 3+) -->
+        <div class="game-screen hidden" id="shopScreen">
+            <div class="screen-box artifact-box" style="border-color: var(--neon-green); box-shadow: 0 0 40px rgba(74,222,128,0.3);">
+                <button class="close-screen-btn" onclick="cerrarMenuYContinuar('shopScreen')" title="Cerrar Tienda sin comprar">✕</button>
+                <h1 style="color: var(--neon-green); text-shadow: 0 0 12px var(--neon-green); font-size: 24px;"><i class="fa-solid fa-store"></i> Tienda de Kamazon (Piso 3+)</h1>
+                
+                <div class="warning-tag">
+                    <i class="fa-solid fa-triangle-exclamation"></i> <b>¡ADVERTENCIA DE RIESGO!</b><br>
+                    • Las cartas misteriosas son un intercambio arriesgado 1 por piso (Costo: <b>500 pts</b>). Una vez que arrastras la carta sobre una de tus cartas actuales, <b>la pierdes permanentemente</b> y podrías recibir una maldición inmediata temporal.<br>
+                    • Las mejoras de Bate (Costo: <b>5000 pts</b>) son excluyentes: solo puedes elegir una rama (Daño o Duración) por partida.<br>
+                    • Puedes hacer clic en la <b>X</b> superior derecha si prefieres no arriesgarte y continuar sin comprar nada.
+                </div>
+
+                <p style="font-size: 11px; margin-bottom: 6px; color: #ccc;"><b>1. CARTA MISTERIOSA (500 PTS) - ARRASTRA SOBRE UNA CARTA ACTUAL:</b></p>
+                <div class="artifact-grid" style="grid-template-columns: 1fr; max-width: 280px; margin: 0 auto 10px auto;">
+                    <div class="artifact-card draggable-card" draggable="true" id="mysteryCardDrag" ondragstart="handleDragStart(event)">
+                        <div class="artifact-icon" style="color: var(--kamazon-gold);"><i class="fa-solid fa-box-archive"></i></div>
+                        <div class="artifact-title">Carta Misteriosa (Arrastrar)</div>
+                        <div class="artifact-desc">Arrastra y suelta sobre la carta que deseas reemplazar.</div>
+                        <div class="price-badge">Costo: 500 Pts</div>
+                    </div>
+                </div>
+
+                <p style="font-size: 11px; margin-bottom: 6px; color: #ccc;"><b>TUS CARTAS ACTUALES (ZONA DE INTERCAMBIO - SUELTA AQUÍ):</b></p>
+                <div class="artifact-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 12px;">
+                    <div class="artifact-card drop-zone" id="userCard0" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 0)">
+                        <div class="artifact-icon" style="color: #ffcf00;"><i class="fa-solid fa-magnet"></i></div>
+                        <div class="artifact-title" id="titleCard0">Imán</div>
+                        <div class="artifact-desc" id="descCard0">Atrae chapas temporalmente.</div>
+                    </div>
+                    <div class="artifact-card drop-zone" id="userCard1" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 1)">
+                        <div class="artifact-icon" style="color: #60a5fa;"><i class="fa-solid fa-flask"></i></div>
+                        <div class="artifact-title" id="titleCard1">Escudo</div>
+                        <div class="artifact-desc" id="descCard1">+1 Vida protectora.</div>
+                    </div>
+                    <div class="artifact-card drop-zone" id="userCard2" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 2)">
+                        <div class="artifact-icon" style="color: #4ade80;"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div class="artifact-title" id="titleCard2">Monedero</div>
+                        <div class="artifact-desc" id="descCard2">+50 Puntos base por chapa.</div>
+                    </div>
+                </div>
+
+                <p style="font-size: 11px; margin-bottom: 6px; color: #ccc;"><b>2. MEJORAS DEL BATE (5000 PTS - EXCLUYENTE):</b></p>
+                <div class="artifact-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <div class="artifact-card" style="border-color: var(--neon-blue);" onclick="buyBatUpgrade('power')">
+                        <div class="artifact-icon" style="color: var(--neon-blue);"><i class="fa-solid fa-hammer"></i></div>
+                        <div class="artifact-title">Área de Daño (Nivel: x<span id="batDmgLvl">1</span>)</div>
+                        <div class="artifact-desc">Aumenta el radio de impacto a x2, x3 o x4.</div>
+                        <div class="price-badge">Costo: 5000 Pts</div>
+                    </div>
+                    <div class="artifact-card" style="border-color: var(--neon-purple);" onclick="buyBatUpgrade('duration')">
+                        <div class="artifact-icon" style="color: var(--neon-purple);"><i class="fa-solid fa-stopwatch"></i></div>
+                        <div class="artifact-title">Duración Max (Actual: <span id="batDurLvl">2.5</span>s)</div>
+                        <div class="artifact-desc">Amplía la duración del bate hasta 10 seg.</div>
+                        <div class="price-badge">Costo: 5000 Pts</div>
                     </div>
                 </div>
             </div>
@@ -480,19 +565,19 @@
         });
 
         // =========================================================================
-        // DATOS DE USUARIO Y SHEETDB (Halloween)
+        // DATOS DE USUARIO Y API DE SHEETDB (Columna C - Kamazon)
         // =========================================================================
         let usuarioActual = { 
             nombre: localStorage.getItem('usuario_nombre') || 'Newt', 
             foto: localStorage.getItem('usuario_avatar') || 'logo.jpg' 
         };
-        let miKamazonActual = 0;
+        let miKamazonActual = 0; 
         let pDataTotal = [];
         
         document.getElementById('sidebar-name').innerText = usuarioActual.nombre;
         document.getElementById('sidebar-avatar').src = usuarioActual.foto;
 
-        const API_URL = 'https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween';
+        const API_URL = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween';
 
         async function cargarLeaderboard() {
             try {
@@ -523,6 +608,10 @@
                 pDataTotal = []; 
                 document.getElementById('ld-list').innerText = "Aún no hay puntuaciones registradas.";
             }
+        }
+
+        function getSaldoDisponible() {
+            return miKamazonActual + Math.floor(score);
         }
 
         // ==========================================
@@ -618,7 +707,7 @@
         player.add(playerAura);
 
         // ==========================================
-        // CARGADOR 3D Y GESTIÓN DE PANTALLA DE CARGA (Aprox 10s o al completar)
+        // CARGADOR 3D (ESPERA REAL AL 100% SIN FORZAR)
         // ==========================================
         const loader = new THREE.GLTFLoader();
         let isModelLoaded = false;
@@ -628,55 +717,23 @@
         const loadingBarFill = document.getElementById('loadingBarFill');
         const loadingText = document.getElementById('loadingText');
 
-        let pendingStart = false; // Bandera para arrancar al terminar de cargar si el usuario dio clic
+        let pendingStart = false;
 
         function iniciarCargaYSimulacion() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.add('hidden');
             document.getElementById('artifactScreen').classList.add('hidden');
+            document.getElementById('portalScreen').classList.add('hidden');
+            document.getElementById('shopScreen').classList.add('hidden');
 
             if (isModelLoaded) {
-                // Si ya está cargado previamente, inicia de inmediato
                 startGame();
             } else {
-                // Muestra pantalla de carga y simula progreso de 10s
                 modelLoadingScreen.classList.add('active');
                 pendingStart = true;
-                simularProgresoCarga();
             }
         }
 
-        let currentProgress = 0;
-        let progressInterval = null;
-
-        function simularProgresoCarga() {
-            currentProgress = 0;
-            loadingBarFill.style.width = '0%';
-            loadingText.innerText = 'Descargando modelo 3D (0%)...';
-
-            progressInterval = setInterval(() => {
-                if (currentProgress < 90 && !isModelLoaded) {
-                    currentProgress += 1.5; // Llega al 90% en aprox 9-10 segundos
-                    loadingBarFill.style.width = currentProgress + '%';
-                    loadingText.innerText = `Descargando modelo 3D (${Math.floor(currentProgress)}%)...`;
-                }
-            }, 150);
-        }
-
-        function finalizarCargaYArrancar() {
-            if (!pendingStart) return;
-            clearInterval(progressInterval);
-            loadingBarFill.style.width = '100%';
-            loadingText.innerText = '¡Modelo listo!';
-
-            setTimeout(() => {
-                modelLoadingScreen.classList.remove('active');
-                pendingStart = false;
-                startGame();
-            }, 400);
-        }
-
-        // Carga real del archivo GLB
         loader.load(modeloUrl, function(gltf) {
             const model = gltf.scene;
             model.scale.set(1.7, 1.7, 1.7); 
@@ -685,20 +742,41 @@
             
             player.add(model);
             isModelLoaded = true;
-            finalizarCargaYArrancar();
 
             if (gltf.animations && gltf.animations.length > 0) {
                 mixer = new THREE.AnimationMixer(model);
                 const action = mixer.clipAction(gltf.animations[0]);
                 action.play();
             }
-        }, undefined, function(error) {
+
+            if (pendingStart) {
+                loadingBarFill.style.width = '100%';
+                loadingText.innerText = '¡Modelo listo!';
+                setTimeout(() => {
+                    modelLoadingScreen.classList.remove('active');
+                    pendingStart = false;
+                    startGame();
+                }, 400);
+            }
+        }, function(xhr) {
+            if (xhr.total) {
+                const percent = Math.floor((xhr.loaded / xhr.total) * 100);
+                loadingBarFill.style.width = percent + '%';
+                loadingText.innerText = `Descargando modelo 3D (${percent}%)...`;
+            } else {
+                loadingText.innerText = 'Descargando modelo 3D...';
+            }
+        }, function(error) {
             console.error('Error al cargar el modelo 3D:', error);
             const backupGeo = new THREE.SphereGeometry(0.8, 16, 16);
             const backupMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, wireframe: true });
             player.add(new THREE.Mesh(backupGeo, backupMat));
             isModelLoaded = true;
-            finalizarCargaYArrancar();
+            if (pendingStart) {
+                modelLoadingScreen.classList.remove('active');
+                pendingStart = false;
+                startGame();
+            }
         });
 
         const obstacles = [];
@@ -747,14 +825,16 @@
         const boundsX = 8.0; 
         const boundsY = 5.0;
 
-        let magnetLevel = 0;
+        let magnetTimer = 0;
         let shields = 0;
         let coinBaseValue = 50;
 
         let skillActive = false;
         let skillTimer = 0;
         let skillCooldown = 0;
-        const SKILL_DURATION = 2.5;
+        let skillDurationMax = 2.5;
+        let batDamageLevel = 1;
+        let batUpgradeChosenType = null;
         const SKILL_CD_TIME = 10.0;
 
         let comboMult = 1;
@@ -767,6 +847,8 @@
 
         let bossShootTimer = 0;
         let liveRankingUpdateTimer = 0; 
+        let speedDampingTimer = 0;
+        let hasSwappedCardThisFloor = false;
 
         container.addEventListener('mousemove', (e) => {
             if(!isPlaying || isPausedForArtifact) return;
@@ -784,9 +866,9 @@
         function activateBatSkill() {
             if (skillCooldown <= 0 && !skillActive) {
                 skillActive = true;
-                skillTimer = SKILL_DURATION;
+                skillTimer = skillDurationMax;
                 playerAura.color.setHex(0x00ffff);
-                playerAura.intensity = 5;
+                playerAura.intensity = 5 + (batDamageLevel * 1.5);
                 document.getElementById('skillBox').classList.remove('ready');
                 document.getElementById('skillBox').classList.add('active-skill');
                 document.getElementById('skillStatusText').innerText = "¡ACTIVO!";
@@ -797,6 +879,7 @@
             const mat = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true, transparent: true, opacity: 1 });
             const mesh = new THREE.Mesh(impactGeo, mat);
             mesh.position.copy(pos);
+            mesh.scale.multiplyScalar(batDamageLevel); 
             mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
             scene.add(mesh);
             impacts.push({ mesh: mesh, life: 1.0 });
@@ -806,6 +889,7 @@
             if (type === 'coin') {
                 const mesh = new THREE.Mesh(coinGeo, coinMat);
                 mesh.position.set((Math.random() - 0.5) * boundsX * 2, (Math.random() - 0.5) * boundsY * 2, -100 - Math.random() * 150);
+                mesh.userData = { isAttracted: false, stuckTime: 0 };
                 scene.add(mesh);
                 coins.push(mesh);
             } else if (type === 'obs') {
@@ -852,15 +936,28 @@
             
             score = 0;
             currentLevelIdx = 0;
-            magnetLevel = 0;
+            magnetTimer = 0;
             shields = 0;
             coinBaseValue = 50;
             speedMultiplier = 1.0;
+            speedDampingTimer = 0;
+            hasSwappedCardThisFloor = false;
 
             skillActive = false;
             skillCooldown = 0;
+            skillDurationMax = 2.5;
+            batDamageLevel = 1;
+            batUpgradeChosenType = null;
+            document.getElementById('batDmgLvl').innerText = '1';
+            document.getElementById('batDurLvl').innerText = '2.5';
             
-            // INMUNIDAD TEMPORAL DE 3 SEGUNDOS AL INICIAR LA PARTIDA
+            document.getElementById('titleCard0').innerText = 'Imán';
+            document.getElementById('descCard0').innerText = 'Atrae chapas temporalmente.';
+            document.getElementById('titleCard1').innerText = 'Escudo';
+            document.getElementById('descCard1').innerText = '+1 Vida protectora.';
+            document.getElementById('titleCard2').innerText = 'Monedero';
+            document.getElementById('descCard2').innerText = '+50 Puntos base por chapa.';
+
             isSafeMode = true;
             safeTimerGame = 3.0;
 
@@ -883,7 +980,9 @@
             if (currentLevelIdx < kamazonLevels.length - 1) {
                 const nextLevel = kamazonLevels[currentLevelIdx + 1];
                 if (score >= nextLevel.threshold) {
+                    speedDampingTimer = 1.5; 
                     currentLevelIdx++;
+                    hasSwappedCardThisFloor = false; 
                     updateLevelVisuals(currentLevelIdx);
                     showLevelUpMessage(nextLevel.name);
                     
@@ -891,34 +990,178 @@
                     sfxSubirPiso.play().catch(e=>console.warn(e));
 
                     isPausedForArtifact = true;
-                    document.getElementById('artifactScreen').classList.remove('hidden');
-
                     sfxCartas.currentTime = 0;
                     sfxCartas.play().catch(e=>console.warn(e));
-                    
                     sfxViento.pause();
+
+                    if (currentLevelIdx >= 2) {
+                        document.getElementById('portalSubText').innerText = `Has cruzado el portal hacia el ${nextLevel.name} (Tienda de Kamazon)...`;
+                        document.getElementById('portalScreen').classList.remove('hidden');
+                    } else {
+                        document.getElementById('artifactScreen').classList.remove('hidden');
+                    }
                 }
             }
         }
 
+        function abrirTiendaOArtefactos() {
+            document.getElementById('portalScreen').classList.add('hidden');
+            if (currentLevelIdx >= 2) {
+                document.getElementById('shopScreen').classList.remove('hidden');
+            } else {
+                document.getElementById('artifactScreen').classList.remove('hidden');
+            }
+        }
+
+        function cerrarMenuYContinuar(screenId) {
+            document.getElementById(screenId).classList.add('hidden');
+            reanudarDespuesDeMejora();
+        }
+
         function selectArtifact(type) {
             if (type === 'magnet') {
-                magnetLevel++;
+                magnetTimer = 8.0;
             } else if (type === 'shield') {
                 shields++;
-                speedMultiplier *= 1.10;
                 updateShieldUI();
             } else if (type === 'greed') {
                 coinBaseValue += 50;
             }
 
             document.getElementById('artifactScreen').classList.add('hidden');
-            
+            reanudarDespuesDeMejora();
+        }
+
+        // =========================================================================
+        // LÓGICA DRAG & DROP E INTERCAMBIO DE CARTAS CON ADVERTENCIAS (500 PTS)
+        // =========================================================================
+        function handleDragStart(e) {
+            e.dataTransfer.setData("text/plain", "mystery_card");
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drop-target');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drop-target');
+        }
+
+        function handleDrop(e, targetCardSlot) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drop-target');
+
+            if (hasSwappedCardThisFloor) {
+                alert("¡ADVERTENCIA: Ya realizaste tu intercambio de carta permitido en este piso!");
+                return;
+            }
+
+            const saldo = getSaldoDisponible();
+            if (saldo < 500) {
+                alert(`¡ADVERTENCIA: Fondos insuficientes! Necesitas 500 Pts Kamazon (Tienes ${saldo} Pts).`);
+                return;
+            }
+
+            if (!confirm("⚠️ ADVERTENCIA DE INTERCAMBIO:\nEstás a punto de gastar 500 Pts y PERMANENTEMENTE intercambiar tu carta actual por una Caja Misteriosa que puede contener un poder o una maldición inmediata. ¿Deseas continuar?")) {
+                return;
+            }
+
+            descontarPuntosKamazon(500);
+            hasSwappedCardThisFloor = true;
+
+            const roll = Math.random();
+            let resultTitle = "";
+            let resultDesc = "";
+
+            if (roll < 0.40) {
+                magnetTimer += 12.0;
+                resultTitle = "Imán Dorado";
+                resultDesc = "+12s Imán Automático activado";
+                showLevelUpMessage("¡INTERCAMBIO: IMÁN EXTENDIDO!");
+            } else if (roll < 0.70) {
+                shields += 2;
+                updateShieldUI();
+                resultTitle = "Escudo Divino";
+                resultDesc = "+2 Escudos Protectores";
+                showLevelUpMessage("¡INTERCAMBIO: +2 ESCUDOS!");
+            } else {
+                triggerRandomCurse();
+                resultTitle = "Maldición Caótica";
+                resultDesc = "Maldición temporal aplicada de inmediato";
+                showLevelUpMessage("¡CARTA TRAMPA: MALDICIÓN APLICADA!");
+            }
+
+            document.getElementById(`titleCard${targetCardSlot}`).innerText = resultTitle;
+            document.getElementById(`descCard${targetCardSlot}`).innerText = resultDesc;
+
+            document.getElementById('shopScreen').classList.add('hidden');
+            reanudarDespuesDeMejora();
+        }
+
+        // =========================================================================
+        // LÓGICA DE MEJORAS DEL BATE EN TIENDA (5000 PTS - EXCLUYENTE)
+        // =========================================================================
+        function buyBatUpgrade(type) {
+            if (batUpgradeChosenType !== null && batUpgradeChosenType !== type) {
+                alert("⚠️ ADVERTENCIA: Las mejoras del Bate son excluyentes. Ya elegiste la otra ruta en esta partida.");
+                return;
+            }
+
+            const saldo = getSaldoDisponible();
+            if (saldo < 5000) {
+                alert(`⚠️ ADVERTENCIA: Fondos insuficientes. Se requieren 5000 Pts Kamazon (Tienes ${saldo} Pts).`);
+                return;
+            }
+
+            if (type === 'power' && batDamageLevel >= 4) {
+                alert("¡El área de daño del bate ya está al nivel máximo (x4)!");
+                return;
+            }
+            if (type === 'duration' && skillDurationMax >= 10.0) {
+                alert("¡La duración del bate ya está al máximo (10.0s)!");
+                return;
+            }
+
+            if (!confirm(`⚠️ ADVERTENCIA DE COMPRA:\n¿Deseas gastar 5000 Pts Kamazon para mejorar permanentemente tu Bate (${type === 'power' ? 'Daño/Área' : 'Duración'})?`)) {
+                return;
+            }
+
+            descontarPuntosKamazon(5000);
+            batUpgradeChosenType = type;
+
+            if (type === 'power') {
+                batDamageLevel++;
+                document.getElementById('batDmgLvl').innerText = batDamageLevel;
+                showLevelUpMessage(`¡BATE MEJORADO: DAÑO x${batDamageLevel}!`);
+            } else if (type === 'duration') {
+                skillDurationMax = Math.min(10.0, skillDurationMax + 2.5);
+                document.getElementById('batDurLvl').innerText = skillDurationMax;
+                showLevelUpMessage(`¡BATE MEJORADO: ${skillDurationMax}s DURACIÓN!`);
+            }
+
+            document.getElementById('shopScreen').classList.add('hidden');
+            reanudarDespuesDeMejora();
+        }
+
+        function descontarPuntosKamazon(costo) {
+            if (score >= costo) {
+                score -= costo;
+            } else {
+                let restante = costo - score;
+                score = 0; 
+                miKamazonActual = Math.max(0, miKamazonActual - restante); // Límite en 0, nunca negativo
+            }
+            document.getElementById('scoreDisplay').innerText = Math.floor(score);
+            document.getElementById('sidebarTotalPower').innerText = getSaldoDisponible().toLocaleString();
+        }
+
+        function reanudarDespuesDeMejora() {
             obstacles.forEach(obs => resetObstacle(obs, -150 - Math.random() * 100));
             lasers.forEach(laser => { laser.position.z = -200 - Math.random() * 50; laser.userData.soundPlayed = false; });
 
             isSafeMode = true;
-            safeTimerGame = 2.0;
+            safeTimerGame = 2.5;
             isPausedForArtifact = false;
             clock.getDelta(); 
 
@@ -949,7 +1192,7 @@
 
         function showLevelUpMessage(text) {
             const msgBox = document.getElementById('levelUpMessage');
-            msgBox.innerText = `¡${text} ALCANZADO!`;
+            msgBox.innerText = text;
             msgBox.classList.add('show');
             setTimeout(() => { msgBox.classList.remove('show'); }, 2200);
         }
@@ -960,7 +1203,7 @@
 
             const curseAlert = document.getElementById('curseAlert');
             activeCurse = Math.random() < 0.5 ? 'darkness' : 'invert';
-            curseDurationTimer = 5.5;
+            curseDurationTimer = 6.0;
 
             if (activeCurse === 'darkness') {
                 ambientLight.intensity = 0.02;
@@ -1007,7 +1250,7 @@
 
         function handlePlayerHit(obstacleMesh) {
             if (skillActive) {
-                score += 25 * comboMult;
+                score += (25 * batDamageLevel) * comboMult;
                 spawnImpact(obstacleMesh.position); 
                 
                 sfxCristales.currentTime = 0;
@@ -1084,6 +1327,8 @@
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.add('hidden');
             document.getElementById('artifactScreen').classList.add('hidden');
+            document.getElementById('portalScreen').classList.add('hidden');
+            document.getElementById('shopScreen').classList.add('hidden');
             document.getElementById('saveMsg').style.display = 'none';
             document.getElementById('btnRestart').disabled = false;
             document.getElementById('liveRankingBoard').style.display = 'block'; 
@@ -1139,7 +1384,18 @@
             const dt = Math.min(clock.getDelta(), 0.1);
             if (mixer) { mixer.update(dt); }
 
-            const currentSpeed = baseSpeed * speedMultiplier;
+            if (magnetTimer > 0) {
+                magnetTimer -= dt;
+            }
+
+            if (speedDampingTimer > 0) {
+                speedDampingTimer -= dt;
+            }
+            let effectiveSpeedMultiplier = speedMultiplier;
+            if (speedDampingTimer > 0) {
+                effectiveSpeedMultiplier *= 0.7; 
+            }
+            const currentSpeed = baseSpeed * effectiveSpeedMultiplier;
 
             liveRankingUpdateTimer += dt;
             if (liveRankingUpdateTimer >= 0.5) {
@@ -1172,7 +1428,7 @@
 
             if (skillActive) {
                 skillTimer -= dt;
-                document.getElementById('skillBar').style.width = `${(skillTimer / SKILL_DURATION) * 100}%`;
+                document.getElementById('skillBar').style.width = `${(skillTimer / skillDurationMax) * 100}%`;
                 if (skillTimer <= 0) {
                     skillActive = false;
                     skillCooldown = SKILL_CD_TIME;
@@ -1302,15 +1558,29 @@
                 }
             }
 
-            for (let i = 0; i < coins.length; i++) {
+            for (let i = coins.length - 1; i >= 0; i--) {
                 const coin = coins[i];
                 coin.position.z += currentSpeed;
                 coin.rotation.y += 0.1; 
 
-                if (magnetLevel > 0) {
-                    const magnetRange = 4.5 + (magnetLevel * 3.5);
-                    if (player.position.distanceTo(coin.position) < magnetRange) {
+                if (magnetTimer > 0) {
+                    const magnetRange = 7.5;
+                    const distToPlayer = player.position.distanceTo(coin.position);
+                    
+                    if (distToPlayer < magnetRange) {
+                        coin.userData.isAttracted = true;
                         coin.position.lerp(player.position, 0.14);
+                    }
+                }
+
+                const distToPlayerCenter = player.position.distanceTo(coin.position);
+                if (coin.userData.isAttracted && distToPlayerCenter < 1.8) {
+                    coin.userData.stuckTime += dt;
+                    if (coin.userData.stuckTime > 2.0) {
+                        scene.remove(coin);
+                        coins.splice(i, 1);
+                        spawnEntity('coin');
+                        continue;
                     }
                 }
 
@@ -1323,10 +1593,15 @@
                     sfxMoneda.play().catch(e=>{});
 
                     coin.position.set((Math.random() - 0.5) * boundsX * 2, (Math.random() - 0.5) * boundsY * 2, -100 - Math.random() * 100);
+                    coin.userData.isAttracted = false;
+                    coin.userData.stuckTime = 0;
+
                     document.getElementById('hudScore').style.borderColor = "#ffcf00";
                     setTimeout(() => { document.getElementById('hudScore').style.borderColor = "var(--neon-blue)"; }, 200);
                 } else if (coin.position.z > 10) {
                     coin.position.set((Math.random() - 0.5) * boundsX * 2, (Math.random() - 0.5) * boundsY * 2, -100 - Math.random() * 100);
+                    coin.userData.isAttracted = false;
+                    coin.userData.stuckTime = 0;
                 }
             }
 
@@ -1404,12 +1679,12 @@
                 let nuevoTotal = nuevoKamazon + j2 + j3 + j4 + j5;
 
                 if (miRegistro) {
-                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
                         method: 'PATCH', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ data: { Kamazon: nuevoKamazon, Foto: avatarSeguro, Total: nuevoTotal } })
                     });
                 } else {
-                    await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween`, {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ data: [{ Nombre: nombreSeguro, Foto: avatarSeguro, Kamazon: puntosPartida, Juego2: 0, Juego3: 0, Juego4: 0, Juego5: 0, Total: puntosPartida, Victorias: 0, Derrotas: 0 }] })
                     });
