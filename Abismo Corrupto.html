@@ -1402,35 +1402,3 @@
 
                 let nuevoKamazon = kamazonAnterior + puntosPartida;
                 let nuevoTotal = nuevoKamazon + j2 + j3 + j4 + j5;
-
-                if (miRegistro) {
-                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
-                        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: { Kamazon: nuevoKamazon, Foto: avatarSeguro, Total: nuevoTotal } })
-                    });
-                } else {
-                    await fetch(`https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: [{ Nombre: nombreSeguro, Foto: avatarSeguro, Kamazon: puntosPartida, Juego2: 0, Juego3: 0, Juego4: 0, Juego5: 0, Total: puntosPartida, Victorias: 0, Derrotas: 0 }] })
-                    });
-                    nuevoKamazon = puntosPartida;
-                    nuevoTotal = puntosPartida;
-                }
-                
-                miKamazonActual = nuevoKamazon;
-                document.getElementById('sidebarTotalPower').innerText = nuevoTotal.toLocaleString();
-                await cargarLeaderboard();
-                saveMsg.innerText = `¡Guardado! +${puntosPartida} sumados a Kamazon.`;
-            } catch (e) {
-                console.error(e);
-                saveMsg.style.color = 'var(--accent-red)';
-                saveMsg.innerText = "Error de sincronización.";
-            }
-            btnRes.disabled = false;
-        }
-
-        cargarLeaderboard();
-        renderer.render(scene, camera);
-    </script>
-</body>
-</html>
