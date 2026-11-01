@@ -784,21 +784,3 @@
 
         function rendirse() {
             if (!confirm("¿Estás seguro de que deseas rendirte? Perderás los puntos apostados.")) return;
-            finalizarPartida(false, "Te has rendido ante Lorraine.");
-        }
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('sesion_activa');
-            localStorage.removeItem('usuario_nombre');
-            localStorage.removeItem('usuario_avatar');
-            localStorage.removeItem('usuario_roll');
-            window.location.href = 'login.html';
-        });
-    </script>
-</body>
-</html>
