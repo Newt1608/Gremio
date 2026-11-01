@@ -565,7 +565,7 @@
         });
 
         // =========================================================================
-        // DATOS DE USUARIO Y API DE SHEETDB (Columna C - Kamazon)
+        // DATOS DE USUARIO Y CONEXIÓN A GOOGLE APPS SCRIPT (ILIMITADO)
         // =========================================================================
         let usuarioActual = { 
             nombre: localStorage.getItem('usuario_nombre') || 'Newt', 
@@ -577,15 +577,15 @@
         document.getElementById('sidebar-name').innerText = usuarioActual.nombre;
         document.getElementById('sidebar-avatar').src = usuarioActual.foto;
 
-        const API_URL = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz7IeyA8op6c_3Haq-7f4-kxwRPeiJJ1PhqSCNQbTo2ud-HkkJoclnqIz0XsCSbSvJ4NA/exec';
 
         async function cargarLeaderboard() {
             try {
                 const t = new Date().getTime();
-                const res = await fetch(`${API_URL}&_=${t}`);
-                const rawData = await res.json();
+                const res = await fetch(`${API_URL}?_=${t}`);
+                const allSheetsData = await res.json();
                 
-                if(rawData.error) throw new Error(rawData.error);
+                const rawData = allSheetsData["halloween"] || [];
                 
                 pDataTotal = rawData.map(row => {
                     let newRow = {};
@@ -604,7 +604,7 @@
                 
                 renderLeaderboard();
             } catch (error) {
-                console.warn("No se pudo cargar el ranking en vivo (API falló). El juego continuará normalmente.");
+                console.warn("No se pudo cargar el ranking en vivo (API falló). El juego continuará normalmente.", error);
                 pDataTotal = []; 
                 document.getElementById('ld-list').innerText = "Aún no hay puntuaciones registradas.";
             }
@@ -1659,9 +1659,9 @@
                 const avatarSeguro = usuarioActual.foto;
                 
                 const t = new Date().getTime();
-                const res = await fetch(`${API_URL}&_=${t}`);
-                const rawData = await res.json();
-                const freshList = rawData.map(row => {
+                const res = await fetch(`${API_URL}?_=${t}`);
+                const allSheetsData = await res.json();
+                const freshList = (allSheetsData["halloween"] || []).map(row => {
                     let newRow = {};
                     for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
                     return newRow;
@@ -1670,27 +1670,25 @@
                 const miRegistro = freshList.find(r => r.nombre && r.nombre.toLowerCase() === nombreSeguro.toLowerCase());
                 
                 let kamazonAnterior = miRegistro ? (parseInt(miRegistro.kamazon) || 0) : miKamazonActual;
+                let nuevoKamazon = kamazonAnterior + puntosPartida;
                 let j2 = miRegistro && miRegistro.juego2 ? (parseInt(miRegistro.juego2) || 0) : 0;
                 let j3 = miRegistro && miRegistro.juego3 ? (parseInt(miRegistro.juego3) || 0) : 0;
                 let j4 = miRegistro && miRegistro.juego4 ? (parseInt(miRegistro.juego4) || 0) : 0;
                 let j5 = miRegistro && miRegistro.juego5 ? (parseInt(miRegistro.juego5) || 0) : 0;
-
-                let nuevoKamazon = kamazonAnterior + puntosPartida;
                 let nuevoTotal = nuevoKamazon + j2 + j3 + j4 + j5;
 
-                if (miRegistro) {
-                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
-                        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: { Kamazon: nuevoKamazon, Foto: avatarSeguro, Total: nuevoTotal } })
-                    });
-                } else {
-                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: [{ Nombre: nombreSeguro, Foto: avatarSeguro, Kamazon: puntosPartida, Juego2: 0, Juego3: 0, Juego4: 0, Juego5: 0, Total: puntosPartida, Victorias: 0, Derrotas: 0 }] })
-                    });
-                    nuevoKamazon = puntosPartida;
-                    nuevoTotal = puntosPartida;
-                }
+                await fetch(API_URL, {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ 
+                        sheet: "Halloween",
+                        action: "updateKamazon", 
+                        nombre: nombreSeguro, 
+                        kamazon: nuevoKamazon, 
+                        total: nuevoTotal,
+                        foto: avatarSeguro 
+                    })
+                });
                 
                 miKamazonActual = nuevoKamazon;
                 document.getElementById('sidebarTotalPower').innerText = nuevoTotal.toLocaleString();
