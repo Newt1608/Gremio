@@ -1,4 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena de Mazmorras - Mi Casita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #1e1b2e;
+            --card-bg: #151520; --text-dark: #ffffff; --text-muted: #8888a5;
+            --border-color: #2a2a3e; --setup-blue: #3b68ff; --accent-red: #d84d65;
+        }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); overflow: hidden; }
+
+        /* BARRA LATERAL Y PERFIL */
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: 0.3s; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
+        .sidebar.collapsed { width: 0; padding: 0; }
+        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
+        .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        
         .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
         .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
         .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--setup-blue); object-fit: cover; }
@@ -375,7 +402,7 @@
         // BASE DE DATOS Y BÚSQUEDA DE ARENA (Con parche Anti-Caché y Limpiador de Excel)
         // =========================================================================
         const timestamp = new Date().getTime();
-        const API_BASE = `https://sheetdb.io/api/v1/6cuneuqsf5cv0`;
+        const API_BASE = `https://sheetdb.io/api/v1/ht7mdi08mv7xo`;
         
         let dbSistema = [], mapaHeroes = {}, infoHeroes = {}, mapaArmas = {};
         
