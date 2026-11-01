@@ -644,3 +644,16 @@
                 startBtn.disabled = false;
             }
         }
+
+        const sidebar = document.getElementById('sidebar');
+        if (localStorage.getItem('sidebar-colapsada') === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => { 
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebar-colapsada', sidebar.classList.contains('collapsed'));
+        });
+    </script>
+</body>
+</html>
