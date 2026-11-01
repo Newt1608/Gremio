@@ -1,4 +1,21 @@
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking - Mi Casita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* TEMA OSCURO (Default) */
+        :root {
+            --sidebar-bg: #15131f; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #221e2d; 
+            --sidebar-btn: #ff8c00; 
+            --main-bg: #121017;
             --card-bg: #191622; 
             --text-dark: #f0eef5; 
             --text-muted: #888299;
@@ -387,7 +404,7 @@
         // =========================================================================
         // COMPROBAR SESIÓN, CARGAR PERFIL Y PUNTOS DESDE SHEETDB
         // =========================================================================
-        const API_URL = 'https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Halloween';
+        const API_URL = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween';
 
         document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
@@ -482,8 +499,8 @@
         const cuerpoTabla = document.getElementById('cuerpo-tabla');
         
         const timestamp = new Date().getTime();
-        const apiRankingURL = `https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Ranking&_=${timestamp}`;
-        const apiUsuariosURL = `https://sheetdb.io/api/v1/6cuneuqsf5cv0?sheet=Usuarios&_=${timestamp}`;
+        const apiRankingURL = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Ranking&_=${timestamp}`;
+        const apiUsuariosURL = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Usuarios&_=${timestamp}`;
 
         // CARGAMOS RANKING Y USUARIOS AL MISMO TIEMPO
         Promise.all([
