@@ -1,4 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Ruleta de Pimientos de Lorraine - Mi Casita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <style>
+        /* TEMA OSCURO (Default) */
+        :root {
+            --sidebar-bg: #15131f; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #221e2d; 
+            --sidebar-btn: #ff8c00; 
+            --main-bg: #121017;
+            --card-bg: #191622; 
+            --text-dark: #f0eef5; 
+            --text-muted: #888299;
+            --border-color: #272235; 
             --accent-red: #ff5722;
             --halloween-orange: #ff8c00; 
             --halloween-purple: #7b1fa2;
@@ -357,7 +378,7 @@
         document.getElementById('hudMyName').innerText = usuarioActual.nombre;
         document.getElementById('hudMyAvatar').src = usuarioActual.foto;
 
-        const API_URL = 'https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween';
+        const API_URL = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween';
 
         async function cargarPuntosDesdeBD() {
             try {
@@ -727,13 +748,13 @@
                 payloadData.Derrotas = derrotasActuales;
 
                 if (miRegistroActualizado) {
-                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ data: payloadData })
                     });
                 } else {
-                    await fetch(`https://sheetdb.io/api/v1/rfy0fba41r17u?sheet=Halloween`, {
+                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
