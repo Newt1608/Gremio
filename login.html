@@ -320,17 +320,4 @@
                 }
             } catch (error) {
                 console.error("Error al conectar con la BD:", error);
-                errorMsg.innerText = "Revisa el enlace de SheetDB o la pestaña Usuarios.";
-                errorMsg.classList.add('show');
-                submitBtn.innerHTML = btnOriginalText;
-                submitBtn.disabled = false;
-            }
-        });
-
-        // Si ya hay sesión activa, salta el login
-        if (localStorage.getItem('sesion_activa') === 'true') {
-            window.location.href = 'index.html';
-        }
-    </script>
-</body>
-</html>
+                
