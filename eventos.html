@@ -361,7 +361,7 @@
         // =========================================================================
         // COMPROBAR SESIÓN, PERFIL, PUNTOS Y ESTADO DE DESBLOQUEO DE JUEGOS
         // =========================================================================
-        const API_URL = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz7IeyA8op6c_3Haq-7f4-kxwRPeiJJ1PhqSCNQbTo2ud-HkkJoclnqIz0XsCSbSvJ4NA/exec';
 
         document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
@@ -376,10 +376,12 @@
                 }
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
-                // Cargar Puntos Totales en la barra lateral
+                // Cargar Puntos Totales en la barra lateral mediante la API de Google Apps Script
                 try {
-                    const res = await fetch(`${API_URL}&_=${new Date().getTime()}`);
-                    const rawData = await res.json();
+                    const res = await fetch(`${API_URL}?_=${new Date().getTime()}`);
+                    const allSheetsData = await res.json();
+                    
+                    const rawData = allSheetsData["halloween"] || [];
                     const pDataTotal = rawData.map(row => {
                         let newRow = {};
                         for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }

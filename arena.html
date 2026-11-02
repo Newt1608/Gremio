@@ -8,45 +8,117 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* TEMA OSCURO (Default) */
         :root {
-            --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
-            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #1e1b2e;
-            --card-bg: #151520; --text-dark: #ffffff; --text-muted: #8888a5;
-            --border-color: #2a2a3e; --setup-blue: #3b68ff; --accent-red: #d84d65;
+            --sidebar-bg: #15131f; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #221e2d; 
+            --sidebar-btn: #ff8c00; 
+            --main-bg: #121017;
+            --card-bg: #191622; 
+            --text-dark: #f0eef5; 
+            --text-muted: #888299;
+            --border-color: #272235; 
+            --accent-red: #ff5722;
+            --halloween-orange: #ff8c00; 
+            --halloween-purple: #7b1fa2;
+            --poison-green: #39ff14; 
+            --kamazon-gold: #ffcf00; 
+            --setup-blue: #4299f6;
+            --transition-speed: 0.3s;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); overflow: hidden; }
+        /* TEMA CLARO */
+        [data-theme="light"] {
+            --sidebar-bg: #292437; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; 
+            --sidebar-btn: #ff8800; 
+            --main-bg: linear-gradient(135deg, #f9f5ed 0%, #f0eae1 100%);
+            --card-bg: #ffffff; 
+            --text-dark: #201b2a; 
+            --text-muted: #7d7889;
+            --border-color: #e8e4dc;
+            --halloween-orange: #ff6600;
+            --kamazon-gold: #d4ac0d;
+        }
+
+        /* TEMA BLANCO Y NEGRO */
+        [data-theme="bn"] {
+            --sidebar-bg: #1a1a1a; 
+            --sidebar-text: #b0b0b0; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #333333; 
+            --sidebar-btn: #ffffff; 
+            --main-bg: #ffffff;
+            --card-bg: #f2f2f2; 
+            --text-dark: #000000; 
+            --text-muted: #555555;
+            --border-color: #cccccc; 
+            --kamazon-gold: #333333; 
+            --halloween-orange: #000000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; position: relative; }
+
+        /* ====== DECORACIONES DE HALLOWEEN (CSS ANIMADO) ====== */
+        .bat-bg { position: absolute; font-size: 24px; color: var(--text-dark); opacity: 0.15; pointer-events: none; z-index: 0; animation: flyBat 15s infinite linear; }
+        .bat-1 { top: 10%; left: -50px; animation-duration: 18s; }
+        .bat-2 { top: 40%; left: -50px; animation-duration: 25s; animation-delay: 5s; font-size: 16px; }
+        .bat-3 { top: 70%; left: -50px; animation-duration: 20s; animation-delay: 10s; font-size: 32px; }
+        
+        @keyframes flyBat {
+            0% { transform: translateX(-50px) translateY(0) scale(1); }
+            25% { transform: translateX(25vw) translateY(-30px) scale(1.1); }
+            50% { transform: translateX(50vw) translateY(20px) scale(1); }
+            75% { transform: translateX(75vw) translateY(-20px) scale(0.9); }
+            100% { transform: translateX(110vw) translateY(0) scale(1); }
+        }
+
+        .hanging-spider { position: absolute; top: -50px; font-size: 28px; color: var(--text-dark); opacity: 0.3; pointer-events: none; z-index: 10; display: flex; flex-direction: column; align-items: center; animation: hangSpider 6s infinite ease-in-out; }
+        .hanging-spider::before { content: ''; width: 2px; height: 150px; background: var(--text-dark); margin-bottom: -5px; }
+        .spider-1 { right: 15%; }
+        .spider-2 { right: 40%; animation-delay: 2s; animation-duration: 8s; font-size: 20px;}
+        
+        @keyframes hangSpider {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(40px); }
+        }
 
         /* BARRA LATERAL Y PERFIL */
-        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: 0.3s; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; z-index: 100; border-right: 1px solid var(--border-color); }
         .sidebar.collapsed { width: 0; padding: 0; }
-        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
-        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
+        .sidebar-header { padding: 22px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--halloween-orange); }
         .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
-        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--halloween-orange); font-weight: 700; }
         
-        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
-        .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
-        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--setup-blue); object-fit: cover; }
-        .profile-info-wrap span { color: white; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;}
-        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        .user-profile-sidebar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; min-width: 260px; background: rgba(25, 22, 34, 0.5); }
+        .profile-info-wrap { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--halloween-orange); object-fit: cover; flex-shrink: 0; }
+        .user-meta { display: flex; flex-direction: column; overflow: hidden; }
+        .user-meta span { color: white; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+        .user-meta p { font-size: 11px; color: var(--kamazon-gold); font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 1px; white-space: nowrap; }
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
 
-        .nav-group { margin-bottom: 10px; min-width: 260px; }
-        .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .nav-group { margin-bottom: 5px; min-width: 260px; }
+        .nav-title { padding: 10px 22px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; color: var(--text-muted); font-weight: 700; }
         .nav-title:hover { color: var(--sidebar-text-active); }
         .nav-title i { transition: transform 0.3s ease; }
         .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
-        .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
         .nav-group.collapsed-group .nav-items-container { max-height: 0; }
+        .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
         
-        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
-        .nav-item:hover { color: var(--sidebar-text-active); }
-        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
+        .nav-item { padding: 10px 22px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
+        .nav-item:hover { color: var(--sidebar-text-active); background: rgba(255, 140, 0, 0.05); }
+        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--halloween-orange); }
 
         /* CANDADOS ANIMADOS */
-        .lock-icon { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
+        .lock-icon { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
         .nav-item.locked { cursor: not-allowed; opacity: 0.6; }
         .nav-item.locked:hover .lock-icon { color: var(--accent-red); filter: drop-shadow(0 0 8px rgba(216, 77, 101, 0.8)); }
         
@@ -58,7 +130,7 @@
         .toast-alert { position: fixed; top: 20px; right: -300px; background: rgba(216, 77, 101, 0.95); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 700; font-size: 13px; box-shadow: 0 10px 30px rgba(216, 77, 101, 0.4); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 10px; z-index: 9999; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .toast-alert.show { right: 30px; }
 
-        /* ANIMACIÓN GRIS AL CERRAR SESIÓN */
+        /* OVERLAY CERRAR SESIÓN */
         .logout-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #110f17; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 9999; }
         .logout-overlay.active { opacity: 1; pointer-events: auto; }
         .logout-loader-container { position: relative; width: 120px; height: 120px; margin-bottom: 20px; }
@@ -70,69 +142,72 @@
         .logout-overlay.active .logout-text { opacity: 1; transform: translateY(0); }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
-        .breadcrumbs { font-size: 14px; color: var(--text-muted); }
-        .dashboard-container { padding: 0 40px 60px 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        /* CONTENIDO PRINCIPAL */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 10; padding-bottom: 80px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); z-index: 10; }
+        .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
+        .toggle-btn, .theme-btn { background: none; border: none; color: var(--halloween-orange); font-size: 18px; cursor: pointer; padding: 8px 12px; border-radius: 10px; background-color: var(--card-bg); border: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
+        .toggle-btn:hover, .theme-btn:hover { background: rgba(255,140,0,0.1); }
         
-        .arena-header { background: linear-gradient(90deg, #151520 0%, #1e1b2e 100%); border-radius: 16px; padding: 30px; border: 1px solid var(--border-color); margin-bottom: 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .arena-icon { width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, #2a52d3, #3b68ff); display: flex; justify-content: center; align-items: center; font-size: 30px; color: white; box-shadow: 0 4px 15px rgba(59, 104, 255, 0.4); }
+        .dashboard-container { padding: 30px 40px 60px 40px; max-width: 1400px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
+        
+        .arena-header { background: var(--card-bg); border-radius: 20px; padding: 30px; border: 1px solid var(--border-color); margin-bottom: 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        .arena-icon { width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, #ff8c00, #e65100); display: flex; justify-content: center; align-items: center; font-size: 30px; color: white; box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3); }
         .arena-title-wrapper { display: flex; flex-direction: column; gap: 4px; }
-        .arena-tag { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
-        .arena-title-wrapper h1 { font-size: 32px; font-weight: 900; text-transform: uppercase; color: white; letter-spacing: 1px; }
+        .arena-tag { font-size: 10px; font-weight: 800; color: var(--halloween-orange); text-transform: uppercase; letter-spacing: 2px; }
+        .arena-title-wrapper h1 { font-size: 32px; font-weight: 900; text-transform: uppercase; color: var(--text-dark); letter-spacing: 1px; }
         .arena-breadcrumbs { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
-        .selection-panel { background: var(--card-bg); border-radius: 16px; padding: 30px; border: 1px solid var(--border-color); margin-bottom: 30px; }
-        .panel-heading { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: white; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
-        .panel-heading::before { content: ''; width: 20px; height: 2px; background: var(--setup-blue); display: inline-block; }
+        .selection-panel { background: var(--card-bg); border-radius: 20px; padding: 30px; border: 1px solid var(--border-color); margin-bottom: 30px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        .panel-heading { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        .panel-heading::before { content: ''; width: 20px; height: 2px; background: var(--halloween-orange); display: inline-block; }
         
         .selection-layout { display: flex; gap: 40px; flex-wrap: wrap; }
         
         .boss-grid { flex: 1.5; display: flex; flex-wrap: wrap; gap: 15px; min-width: 300px; }
-        .boss-btn { width: 105px; height: 105px; background: #1a1625; border-radius: 12px; border: 2px solid transparent; cursor: pointer; position: relative; transition: 0.2s; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .boss-btn:hover { background: #231f32; border-color: rgba(59, 104, 255, 0.5); }
-        .boss-btn.active { border-color: var(--setup-blue); background: rgba(59, 104, 255, 0.1); box-shadow: 0 0 15px rgba(59, 104, 255, 0.3); }
+        .boss-btn { width: 105px; height: 105px; background: var(--main-bg); border-radius: 12px; border: 2px solid var(--border-color); cursor: pointer; position: relative; transition: 0.2s; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .boss-btn:hover { border-color: var(--halloween-orange); background: rgba(255,140,0,0.05); }
+        .boss-btn.active { border-color: var(--halloween-orange); background: rgba(255, 140, 0, 0.1); box-shadow: 0 0 15px rgba(255, 140, 0, 0.3); }
         .boss-btn img.slime-img { width: 85%; height: 85%; object-fit: contain; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.6)); transition: 0.2s; }
         .boss-btn.active img.slime-img { transform: scale(1.08); filter: drop-shadow(0 8px 12px rgba(0,0,0,0.8)); }
         
-        .elem-badge { position: absolute; bottom: -6px; right: -6px; width: 26px; height: 26px; background: #151520; border-radius: 50%; padding: 4px; border: 1px solid #3a334e; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .elem-badge { position: absolute; bottom: -6px; right: -6px; width: 26px; height: 26px; background: var(--card-bg); border-radius: 50%; padding: 4px; border: 1px solid var(--border-color); display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         .elem-badge img { width: 100%; height: 100%; object-fit: contain; }
 
         .weakness-list { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 250px; }
-        .weakness-btn { display: flex; align-items: center; gap: 15px; background: #1a1625; padding: 18px 20px; border-radius: 12px; border: 1px solid transparent; cursor: pointer; color: white; font-weight: 800; transition: 0.2s; font-size: 13px; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .weakness-btn:hover { background: #231f32; border-color: rgba(59, 104, 255, 0.5); }
-        .weakness-btn.active { border-color: var(--setup-blue); background: rgba(59, 104, 255, 0.1); }
-        .weakness-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.1); padding: 5px; }
+        .weakness-btn { display: flex; align-items: center; gap: 15px; background: var(--main-bg); padding: 18px 20px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer; color: var(--text-dark); font-weight: 800; transition: 0.2s; font-size: 13px; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .weakness-btn:hover { border-color: var(--halloween-orange); background: rgba(255,140,0,0.05); }
+        .weakness-btn.active { border-color: var(--halloween-orange); background: rgba(255, 140, 0, 0.1); }
+        .weakness-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; justify-content: center; align-items: center; border: 1px solid var(--border-color); padding: 5px; }
 
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
         #resultados-equipos { display: none; }
         
-        .team-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .team-header-main { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(0, 0, 0, 0.15); flex-wrap: wrap; gap: 15px; }
+        .team-card { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 25px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        .team-header-main { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; background: rgba(0, 0, 0, 0.15); flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--border-color); }
         .damage-info { display: flex; flex-direction: column; }
         .season { font-size: 10px; color: var(--text-muted); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
         .damage-val { font-size: 32px; font-weight: 900; color: var(--text-dark); margin-top: -2px; }
 
-        /* Miniaturas superiores limpias */
         .hero-mini-list { display: flex; gap: 8px; }
-        .hero-mini-list img { width: 45px; height: 45px; border-radius: 8px; border: 1px solid var(--border-color); object-fit: cover; background: #3c354e; }
+        .hero-mini-list img { width: 45px; height: 45px; border-radius: 10px; border: 2px solid var(--border-color); object-fit: cover; background: var(--main-bg); }
 
-        .team-tabs { display: flex; background: var(--card-bg); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+        .team-tabs { display: flex; background: var(--card-bg); border-bottom: 1px solid var(--border-color); }
         .tab { flex: 1; text-align: center; padding: 15px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; letter-spacing: 1px; }
-        .tab:hover { color: var(--text-dark); background: rgba(255, 255, 255, 0.03); }
-        .tab.active { background: var(--setup-blue); color: #ffffff; }
-        .content-panel { display: none; padding: 25px; background: var(--card-bg); }
+        .tab:hover { color: var(--text-dark); background: rgba(255, 140, 0, 0.05); }
+        .tab.active { background: var(--halloween-orange); color: #ffffff; }
+
+        .content-panel { display: none; padding: 25px 30px; background: var(--card-bg); }
         .content-panel.active { display: block; }
         .setup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 15px; }
-        .setup-hero-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.15); padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border-color); gap: 12px; }
+        .setup-hero-row { display: flex; justify-content: space-between; align-items: center; background: var(--main-bg); padding: 14px 20px; border-radius: 14px; border: 1px solid var(--border-color); gap: 12px; }
 
-        /* Perfil del héroe en SETUP con Nombre, Clase, Elemento y Evolución Mítica */
         .hero-profile-box { display: flex; align-items: center; gap: 14px; min-width: 0; }
         .hero-avatar-wrap { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
-        .setup-hero-img { width: 52px; height: 52px; border-radius: 10px; border: 2px solid var(--border-color); background: #3c354e; object-fit: cover; }
-        .badge-elem-hero { position: absolute; bottom: -5px; left: -5px; width: 20px; height: 20px; background: #151520; border-radius: 50%; padding: 2px; border: 1px solid #3c354e; display: flex; align-items: center; justify-content: center; }
+        .setup-hero-img { width: 52px; height: 52px; border-radius: 12px; border: 2px solid var(--border-color); background: var(--main-bg); object-fit: cover; }
+        .badge-elem-hero { position: absolute; bottom: -5px; left: -5px; width: 20px; height: 20px; background: var(--card-bg); border-radius: 50%; padding: 2px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
         .badge-elem-hero img { width: 100%; height: 100%; object-fit: contain; }
-        .badge-myth-hero { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; background: #151520; border-radius: 50%; padding: 2px; border: 1px solid #fdd843; box-shadow: 0 0 8px rgba(253, 216, 67, 0.4); display: flex; align-items: center; justify-content: center; }
+        .badge-myth-hero { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; background: var(--card-bg); border-radius: 50%; padding: 2px; border: 1px solid var(--kamazon-gold); box-shadow: 0 0 8px rgba(255, 207, 0, 0.4); display: flex; align-items: center; justify-content: center; }
         .badge-myth-hero img { width: 100%; height: 100%; object-fit: contain; }
         
         .hero-profile-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
@@ -141,26 +216,34 @@
         .hero-profile-meta img { width: 15px; height: 15px; object-fit: contain; }
         
         .gear-list { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
-        .gear-item { width: 38px; height: 38px; background: var(--main-bg); border-radius: 6px; border: 1px solid var(--border-color); object-fit: cover; padding: 2px; }
-        .card-placeholder { width: 28px; height: 38px; background: var(--main-bg); border-radius: 4px; display: flex; justify-content: center; align-items: center; color: var(--text-muted); font-size: 12px; border: 1px dashed var(--border-color); }
+        .gear-item { width: 38px; height: 38px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); object-fit: cover; padding: 2px; }
+        .card-placeholder { width: 28px; height: 38px; background: var(--card-bg); border-radius: 6px; display: flex; justify-content: center; align-items: center; color: var(--text-muted); font-size: 12px; border: 1px dashed var(--border-color); }
 
         .sprite-card { 
             width: 28px !important; height: 38px !important;
             background-size: 2625.641% 948.148%; background-repeat: no-repeat; 
-            padding: 0 !important; border-radius: 4px; flex-shrink: 0;
+            padding: 0 !important; border-radius: 6px; flex-shrink: 0;
         }
 
-        #floating-video-container { position: fixed; bottom: 20px; right: 20px; width: 450px; height: 280px; background: #000; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 9999; display: none; flex-direction: column; overflow: hidden; resize: both; min-width: 300px; min-height: 200px; border: 2px solid var(--setup-blue); }
-        .floating-header { background: #13111c; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; cursor: move; user-select: none; border-bottom: 1px solid #2a2a3e; }
+        #floating-video-container { position: fixed; bottom: 20px; right: 20px; width: 450px; height: 280px; background: #191622; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 9999; display: none; flex-direction: column; overflow: hidden; resize: both; min-width: 300px; min-height: 200px; border: 2px solid var(--halloween-orange); }
+        .floating-header { background: #15131f; color: white; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; cursor: move; user-select: none; border-bottom: 1px solid var(--border-color); }
         .floating-header button { background: none; border: none; color: #fff; cursor: pointer; font-size: 16px; transition: 0.2s;}
         .floating-header button:hover { color: var(--accent-red); }
         .floating-body { flex: 1; width: 100%; height: 100%; }
         .floating-body iframe { width: 100%; height: 100%; border: none; }
 
-        @media (max-width: 1000px) { .sidebar { position: absolute; height: 100%; z-index: 100; } }
+        @media (max-width: 1100px) { .sidebar { position: absolute; height: 100%; z-index: 100; } }
     </style>
 </head>
 <body>
+
+    <!-- DECORACIONES HALLOWEEN FONDO -->
+    <i class="fa-solid fa-bat bat-bg bat-1"></i>
+    <i class="fa-solid fa-bat bat-bg bat-2"></i>
+    <i class="fa-solid fa-bat bat-bg bat-3"></i>
+    
+    <div class="hanging-spider spider-1"><i class="fa-solid fa-spider"></i></div>
+    <div class="hanging-spider spider-2"><i class="fa-solid fa-spider"></i></div>
 
     <!-- MENSAJE DE PERMISO DENEGADO -->
     <div class="toast-alert" id="toastAlert">
@@ -179,24 +262,28 @@
     <aside class="sidebar" id="sidebar">
         <!-- HEADER PRINCIPAL -->
         <div class="sidebar-header">
-            <img src="logo.jpg" alt="Logo">
+            <img src="logo.jpg" alt="Logo" onerror="this.src='logo.jpg';">
             <div>
                 <h2>Mi Casita</h2>
                 <p>Gremio de Guardian Tales</p>
             </div>
         </div>
 
-        <!-- PERFIL DEL USUARIO DINÁMICO CON BOTÓN ROJO -->
+        <!-- PERFIL DEL USUARIO DINÁMICO -->
         <div class="user-profile-sidebar" id="user-profile-sidebar">
             <div class="profile-info-wrap">
                 <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
-                <span id="sidebar-name">Usuario</span>
+                <div class="user-meta">
+                    <span id="sidebar-name">Usuario</span>
+                    <p><i class="fa-solid fa-coins" style="color:var(--kamazon-gold);"></i> <span id="sidebarTotalPower">0</span> pts</p>
+                </div>
             </div>
             <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
                 <i class="fa-solid fa-power-off"></i>
             </button>
         </div>
 
+        <!-- MENÚ INICIO -->
         <div class="nav-group">
             <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -204,15 +291,32 @@
                 <a href="noticias.html" class="nav-item"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
             </div>
         </div>
+
+        <!-- MENÚ GREMIO -->
         <div class="nav-group">
             <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="resumen.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
-                <a href="guia.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
-                <a href="ranking.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-trophy"></i> Ranking de la casa</a>
+                <a href="resumen.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-chart-pie"></i> Resumen del gremio
+                </a>
+                <a href="guia.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-book-bookmark"></i> Guía
+                </a>
+                <a href="ranking.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-trophy"></i> Ranking de la casa
+                </a>
             </div>
         </div>
-<!-- MENÚ GUARDIANES -->
+        
+        <!-- SECCIÓN DE EVENTOS ESPECIALES -->
+        <div class="nav-group">
+            <div class="nav-title" style="color: var(--halloween-orange);">EVENTOS ESPECIALES <i class="fa-solid fa-ghost"></i></div>
+            <div class="nav-items-container">
+                <a href="eventos.html" class="nav-item"><i class="fa-solid fa-spider"></i> Festival de Halloween</a>
+            </div>
+        </div>
+
+        <!-- MENÚ GUARDIANES -->
         <div class="nav-group">
             <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -226,7 +330,7 @@
             <div class="nav-title">INCURSIONES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
                 <a href="incursiones.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-ghost"></i> Asalto</a>
-                <a href="arena.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
+                <a href="arena.html" class="nav-item active restrict-heroe" data-req="Heroe"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
             </div>
         </div>
     </aside>
@@ -237,7 +341,7 @@
                 <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <span>Mi Casita &nbsp; > &nbsp; Incursiones &nbsp; > &nbsp; <b>Arena de Mazmorras</b></span>
             </div>
-            <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
+            <button class="theme-btn" id="themeToggle" title="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
         </div>
 
         <div class="dashboard-container">
@@ -324,25 +428,61 @@
 
     <div id="floating-video-container">
         <div class="floating-header" id="floating-drag-handle">
-            <span id="floating-title"><i class="fa-brands fa-youtube" style="color: #ff0000;"></i> Reproductor</span>
+            <span id="floating-title"><i class="fa-brands fa-youtube" style="color: #ff0000; margin-right: 8px;"></i> Reproductor</span>
             <button onclick="cerrarVideoFlotante()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="floating-body" id="floating-video-slot"></div>
     </div>
 
+    <!-- WIDGETBOT DISCORD -->
     <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
-        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#292437', notifications: true })
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#120e17', notifications: true })
     </script>
 
     <script>
+        // ==========================================
+        // GESTIÓN DE TEMAS (Oscuro, Claro, Blanco y Negro)
+        // ==========================================
+        const themeBtn = document.getElementById('themeToggle');
+        const rootElement = document.documentElement;
+
+        function aplicarTema(tema) {
+            if (tema === 'light') {
+                rootElement.setAttribute('data-theme', 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else if (tema === 'bn') {
+                rootElement.setAttribute('data-theme', 'bn');
+                themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>';
+            } else {
+                rootElement.removeAttribute('data-theme');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        }
+
+        let temaActual = localStorage.getItem('tema-casita') || 'dark';
+        aplicarTema(temaActual);
+
+        themeBtn.addEventListener('click', () => {
+            if (!rootElement.hasAttribute('data-theme')) {
+                temaActual = 'light';
+            } else if (rootElement.getAttribute('data-theme') === 'light') {
+                temaActual = 'bn';
+            } else {
+                temaActual = 'dark';
+            }
+            localStorage.setItem('tema-casita', temaActual);
+            aplicarTema(temaActual);
+        });
+
         // =========================================================================
-        // COMPROBAR SESIÓN Y GESTIONAR ROLES Y CANDADOS
+        // COMPROBAR SESIÓN Y GESTIONAR ROLES, CANDADOS Y PUNTOS TOTALES
         // =========================================================================
-        document.addEventListener("DOMContentLoaded", () => {
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz7IeyA8op6c_3Haq-7f4-kxwRPeiJJ1PhqSCNQbTo2ud-HkkJoclnqIz0XsCSbSvJ4NA/exec';
+
+        document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
                 const avatarGuardado = localStorage.getItem('usuario_avatar');
-                const nombreGuardado = localStorage.getItem('usuario_nombre');
-                // Convertimos el rol a minúsculas, si está vacío asume 'basico'
+                const nombreGuardado = localStorage.getItem('usuario_nombre') || 'Newt';
                 const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
                 
                 document.getElementById('user-profile-sidebar').style.display = 'flex';
@@ -352,7 +492,28 @@
                 }
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
-                // Lógica de Candados
+                try {
+                    const res = await fetch(`${API_URL}?_=${new Date().getTime()}`);
+                    const allSheetsData = await res.json();
+                    
+                    const rawHalloween = allSheetsData["halloween"] || [];
+                    const pDataTotal = rawHalloween.map(row => {
+                        let newRow = {};
+                        for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                        return newRow;
+                    });
+                    const miRegistro = pDataTotal.find(r => r.nombre && r.nombre.toLowerCase().trim() === nombreGuardado.toLowerCase().trim());
+                    const totalPuntos = miRegistro ? (parseInt(miRegistro.total) || 0) : 0;
+                    document.getElementById('sidebarTotalPower').innerText = totalPuntos.toLocaleString();
+
+                    // Inicializar base de datos con los datos unificados
+                    inicializarBaseDatosConDatos(allSheetsData);
+
+                } catch (err) {
+                    console.error("Error al cargar datos desde Apps Script:", err);
+                }
+
+                // Control de permisos de usuario para los menús
                 document.querySelectorAll('.nav-item').forEach(link => {
                     const reqOriginal = link.getAttribute('data-req');
                     if (reqOriginal) {
@@ -386,9 +547,9 @@
             }
         });
 
-        // BOTÓN CERRAR SESIÓN
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            document.getElementById('logoutOverlay').classList.add('active'); 
+            const logoutOverlay = document.getElementById('logoutOverlay');
+            logoutOverlay.classList.add('active'); 
             setTimeout(() => {
                 localStorage.removeItem('sesion_activa');
                 localStorage.removeItem('usuario_nombre');
@@ -398,22 +559,38 @@
             }, 2500);
         });
 
-        // =========================================================================
-        // BASE DE DATOS Y BÚSQUEDA DE ARENA (Con parche Anti-Caché y Limpiador de Excel)
-        // =========================================================================
-        const timestamp = new Date().getTime();
-        const API_BASE = `https://sheetdb.io/api/v1/ht7mdi08mv7xo`;
-        
-        let dbSistema = [], mapaHeroes = {}, infoHeroes = {}, mapaArmas = {};
-        
+        let dbSistema = [];
+        let mapaHeroes = {};
+        let infoHeroes = {};
+        let mapaArmas = {};
+
         let jefeSeleccionado = null;
         let debilidadSeleccionada = null;
 
         const ICON_MYTH = "https://www.gtales.top/assets/icons/myth.svg";
-        const iconosClases = { "melee": "https://www.gtales.top/assets/icons/melee.svg", "ranged": "https://www.gtales.top/assets/icons/ranged.svg", "supp": "https://www.gtales.top/assets/icons/supp.svg", "tank": "https://www.gtales.top/assets/icons/tank.svg" };
-        const nombresClases = { "melee": "Guerrero", "ranged": "Tirador", "supp": "Apoyo", "tank": "Tanque" };
+        const iconosClases = {
+            "melee": "https://www.gtales.top/assets/icons/melee.svg",
+            "ranged": "https://www.gtales.top/assets/icons/ranged.svg",
+            "supp": "https://www.gtales.top/assets/icons/supp.svg",
+            "tank": "https://www.gtales.top/assets/icons/tank.svg"
+        };
+        const nombresClases = {
+            "melee": "Guerrero",
+            "ranged": "Tirador",
+            "supp": "Apoyo",
+            "tank": "Tanque"
+        };
+
         const nombresElementos = { "luz": "Luz", "agua": "Agua", "tierra": "Tierra", "fuego": "Fuego", "basico": "Básico", "oscuro": "Oscuro", "oscuridad": "Oscuro" };
-        const iconosElementos = { "basico": "https://www.gtales.top/assets/elements/basic.svg", "oscuro": "https://www.gtales.top/assets/elements/dark.svg", "oscuridad": "https://www.gtales.top/assets/elements/dark.svg", "tierra": "https://www.gtales.top/assets/elements/earth.svg", "fuego": "https://www.gtales.top/assets/elements/fire.svg", "luz": "https://www.gtales.top/assets/elements/light.svg", "agua": "https://www.gtales.top/assets/elements/water.svg" };
+        const iconosElementos = {
+            "basico": "https://www.gtales.top/assets/elements/basic.svg",
+            "oscuro": "https://www.gtales.top/assets/elements/dark.svg",
+            "oscuridad": "https://www.gtales.top/assets/elements/dark.svg",
+            "tierra": "https://www.gtales.top/assets/elements/earth.svg",
+            "fuego": "https://www.gtales.top/assets/elements/fire.svg",
+            "luz": "https://www.gtales.top/assets/elements/light.svg",
+            "agua": "https://www.gtales.top/assets/elements/water.svg"
+        };
 
         const mapaFandomStatic = {
             "Accessory_Mad_Panda_Brooch.png": "https://static.wikia.nocookie.net/guardian-tales/images/9/94/Accessory_Mad_Panda_Brooch.png",
@@ -454,56 +631,46 @@
             return limpia;
         }
 
-        const urlSpritesheet = "https://static.wikia.nocookie.net/guardian-tales/images/1/10/Spritesheet_Cards.png?format=original";
+        // RUTA A LA IMAGEN LOCAL DE CARTAS
+        const urlSpritesheet = "img/Cartas.png";
 
-        async function inicializarBaseDatos() {
-            try {
-                // Agregar timestamp a cada URL para prevenir el caché de SheetDB y ver actualizaciones en vivo
-                const t = new Date().getTime();
-                const [resSistema, resHeroes, resArmas] = await Promise.all([
-                    fetch(`${API_BASE}?sheet=Sistema&_=${t}`).then(r => r.json()),
-                    fetch(`${API_BASE}?sheet=Heroes&_=${t}`).then(r => r.json()),
-                    fetch(`${API_BASE}?sheet=Armas&_=${t}`).then(r => r.json())
-                ]);
+        function inicializarBaseDatosConDatos(allSheetsData) {
+            dbSistema = allSheetsData["sistema"] || [];
+            const resHeroes = allSheetsData["heroes"] || [];
+            const resArmas = allSheetsData["armas"] || [];
 
-                dbSistema = resSistema;
-                resHeroes.forEach(h => {
-                    const idH = (h.id || '').trim();
-                    if (!idH) return;
-                    const icono = normalizarUrlImagen(h.icono);
-                    const claseKey = (h.clase || '').trim().toLowerCase();
-                    const tieneMito = (h.rareza_max || '').trim().toLowerCase() === 'rarity-myth';
-                    mapaHeroes[idH] = icono;
-                    infoHeroes[idH] = {
-                        nombre: h.nombre || idH,
-                        icono: icono,
-                        elemento: (h.elemento || 'basico').trim().toLowerCase(),
-                        clase: claseKey,
-                        icono_clase: h.icono_clase || iconosClases[claseKey] || '',
-                        tiene_mito: tieneMito,
-                        icono_mito: tieneMito ? ICON_MYTH : ''
-                    };
-                });
+            resHeroes.forEach(h => {
+                const idH = (h.id || '').trim();
+                if (!idH) return;
+                const icono = normalizarUrlImagen(h.icono);
+                const claseKey = (h.clase || '').trim().toLowerCase();
+                const tieneMito = (h.rareza_max || '').trim().toLowerCase() === 'rarity-myth';
+                mapaHeroes[idH] = icono;
+                infoHeroes[idH] = {
+                    nombre: h.nombre || idH,
+                    icono: icono,
+                    elemento: (h.elemento || 'basico').trim().toLowerCase(),
+                    clase: claseKey,
+                    icono_clase: h.icono_clase || iconosClases[claseKey] || '',
+                    tiene_mito: tieneMito,
+                    icono_mito: tieneMito ? ICON_MYTH : ''
+                };
+            });
 
-                let contadorCartas = 0;
-                resArmas.forEach(a => {
-                    const esCarta = (a.tipo && a.tipo.toLowerCase() === 'carta') || (a.id_arma && a.id_arma.startsWith('carta_'));
-                    if (esCarta) {
-                        if (a.img && (a.img.startsWith('sprite:') || a.img.startsWith('px:'))) {
-                            mapaArmas[a.id_arma] = a.img.trim();
-                        } else {
-                            mapaArmas[a.id_arma] = `sprite:${contadorCartas}`;
-                        }
-                        contadorCartas++;
+            let contadorCartas = 0;
+            resArmas.forEach(a => {
+                const esCarta = (a.tipo && a.tipo.toLowerCase() === 'carta') || (a.id_arma && a.id_arma.startsWith('carta_'));
+                if (esCarta) {
+                    if (a.img && (a.img.startsWith('sprite:') || a.img.startsWith('px:'))) {
+                        mapaArmas[a.id_arma] = a.img.trim();
                     } else {
-                        mapaArmas[a.id_arma] = normalizarUrlImagen(a.img);
+                        mapaArmas[a.id_arma] = `sprite:${contadorCartas}`;
                     }
-                });
-                
-            } catch (error) {
-                console.error("Error al cargar BD:", error);
-                document.getElementById("estado-vacio").innerText = "Error de conexión con la base de datos.";
-            }
+                    contadorCartas++;
+                } else {
+                    mapaArmas[a.id_arma] = normalizarUrlImagen(a.img);
+                }
+            });
         }
 
         function seleccionarJefe(elemento) {
@@ -527,10 +694,8 @@
 
             if (!jefeSeleccionado || !debilidadSeleccionada) return;
 
-            // Formamos el string a buscar (ej: "slime_basico_aerotransportado")
             const busqueda = `slime_${jefeSeleccionado}_${debilidadSeleccionada}`.toLowerCase();
             
-            // Filtro mejorado: a prueba de espacios vacíos en Excel y mayúsculas
             const equipos = dbSistema.filter(row => {
                 if(row.categoria !== 'Equipo_Arena' || !row.jefe_asociado) return false;
                 const dbJefe = row.jefe_asociado.trim().toLowerCase();
@@ -620,7 +785,7 @@
                                 <div class="badge-elem-hero" title="${nombresElementos[hData.elemento] || hData.elemento}">
                                     <img src="${elemHeroSvg}" alt="${hData.elemento}">
                                 </div>
-                                ${hData.icono_mito ? `<div class="badge-myth-hero" title="Evolución Mítica"><img src="\${hData.icono_mito}" alt="Myth"></div>` : ''}
+                                ${hData.icono_mito ? `<div class="badge-myth-hero" title="Evolución Mítica"><img src="${hData.icono_mito}" alt="Myth"></div>` : ''}
                             </div>
                             <div class="hero-profile-info">
                                 <span class="hero-profile-name">${hData.nombre}</span>
@@ -655,7 +820,7 @@
                     </div>
                     
                     <div class="team-tabs">
-                        <div class="tab" onclick="${ytID ? `abrirVideoFlotante('\${ytID}', 'Rotación de Arena')` : 'null'}" ${!ytID ? 'style="opacity:0.3; cursor:not-allowed;"' : ''}>
+                        <div class="tab" onclick="${ytID ? `abrirVideoFlotante('${ytID}', 'Rotación de Arena')` : 'null'}" ${!ytID ? 'style="opacity:0.3; cursor:not-allowed;"' : ''}>
                             <i class="fa-solid fa-play"></i> VIDEO
                         </div>
                         <div class="tab active" onclick="cambiarTabMenu(this, 'setup-${index}', '${cardId}')">
@@ -720,38 +885,20 @@
         function onMouseMove(e) { if (!isDragging) return; floatingContainer.style.left = (initialX + (e.clientX - startX)) + 'px'; floatingContainer.style.top = (initialY + (e.clientY - startY)) + 'px'; }
         function onMouseUp() { isDragging = false; document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
 
-        document.getElementById('toggleSidebar').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('collapsed'); });
+        // Control de barra lateral colapsable
+        const sidebar = document.getElementById('sidebar');
+        if (localStorage.getItem('sidebar-colapsada') === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => { 
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebar-colapsada', sidebar.classList.contains('collapsed'));
+        });
+
         document.querySelectorAll('.nav-title').forEach(title => {
             title.addEventListener('click', () => { title.closest('.nav-group').classList.toggle('collapsed-group'); });
         });
-
-        // =========================================================================
-        // MODO OSCURO
-        // =========================================================================
-        const themeBtn = document.getElementById('themeToggle');
-        const rootElement = document.documentElement;
-        
-        if (localStorage.getItem('tema-casita') === 'dark' || !localStorage.getItem('tema-casita')) { 
-            rootElement.setAttribute('data-theme', 'dark'); 
-            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>'; 
-        } else { 
-            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>'; 
-        }
-        
-        themeBtn.addEventListener('click', () => {
-            if (rootElement.hasAttribute('data-theme')) { 
-                rootElement.removeAttribute('data-theme'); 
-                localStorage.setItem('tema-casita', 'light'); 
-                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>'; 
-            } else { 
-                rootElement.setAttribute('data-theme', 'dark'); 
-                localStorage.setItem('tema-casita', 'dark'); 
-                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>'; 
-            }
-        });
-
-        // Inicia
-        inicializarBaseDatos();
     </script>
 </body>
 </html>

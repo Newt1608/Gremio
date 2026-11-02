@@ -296,7 +296,7 @@
         });
 
         // =========================================================================
-        // CARGAR DATOS DE USUARIO Y SHEETDB (Columna E -> Juego 3, Total)
+        // CARGAR DATOS DE USUARIO Y GOOGLE APPS SCRIPT (Columna E -> Juego 3, Total)
         // =========================================================================
         let usuarioActual = { 
             nombre: localStorage.getItem('usuario_nombre') || 'Newt', 
@@ -310,12 +310,14 @@
         document.getElementById('sidebar-name').innerText = usuarioActual.nombre;
         document.getElementById('sidebar-avatar').src = usuarioActual.foto;
 
-        const API_URL = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz7IeyA8op6c_3Haq-7f4-kxwRPeiJJ1PhqSCNQbTo2ud-HkkJoclnqIz0XsCSbSvJ4NA/exec';
 
         async function cargarDatosBD() {
             try {
-                const res = await fetch(`${API_URL}&_=${new Date().getTime()}`);
-                const rawData = await res.json();
+                const res = await fetch(`${API_URL}?_=${new Date().getTime()}`);
+                const allSheetsData = await res.json();
+                
+                const rawData = allSheetsData["halloween"] || [];
                 pDataTotal = rawData.map(row => {
                     let newRow = {};
                     for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
@@ -331,7 +333,7 @@
                 document.getElementById('myGameScore').innerText = puntajeJuego3Actual.toLocaleString();
                 document.getElementById('sidebarTotalPower').innerText = totalGeneralActual.toLocaleString();
             } catch (error) {
-                console.error("Error al leer SheetDB:", error);
+                console.error("Error al leer la base de datos de Apps Script:", error);
             }
         }
         cargarDatosBD();
@@ -770,45 +772,30 @@
             if(animacionFrameId) cancelAnimationFrame(animacionFrameId);
 
             let nuevoPuntajeJuego3 = puntajeJuego3Actual + scorePartida;
-            let nuevoTotalGeneral = totalGeneralActual + scorePartida;
+            let j2 = miRegistroUsuario && miRegistroUsuario.juego2 ? (parseInt(miRegistroUsuario.juego2) || 0) : 0;
+            let j4 = miRegistroUsuario && miRegistroUsuario.juego4 ? (parseInt(miRegistroUsuario.juego4) || 0) : 0;
+            let j5 = miRegistroUsuario && miRegistroUsuario.juego5 ? (parseInt(miRegistroUsuario.juego5) || 0) : 0;
+            let kamazon = miRegistroUsuario && miRegistroUsuario.kamazon ? (parseInt(miRegistroUsuario.kamazon) || 0) : 0;
+            let nuevoTotalGeneral = kamazon + j2 + nuevoPuntajeJuego3 + j4 + j5;
 
             try {
                 const nombreSeguro = usuarioActual.nombre;
                 const avatarSeguro = usuarioActual.foto;
 
-                if (miRegistroUsuario) {
-                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            data: { 
-                                Juego3: nuevoPuntajeJuego3,
-                                Total: nuevoTotalGeneral,
-                                Foto: avatarSeguro 
-                            } 
-                        })
-                    });
-                } else {
-                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            data: [{ 
-                                Nombre: nombreSeguro, 
-                                Foto: avatarSeguro, 
-                                Kamazon: 0, 
-                                Juego2: 0, 
-                                Juego3: nuevoPuntajeJuego3,
-                                Juego4: 0,
-                                Total: nuevoTotalGeneral, 
-                                Victorias: 0, 
-                                Derrotas: 0 
-                            }] 
-                        })
-                    });
-                }
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        sheet: "Halloween",
+                        action: "updateGame3",
+                        nombre: nombreSeguro,
+                        juego3: nuevoPuntajeJuego3,
+                        total: nuevoTotalGeneral,
+                        foto: avatarSeguro
+                    })
+                });
             } catch (error) {
-                console.error("Error al actualizar SheetDB:", error);
+                console.error("Error al actualizar mediante Apps Script:", error);
             }
 
             alert(`${mensaje}\nPuntaje obtenido: +${scorePartida} puntos.\nTu puntaje acumulado en Juego 3 ahora es: ${nuevoPuntajeJuego3.toLocaleString()}`);

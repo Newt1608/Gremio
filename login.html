@@ -174,9 +174,9 @@
         });
 
         // ==========================================
-        // LÓGICA DE INICIO DE SESIÓN
+        // LÓGICA DE INICIO DE SESIÓN (GOOGLE APPS SCRIPT)
         // ==========================================
-        const API_USUARIOS = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Usuarios';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz7IeyA8op6c_3Haq-7f4-kxwRPeiJJ1PhqSCNQbTo2ud-HkkJoclnqIz0XsCSbSvJ4NA/exec';
         
         const loginForm = document.getElementById('loginForm');
         const loginCard = document.getElementById('loginCard');
@@ -231,15 +231,22 @@
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch(API_USUARIOS + '&_=' + new Date().getTime());
-                const usuariosDB = await response.json();
+                const response = await fetch(API_URL + '?_=' + new Date().getTime());
+                const allSheetsData = await response.json();
 
-                if (usuariosDB.error) throw new Error(usuariosDB.error);
+                // Extraer los usuarios de la pestaña "usuarios" devolviendo claves estandarizadas
+                const usuariosDB = (allSheetsData["usuarios"] || []).map(row => {
+                    let newRow = {};
+                    for (let key in row) {
+                        newRow[key.trim().toLowerCase()] = row[key];
+                    }
+                    return newRow;
+                });
 
                 const coincidencias = usuariosDB.filter(row => {
                     const keys = Object.keys(row);
-                    const keyNombre = keys.find(k => k.trim().toLowerCase() === 'nombre');
-                    const keyPass = keys.find(k => k.trim().toLowerCase().includes('contrase'));
+                    const keyNombre = keys.find(k => k.includes('nombre'));
+                    const keyPass = keys.find(k => k.includes('contrase'));
 
                     if (!keyNombre || !keyPass) return false;
 
@@ -253,11 +260,10 @@
                     const usuarioReciente = coincidencias[coincidencias.length - 1];
                     const keys = Object.keys(usuarioReciente);
                     
-                    const keyFoto = keys.find(k => k.toLowerCase().includes('foto') || k.toLowerCase().includes('perfil'));
-                    const keyNombre = keys.find(k => k.trim().toLowerCase() === 'nombre');
-                    const keyRoll = keys.find(k => k.trim().toLowerCase() === 'roll');
-                    // CORRECCIÓN: Búsqueda flexible para evitar problemas de acentos (Decoración)
-                    const keyDeco = keys.find(k => k.trim().toLowerCase().includes('decoraci'));
+                    const keyFoto = keys.find(k => k.includes('foto') || k.includes('perfil'));
+                    const keyNombre = keys.find(k => k.includes('nombre'));
+                    const keyRoll = keys.find(k => k.includes('roll') || k.includes('rol'));
+                    const keyDeco = keys.find(k => k.includes('decoraci'));
 
                     const rawUrl = keyFoto ? (usuarioReciente[keyFoto] || '') : '';
                     const avatarUrl = convertirUrlDrive(rawUrl);
@@ -320,7 +326,7 @@
                 }
             } catch (error) {
                 console.error("Error al conectar con la BD:", error);
-                errorMsg.innerText = "Revisa el enlace de SheetDB o la pestaña Usuarios.";
+                errorMsg.innerText = "Error de conexión con la base de datos de Google.";
                 errorMsg.classList.add('show');
                 submitBtn.innerHTML = btnOriginalText;
                 submitBtn.disabled = false;

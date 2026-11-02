@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* TEMA OSCURO (Default) */
+        /* TEMA OSCURO (Morado oscuro y naranja) */
         :root {
             --sidebar-bg: #15131f; 
             --sidebar-text: #9691a5; 
@@ -61,10 +61,32 @@
             --halloween-orange: #000000;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; position: relative; }
+
+        /* ====== DECORACIONES DE HALLOWEEN (CSS ANIMADO) ====== */
+        .bat-bg { position: absolute; font-size: 24px; color: var(--text-dark); opacity: 0.15; pointer-events: none; z-index: 0; animation: flyBat 15s infinite linear; }
+        .bat-1 { top: 10%; left: -50px; animation-duration: 18s; }
+        .bat-2 { top: 40%; left: -50px; animation-duration: 25s; animation-delay: 5s; font-size: 16px; }
+        .bat-3 { top: 70%; left: -50px; animation-duration: 20s; animation-delay: 10s; font-size: 32px; }
         
-        /* CORREGIDO: overflow-y auto para permitir bajar la página con el cursor */
-        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
+        @keyframes flyBat {
+            0% { transform: translateX(-50px) translateY(0) scale(1); }
+            25% { transform: translateX(25vw) translateY(-30px) scale(1.1); }
+            50% { transform: translateX(50vw) translateY(20px) scale(1); }
+            75% { transform: translateX(75vw) translateY(-20px) scale(0.9); }
+            100% { transform: translateX(110vw) translateY(0) scale(1); }
+        }
+
+        .hanging-spider { position: absolute; top: -50px; font-size: 28px; color: var(--text-dark); opacity: 0.3; pointer-events: none; z-index: 10; display: flex; flex-direction: column; align-items: center; animation: hangSpider 6s infinite ease-in-out; }
+        .hanging-spider::before { content: ''; width: 2px; height: 150px; background: var(--text-dark); margin-bottom: -5px; }
+        .spider-1 { right: 15%; }
+        .spider-2 { right: 40%; animation-delay: 2s; animation-duration: 8s; font-size: 20px;}
+        
+        @keyframes hangSpider {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(40px); }
+        }
 
         /* BARRA LATERAL Y PERFIL */
         .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; z-index: 100; border-right: 1px solid var(--border-color); }
@@ -74,7 +96,7 @@
         .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
         .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--halloween-orange); font-weight: 700; }
         
-        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; min-width: 260px; background: rgba(25, 22, 34, 0.5); }
+        .user-profile-sidebar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; min-width: 260px; background: rgba(25, 22, 34, 0.5); }
         .profile-info-wrap { display: flex; align-items: center; gap: 10px; overflow: hidden; }
         .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--halloween-orange); object-fit: cover; flex-shrink: 0; }
         .user-meta { display: flex; flex-direction: column; overflow: hidden; }
@@ -87,6 +109,7 @@
         .nav-title { padding: 10px 22px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; color: var(--text-muted); font-weight: 700; }
         .nav-title:hover { color: var(--sidebar-text-active); }
         .nav-title i { transition: transform 0.3s ease; }
+        .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
         .nav-group.collapsed-group .nav-items-container { max-height: 0; }
         .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
         
@@ -120,13 +143,13 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* CONTENIDO PRINCIPAL Y TABLA */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 10; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); z-index: 10; }
         .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
         .toggle-btn, .theme-btn { background: none; border: none; color: var(--halloween-orange); font-size: 18px; cursor: pointer; padding: 8px 12px; border-radius: 10px; background-color: var(--card-bg); border: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
         .toggle-btn:hover, .theme-btn:hover { background: rgba(255,140,0,0.1); }
         
-        .dashboard-container { padding: 30px 40px 60px 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        .dashboard-container { padding: 30px 40px 60px 40px; max-width: 1400px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
         
         .welcome-header { margin-bottom: 30px; }
         .welcome-header h1 { font-size: 36px; font-weight: 900; margin-bottom: 8px; color: var(--text-dark); }
@@ -172,6 +195,14 @@
 </head>
 <body>
 
+    <!-- DECORACIONES HALLOWEEN FONDO -->
+    <i class="fa-solid fa-bat bat-bg bat-1"></i>
+    <i class="fa-solid fa-bat bat-bg bat-2"></i>
+    <i class="fa-solid fa-bat bat-bg bat-3"></i>
+    
+    <div class="hanging-spider spider-1"><i class="fa-solid fa-spider"></i></div>
+    <div class="hanging-spider spider-2"><i class="fa-solid fa-spider"></i></div>
+
     <!-- MENSAJE DE PERMISO DENEGADO -->
     <div class="toast-alert" id="toastAlert">
         <i class="fa-solid fa-lock"></i> No tienes permisos para esta página.
@@ -196,7 +227,7 @@
             </div>
         </div>
 
-        <!-- PERFIL DEL USUARIO DINÁMICO CON PUNTOS TOTALES -->
+        <!-- PERFIL DEL USUARIO DINÁMICO -->
         <div class="user-profile-sidebar" id="user-profile-sidebar">
             <div class="profile-info-wrap">
                 <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
@@ -235,7 +266,7 @@
             </div>
         </div>
         
-        <!-- EVENTOS ESPECIALES -->
+        <!-- SECCIÓN DE EVENTOS ESPECIALES -->
         <div class="nav-group">
             <div class="nav-title" style="color: var(--halloween-orange);">EVENTOS ESPECIALES <i class="fa-solid fa-ghost"></i></div>
             <div class="nav-items-container">
@@ -243,7 +274,7 @@
             </div>
         </div>
 
-        <!-- MENÚ GUARDIANES (CORREGIDO: Sin etiquetas de tachado erróneas) -->
+        <!-- MENÚ GUARDIANES -->
         <div class="nav-group">
             <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -273,7 +304,7 @@
 
         <div class="dashboard-container">
             <div class="welcome-header">
-                <div class="welcome-tag" onclick="toggleAcertijo()"><i class="fa-solid fa-trophy" id="trophyIcon" style="color: var(--halloween-orange);"></i> Asalto del Gremio &nbsp;<span style="font-size:10px; color:var(--halloween-orange);">(✨ Dale clic a lo que el solo un ganador obtiene)</span></div>
+                <div class="welcome-tag" onclick="toggleAcertijo()"><i class="fa-solid fa-trophy" id="trophyIcon" style="color: var(--halloween-orange);"></i> Asalto del Gremio &nbsp;<span style="font-size:10px; color: var(--halloween-orange);">(✨ Dale clic a lo que el solo un ganador obtiene)</span></div>
                 <h1>Ranking del último <span>Asalto.</span></h1>
                 <p>Clasificación de los miembros por su daño en asalto y récords en la sala de práctica (Estafermo).</p>
             </div>
@@ -326,13 +357,49 @@
 
     <!-- WIDGETBOT DISCORD -->
     <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
-        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#15131f', notifications: true })
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#120e17', notifications: true })
     </script>
 
     <script>
         // ==========================================
-        // GESTIÓN DE TEMAS (Oscuro, Claro, Blanco y Negro)
+        // LÓGICA DEL ACERTIJO DEL LABERINTO
         // ==========================================
+        function toggleAcertijo() {
+            const card = document.getElementById('riddleCardContainer');
+            const content = document.getElementById('riddleContent');
+            const chevron = document.getElementById('riddleChevron');
+            
+            if (card.style.display === 'none') {
+                card.style.display = 'block';
+                content.classList.add('open');
+                if(chevron) chevron.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.toggle('open');
+                if(chevron) chevron.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+            }
+        }
+
+        function resolverAcertijo() {
+            const inputVal = document.getElementById('riddleInput').value.toLowerCase().trim();
+            const msg = document.getElementById('riddleMsg');
+
+            if (inputVal === 'laberinto' || inputVal === 'un laberinto') {
+                localStorage.setItem('laberinto_desbloqueada', 'true');
+                msg.style.color = 'var(--poison-green)';
+                msg.innerHTML = '🎉 ¡Correcto! Has desbloqueado el juego del Laberinto en el Festival de Halloween (eventos.html).';
+                
+                setTimeout(() => {
+                    toggleAcertijo();
+                }, 3000);
+            } else {
+                msg.style.color = 'var(--accent-red)';
+                msg.innerHTML = '❌ Respuesta incorrecta. ¡Sigue buscando pistas!';
+            }
+        }
+
+        // =========================================================================
+        // GESTIÓN DE TEMAS (Oscuro, Claro, Blanco y Negro) EN LOCALSTORAGE
+        // =========================================================================
         const themeBtn = document.getElementById('themeToggle');
         const rootElement = document.documentElement;
 
@@ -364,52 +431,30 @@
             aplicarTema(temaActual);
         });
 
-        // ==========================================
-        // LÓGICA DEL ACERTIJO DEL LABERINTO
-        // ==========================================
-        function toggleAcertijo() {
-            const card = document.getElementById('riddleCardContainer');
-            const content = document.getElementById('riddleContent');
-            const chevron = document.getElementById('riddleChevron');
-            
-            if (card.style.display === 'none') {
-                card.style.display = 'block';
-                content.classList.add('open');
-                if(chevron) chevron.style.transform = 'rotate(180deg)';
-            } else {
-                content.classList.toggle('open');
-                if(chevron) chevron.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        // =========================================================================
+        // CONVERSIÓN DE URLS DE GOOGLE DRIVE A IMÁGENES
+        // =========================================================================
+        function convertirUrlDrive(url) {
+            if (!url) return 'logo.jpg';
+            let limpia = String(url).trim().split(',')[0].trim();
+            if (!limpia.includes('drive.google.com')) return limpia;
+            const regexID = /(?:id=|\/d\/|open\?id=)([\w-]+)/i;
+            const match = limpia.match(regexID);
+            if (match && match[1]) { 
+                return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200-h200`; 
             }
-        }
-
-        function resolverAcertijo() {
-            const inputVal = document.getElementById('riddleInput').value.toLowerCase().trim();
-            const msg = document.getElementById('riddleMsg');
-
-            // RESPUESTA DEL ACERTIJO: "laberinto"
-            if (inputVal === 'laberinto' || inputVal === 'un laberinto') {
-                localStorage.setItem('laberinto_desbloqueada', 'true');
-                msg.style.color = 'var(--poison-green)';
-                msg.innerHTML = '🎉 ¡Correcto! Has desbloqueado el juego del Laberinto en el Festival de Halloween (eventos.html).';
-                
-                setTimeout(() => {
-                    toggleAcertijo();
-                }, 3000);
-            } else {
-                msg.style.color = 'var(--accent-red)';
-                msg.innerHTML = '❌ Respuesta incorrecta. ¡Sigue buscando pistas!';
-            }
+            return limpia;
         }
 
         // =========================================================================
-        // COMPROBAR SESIÓN, CARGAR PERFIL Y PUNTOS DESDE SHEETDB
+        // CONFIGURACIÓN DE CONEXIÓN VÍA GOOGLE APPS SCRIPT Y RENDERIZADO
         // =========================================================================
-        const API_URL = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz7IeyA8op6c_3Haq-7f4-kxwRPeiJJ1PhqSCNQbTo2ud-HkkJoclnqIz0XsCSbSvJ4NA/exec';
 
         document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
                 const avatarGuardado = localStorage.getItem('usuario_avatar');
-                const nombreGuardado = localStorage.getItem('usuario_nombre');
+                const nombreGuardado = localStorage.getItem('usuario_nombre') || 'Newt';
                 const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
                 
                 document.getElementById('user-profile-sidebar').style.display = 'flex';
@@ -419,24 +464,88 @@
                 }
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
-                // Cargar Puntos Totales en la barra lateral
                 try {
-                    const res = await fetch(`${API_URL}&_=${new Date().getTime()}`);
-                    const rawData = await res.json();
-                    const pDataTotal = rawData.map(row => {
+                    const res = await fetch(`${API_URL}?_=${new Date().getTime()}`);
+                    const allSheetsData = await res.json();
+                    
+                    // 1. Cargar Puntos de usuario desde la pestaña "halloween"
+                    const rawHalloween = allSheetsData["halloween"] || [];
+                    const pDataTotal = rawHalloween.map(row => {
                         let newRow = {};
                         for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
                         return newRow;
                     });
                     const miRegistro = pDataTotal.find(r => r.nombre && r.nombre.toLowerCase().trim() === nombreGuardado.toLowerCase().trim());
-                    const miPoderTotal = miRegistro ? (parseInt(miRegistro.total) || 0) : 0;
-                    document.getElementById('sidebarTotalPower').innerText = miPoderTotal.toLocaleString();
-                } catch (e) {
-                    console.error("Error al cargar puntos en sidebar:", e);
-                    document.getElementById('sidebarTotalPower').innerText = "0";
+                    const totalPuntos = miRegistro ? (parseInt(miRegistro.total) || 0) : 0;
+                    document.getElementById('sidebarTotalPower').innerText = totalPuntos.toLocaleString();
+
+                    // 2. Mapear Pestaña "usuarios" prioritariamente para obtener fotos reales
+                    const rawUsuarios = allSheetsData["usuarios"] || [];
+                    const usuariosMap = {};
+                    
+                    rawUsuarios.forEach(row => {
+                        let newRow = {};
+                        for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                        if (newRow.nombre) {
+                            const uNombre = String(newRow.nombre).trim().toLowerCase();
+                            const uFoto = newRow.foto || newRow.perfil || '';
+                            if (uFoto && uFoto !== 'logo.jpg') {
+                                usuariosMap[uNombre] = uFoto;
+                            }
+                        }
+                    });
+
+                    // 3. Renderizar la Pestaña "ranking"
+                    const rawRanking = allSheetsData["ranking"] || [];
+                    const rankingData = rawRanking.map(row => {
+                        let newRow = {};
+                        for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                        return newRow;
+                    });
+
+                    const cuerpoTabla = document.getElementById('cuerpo-tabla');
+                    cuerpoTabla.innerHTML = '';
+                    
+                    rankingData.forEach(jugador => {
+                        if (!jugador.nombre) return;
+                        
+                        const claseDorada = parseInt(jugador.posicion) <= 5 ? 'top-5' : '';
+                        const dañoAsalto = jugador.asalto ? jugador.asalto : '0';
+                        const nombreBuscado = String(jugador.nombre).trim().toLowerCase();
+                        
+                        // LÓGICA DE PRIORIDAD DE FOTO:
+                        // 1. Pestaña 'Usuarios' (Foto del registro real)
+                        // 2. Pestaña 'Ranking' (Si no está en Usuarios pero hay algo ahí)
+                        // 3. Avatar por defecto 'logo.jpg'
+                        let fotoRaw = usuariosMap[nombreBuscado] || jugador.foto || 'logo.jpg';
+                        let fotoFinal = convertirUrlDrive(fotoRaw);
+                        
+                        cuerpoTabla.innerHTML += `
+                            <tr class="${claseDorada}">
+                                <td><strong class="pos-numero">${jugador.posicion}</strong></td>
+                                <td>
+                                    <div class="perfil-celda">
+                                        <img src="${fotoFinal}" alt="${jugador.nombre}" class="foto-perfil" onerror="this.src='logo.jpg'">
+                                        <span>${jugador.nombre}</span>
+                                    </div>
+                                </td>
+                                <td style="color: var(--halloween-orange); font-weight: 800; font-size: 16px;">${dañoAsalto}</td>
+                                <td>${jugador.basico || '0'}</td>
+                                <td>${jugador.luz || '0'}</td>
+                                <td>${jugador.oscuridad || '0'}</td>
+                                <td>${jugador.agua || '0'}</td>
+                                <td>${jugador.fuego || '0'}</td>
+                                <td>${jugador.tierra || '0'}</td>
+                            </tr>
+                        `;
+                    });
+
+                } catch (err) {
+                    console.error("Error al cargar datos del ranking desde Apps Script:", err);
+                    document.getElementById('cuerpo-tabla').innerHTML = '<tr><td colspan="9" style="color:var(--accent-red); padding: 25px;">Error al cargar los datos del ranking.</td></tr>';
                 }
 
-                // Lógica de Candados
+                // Control de permisos de usuario para los menús
                 document.querySelectorAll('.nav-item').forEach(link => {
                     const reqOriginal = link.getAttribute('data-req');
                     if (reqOriginal) {
@@ -471,9 +580,9 @@
             }
         });
 
-        // BOTÓN CERRAR SESIÓN
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            document.getElementById('logoutOverlay').classList.add('active');
+            const logoutOverlay = document.getElementById('logoutOverlay');
+            logoutOverlay.classList.add('active');
             setTimeout(() => {
                 localStorage.removeItem('sesion_activa');
                 localStorage.removeItem('usuario_nombre');
@@ -483,95 +592,16 @@
             }, 2500);
         });
 
-        // FUNCIÓN CONVERTIR URL DRIVE PARA AVATARES
-        function convertirUrlDrive(url) {
-            if (!url) return 'logo.jpg';
-            let limpia = String(url).trim().split(',')[0].trim();
-            if (!limpia.includes('drive.google.com')) return limpia;
-            const regexID = /(?:id=|\/d\/|open\?id=)([\w-]+)/i;
-            const match = limpia.match(regexID);
-            if (match && match[1]) { 
-                return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200-h200`; 
-            }
-            return limpia;
+        // Control de barra lateral colapsable
+        const sidebar = document.getElementById('sidebar');
+        if (localStorage.getItem('sidebar-colapsada') === 'true') {
+            sidebar.classList.add('collapsed');
         }
 
-        const cuerpoTabla = document.getElementById('cuerpo-tabla');
-        
-        const timestamp = new Date().getTime();
-        const apiRankingURL = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Ranking&_=${timestamp}`;
-        const apiUsuariosURL = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Usuarios&_=${timestamp}`;
-
-        // CARGAMOS RANKING Y USUARIOS AL MISMO TIEMPO
-        Promise.all([
-            fetch(apiRankingURL).then(res => res.json()),
-            fetch(apiUsuariosURL).then(res => res.json())
-        ])
-        .then(([rankingData, usuariosData]) => {
-            
-            const perfilesMap = {};
-            if (!usuariosData.error) {
-                usuariosData.forEach(row => {
-                    const keys = Object.keys(row);
-                    const keyNombre = keys.find(k => k.trim().toLowerCase() === 'nombre');
-                    const keyFoto = keys.find(k => k.trim().toLowerCase().includes('foto') || k.trim().toLowerCase().includes('perfil'));
-                    
-                    if (keyNombre && row[keyNombre]) {
-                        const nombreUser = String(row[keyNombre]).trim().toLowerCase();
-                        const fotoRaw = keyFoto ? row[keyFoto] : '';
-                        
-                        if (fotoRaw) {
-                            perfilesMap[nombreUser] = convertirUrlDrive(fotoRaw);
-                        }
-                    }
-                });
-            }
-
-            cuerpoTabla.innerHTML = '';
-            rankingData.forEach(jugador => {
-                if (!jugador.nombre) return;
-                
-                const claseDorada = parseInt(jugador.posicion) <= 5 ? 'top-5' : '';
-                const dañoAsalto = jugador.asalto ? jugador.asalto : '0';
-                
-                const nombreBuscado = String(jugador.nombre).trim().toLowerCase();
-                
-                let fotoFinal = 'logo.jpg';
-                if (perfilesMap[nombreBuscado]) {
-                    fotoFinal = perfilesMap[nombreBuscado];
-                } else if (jugador.foto) {
-                    fotoFinal = convertirUrlDrive(jugador.foto);
-                }
-                
-                cuerpoTabla.innerHTML += `
-                    <tr class="${claseDorada}">
-                        <td><strong class="pos-numero">${jugador.posicion}</strong></td>
-                        <td>
-                            <div class="perfil-celda">
-                                <img src="${fotoFinal}" alt="${jugador.nombre}" class="foto-perfil" onerror="this.src='logo.jpg'">
-                                <span>${jugador.nombre}</span>
-                            </div>
-                        </td>
-                        <td style="color: var(--halloween-orange); font-weight: 800; font-size: 16px;">${dañoAsalto}</td>
-                        <td>${jugador.basico || '0'}</td>
-                        <td>${jugador.luz || '0'}</td>
-                        <td>${jugador.oscuridad || '0'}</td>
-                        <td>${jugador.agua || '0'}</td>
-                        <td>${jugador.fuego || '0'}</td>
-                        <td>${jugador.tierra || '0'}</td>
-                    </tr>
-                `;
-            });
-        })
-        .catch(error => {
-            console.error('Error al conectar con la base de datos:', error);
-            cuerpoTabla.innerHTML = '<tr><td colspan="9" style="color:var(--accent-red); padding: 25px;">Error al cargar los datos del ranking. Espera unos segundos e intenta recargar.</td></tr>';
+        document.getElementById('toggleSidebar').addEventListener('click', () => { 
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebar-colapsada', sidebar.classList.contains('collapsed'));
         });
-
-        // MENU LATERAL 
-        const sidebar = document.getElementById('sidebar');
-        const toggleBtn = document.getElementById('toggleSidebar');
-        toggleBtn.addEventListener('click', () => { sidebar.classList.toggle('collapsed'); });
 
         const navTitles = document.querySelectorAll('.nav-title');
         navTitles.forEach(title => {

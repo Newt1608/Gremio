@@ -273,7 +273,7 @@
                                 <li>⏭️ <b>Pasar Turno:</b> Cede el turno a Lorraine de forma estratégica.</li>
                             </ul>
                         </li>
-                        <li><b>Apuestas:</b> Si ganas, se acumulará en la columna de Ganancias (`M`) para sumar a tu Total. Si pierdes, se acumulará en la columna de Descuentos (`K`) para restarlo automáticamente.</li>
+                        <li><b>Apuestas:</b> Si ganas, se acumulará en la columna de Ganancias (`Ganar`) para sumar a tu Total. Si pierdes, se acumulará en la columna de Descuentos (`Descuentos`) para restarlo automáticamente.</li>
                     </ul>
                 </div>
             </div>
@@ -361,7 +361,7 @@
         });
 
         // ==========================================
-        // DATOS DE USUARIO Y BASE DE DATOS SHEETDB
+        // DATOS DE USUARIO Y BASE DE DATOS APPS SCRIPT
         // ==========================================
         let usuarioActual = { 
             nombre: localStorage.getItem('usuario_nombre') || 'Newt', 
@@ -378,14 +378,14 @@
         document.getElementById('hudMyName').innerText = usuarioActual.nombre;
         document.getElementById('hudMyAvatar').src = usuarioActual.foto;
 
-        const API_URL = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz7IeyA8op6c_3Haq-7f4-kxwRPeiJJ1PhqSCNQbTo2ud-HkkJoclnqIz0XsCSbSvJ4NA/exec';
 
         async function cargarPuntosDesdeBD() {
             try {
-                const res = await fetch(`${API_URL}&_=${new Date().getTime()}`);
-                const rawData = await res.json();
+                const res = await fetch(`${API_URL}?_=${new Date().getTime()}`);
+                const allSheetsData = await res.json();
                 
-                if (rawData.error) throw new Error(rawData.error);
+                const rawData = allSheetsData["halloween"] || [];
 
                 pDataTotal = rawData.map(row => {
                     let newRow = {};
@@ -410,7 +410,7 @@
                     warningMsg.innerText = "";
                 }
             } catch (error) {
-                console.error("Error al leer SheetDB:", error);
+                console.error("Error al leer la base de datos de Apps Script:", error);
                 document.getElementById('myTotalPower').innerText = "0";
                 document.getElementById('sidebarTotalPower').innerText = "0";
                 document.getElementById('warningMsg').innerText = "❌ Error al conectar con la base de datos.";
@@ -715,8 +715,10 @@
             let apuestaEfectiva = apuestaBase * multiplicador;
 
             try {
-                const res = await fetch(`${API_URL}&_=${new Date().getTime()}`);
-                const rawData = await res.json();
+                const res = await fetch(`${API_URL}?_=${new Date().getTime()}`);
+                const allSheetsData = await res.json();
+                const rawData = allSheetsData["halloween"] || [];
+
                 const freshList = rawData.map(row => {
                     let newRow = {};
                     for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
@@ -729,51 +731,47 @@
 
                 let gananciasActuales = miRegistroActualizado && miRegistroActualizado.ganar ? (parseInt(miRegistroActualizado.ganar) || 0) : 0;
                 let descuentosActuales = miRegistroActualizado && miRegistroActualizado.descuentos ? (parseInt(miRegistroActualizado.descuentos) || 0) : 0;
-                let victoriasActuales = miRegistroActualizado ? (parseInt(miRegistroActualizado.victorias) || 0) : 0;
-                let derrotasActuales = miRegistroActualizado ? (parseInt(miRegistroActualizado.derrotas) || 0) : 0;
+                let victoriasActuales = miRegistroActualizado && miRegistroActualizado.victorias ? (parseInt(miRegistroActualizado.victorias) || 0) : 0;
+                let derrotasActuales = miRegistroActualizado && miRegistroActualizado.derrotas ? (parseInt(miRegistroActualizado.derrotas) || 0) : 0;
+                
+                let kamazon = miRegistroActualizado && miRegistroActualizado.kamazon ? (parseInt(miRegistroActualizado.kamazon) || 0) : 0;
+                let juego2 = miRegistroActualizado && miRegistroActualizado.juego2 ? (parseInt(miRegistroActualizado.juego2) || 0) : 0;
+                let juego3 = miRegistroActualizado && miRegistroActualizado.juego3 ? (parseInt(miRegistroActualizado.juego3) || 0) : 0;
+                let juego4 = miRegistroActualizado && miRegistroActualizado.juego4 ? (parseInt(miRegistroActualizado.juego4) || 0) : 0;
+                let juego5 = miRegistroActualizado && miRegistroActualizado.juego5 ? (parseInt(miRegistroActualizado.juego5) || 0) : 0;
 
-                let payloadData = { Foto: avatarSeguro };
+                let nuevasGanancias = gananciasActuales;
+                let nuevosDescuentos = descuentosActuales;
 
                 if (gano) {
-                    let nuevasGanancias = gananciasActuales + apuestaEfectiva;
+                    nuevasGanancias += apuestaEfectiva;
                     victoriasActuales++;
-                    payloadData.Ganar = nuevasGanancias;
                 } else {
-                    let nuevosDescuentos = descuentosActuales + apuestaEfectiva;
+                    nuevosDescuentos += apuestaEfectiva;
                     derrotasActuales++;
-                    payloadData.Descuentos = nuevosDescuentos;
                 }
 
-                payloadData.Victorias = victoriasActuales;
-                payloadData.Derrotas = derrotasActuales;
+                let nuevoTotalGeneral = (kamazon + juego2 + juego3 + juego4 + juego5 + nuevasGanancias) - nuevosDescuentos;
 
-                if (miRegistroActualizado) {
-                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo/Nombre/${encodeURIComponent(nombreSeguro)}?sheet=Halloween`, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: payloadData })
-                    });
-                } else {
-                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            data: [{ 
-                                Nombre: nombreSeguro, 
-                                Foto: avatarSeguro, 
-                                Kamazon: 0, 
-                                Ganar: gano ? apuestaEfectiva : 0, 
-                                Descuentos: gano ? 0 : apuestaEfectiva,
-                                Victorias: victoriasActuales, 
-                                Derrotas: derrotasActuales 
-                            }] 
-                        })
-                    });
-                }
-                
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        sheet: "Halloween",
+                        action: "updateRuleta",
+                        nombre: nombreSeguro,
+                        ganar: nuevasGanancias,
+                        descuentos: nuevosDescuentos,
+                        total: nuevoTotalGeneral,
+                        victorias: victoriasActuales,
+                        derrotas: derrotasActuales,
+                        foto: avatarSeguro
+                    })
+                });
+
                 alert(`${mensaje}\nApuesta ${multiplicador > 1 ? '(¡Doble Daño Activo!)' : ''}: ${apuestaEfectiva.toLocaleString()} puntos.`);
             } catch (error) {
-                console.error("Error al actualizar SheetDB:", error);
+                console.error("Error al actualizar la base de datos mediante Apps Script:", error);
                 alert(`${mensaje}\n(Hubo un problema al sincronizar con la base de datos).`);
             }
             

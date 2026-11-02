@@ -533,9 +533,9 @@ Supuestamente, si alguien encuentra ese punto exacto, será arrastrado tras ello
         });
 
         // =========================================================================
-        // COMPROBAR SESIÓN, CANDADOS Y PUNTOS EN SHEETDB (https://sheetdb.io/api/v1/ht7mdi08mv7xo)
+        // NUEVA CONFIGURACIÓN DE CONEXIÓN VÍA GOOGLE APPS SCRIPT (ILIMITADO)
         // =========================================================================
-        const API_HALLOWEEN = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz7IeyA8op6c_3Haq-7f4-kxwRPeiJJ1PhqSCNQbTo2ud-HkkJoclnqIz0XsCSbSvJ4NA/exec';
 
         document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
@@ -550,10 +550,14 @@ Supuestamente, si alguien encuentra ese punto exacto, será arrastrado tras ello
                 }
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
+                // Cargar datos principales usando la API de Apps Script
                 try {
-                    const res = await fetch(`${API_HALLOWEEN}&_=${new Date().getTime()}`);
-                    const rawData = await res.json();
-                    const pDataTotal = rawData.map(row => {
+                    const res = await fetch(`${API_URL}?_=${new Date().getTime()}`);
+                    const allSheetsData = await res.json();
+                    
+                    // 1. Cargar Puntos de usuario desde la pestaña "halloween"
+                    const rawHalloween = allSheetsData["halloween"] || [];
+                    const pDataTotal = rawHalloween.map(row => {
                         let newRow = {};
                         for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
                         return newRow;
@@ -561,10 +565,111 @@ Supuestamente, si alguien encuentra ese punto exacto, será arrastrado tras ello
                     const miRegistro = pDataTotal.find(r => r.nombre && r.nombre.toLowerCase().trim() === nombreGuardado.toLowerCase().trim());
                     const totalPuntos = miRegistro ? (parseInt(miRegistro.total) || 0) : 0;
                     document.getElementById('sidebarTotalPower').innerText = totalPuntos.toLocaleString();
+
+                    // 2. Cargar Pestaña "datos" (Información dinámica del sitio)
+                    const rawDatos = allSheetsData["datos"] || [];
+                    const datosProcesados = rawDatos.map(row => {
+                        let newRow = {};
+                        for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                        return newRow;
+                    });
+                    
+                    datosProcesados.forEach(fila => {
+                        const elemento = document.getElementById('sheet-' + fila.clave);
+                        if (elemento) {
+                            elemento.innerHTML = fila.texto;
+                        }
+                        if (fila.clave === 'dias_asalto') {
+                            const diasActuales = parseInt(fila.texto) || 0; 
+                            const diasTotales = 7;
+                            const porcentaje = Math.round((diasActuales / diasTotales) * 100);
+                            
+                            document.getElementById('porcentaje-texto').innerText = porcentaje + '%';
+                            document.getElementById('barra-progreso').style.width = porcentaje + '%';
+                            document.getElementById('dias-texto').innerText = `Lunas ${diasActuales}/${diasTotales}`;
+
+                            if (diasActuales === 0) {
+                                document.getElementById('porcentaje-texto').style.display = 'none';
+                                document.querySelector('.progress-bar').style.display = 'none';
+                                document.getElementById('dias-texto').style.display = 'none';
+                                document.getElementById('estado-texto').style.display = 'none';
+                                document.getElementById('mensaje-sin-asalto').style.display = 'block';
+                            } else {
+                                document.getElementById('porcentaje-texto').style.display = 'block';
+                                document.querySelector('.progress-bar').style.display = 'block';
+                                document.getElementById('dias-texto').style.display = 'block';
+                                document.getElementById('estado-texto').style.display = 'block';
+                                document.getElementById('estado-texto').innerText = 'Activo';
+                                document.getElementById('mensaje-sin-asalto').style.display = 'none';
+                            }
+                        }
+                    });
+
+                    // 3. Cargar Pestañas "ranking" y "usuarios" (Top 5 Cazadores de Asalto)
+                    const rawRanking = allSheetsData["ranking"] || [];
+                    const rawUsuarios = allSheetsData["usuarios"] || [];
+                    const rankingData = rawRanking.map(row => {
+                        let newRow = {};
+                        for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                        return newRow;
+                    });
+                    const usuariosData = rawUsuarios.map(row => {
+                        let newRow = {};
+                        for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                        return newRow;
+                    });
+
+                    const contenedorTop5 = document.getElementById('top5-contenedor');
+                    if (contenedorTop5) {
+                        const perfilesMap = {};
+                        usuariosData.forEach(row => {
+                            if (row.nombre) {
+                                const nombreUser = String(row.nombre).trim().toLowerCase();
+                                const fotoRaw = row.foto || row.perfil || '';
+                                if (fotoRaw) {
+                                    perfilesMap[nombreUser] = convertirUrlDrive(fotoRaw);
+                                }
+                            }
+                        });
+
+                        contenedorTop5.innerHTML = ''; 
+                        const top5 = rankingData.slice(0, 5);
+                        top5.forEach(jugador => {
+                            if (!jugador.nombre) return;
+                            const daño = jugador.asalto ? jugador.asalto : '0';
+                            const nombreBuscado = String(jugador.nombre).trim().toLowerCase();
+                            
+                            let fotoFinal = 'logo.jpg';
+                            if (perfilesMap[nombreBuscado]) {
+                                fotoFinal = perfilesMap[nombreBuscado];
+                            } else if (jugador.foto) {
+                                fotoFinal = convertirUrlDrive(jugador.foto);
+                            }
+
+                            contenedorTop5.innerHTML += `
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; background: var(--main-bg); border-radius: 12px; border-left: 4px solid var(--halloween-orange);">
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <span style="font-size: 18px; font-weight: 800; color: var(--halloween-orange);">#${jugador.posicion}</span>
+                                        <img src="${fotoFinal}" alt="${jugador.nombre}" class="top5-avatar" onerror="this.src='logo.jpg'">
+                                        <span style="font-weight: 700; font-size: 14px;">${jugador.nombre}</span>
+                                    </div>
+                                    <div style="font-size: 14px; font-weight: 800; color: var(--accent-red);">
+                                        <i class="fa-solid fa-fire-flame-curved"></i> ${daño}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+
                 } catch (err) {
-                    console.error("Error al cargar puntos de usuario desde SheetDB:", err);
+                    console.error("Error al cargar datos globales desde Apps Script:", err);
+                    const contenedorTop5 = document.getElementById('top5-contenedor');
+                    if (contenedorTop5) {
+                        contenedorTop5.innerHTML = '<p style="color: var(--accent-red); font-size: 12px; padding: 10px;">Error al cargar el Top 5 oscuro.</p>';
+                    }
                 }
 
+                // Control de permisos de usuario para los menús
                 document.querySelectorAll('.nav-item').forEach(link => {
                     const reqOriginal = link.getAttribute('data-req');
                     if (reqOriginal) {
@@ -626,107 +731,6 @@ Supuestamente, si alguien encuentra ese punto exacto, será arrastrado tras ello
                 return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200-h200`; 
             }
             return limpia;
-        }
-
-        const timestamp = new Date().getTime();
-        const apiURL = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Datos&_=${timestamp}`;
-        const apiRankingURL = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Ranking&_=${timestamp}`;
-        const apiUsuariosURL = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Usuarios&_=${timestamp}`;
-
-        fetch(apiURL)
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(fila => {
-                    const elemento = document.getElementById('sheet-' + fila.clave);
-                    if (elemento) {
-                        elemento.innerHTML = fila.texto;
-                    }
-                    if (fila.clave === 'dias_asalto') {
-                        const diasActuales = parseInt(fila.texto) || 0; 
-                        const diasTotales = 7;
-                        const porcentaje = Math.round((diasActuales / diasTotales) * 100);
-                        
-                        document.getElementById('porcentaje-texto').innerText = porcentaje + '%';
-                        document.getElementById('barra-progreso').style.width = porcentaje + '%';
-                        document.getElementById('dias-texto').innerText = `Lunas ${diasActuales}/${diasTotales}`;
-
-                        if (diasActuales === 0) {
-                            document.getElementById('porcentaje-texto').style.display = 'none';
-                            document.querySelector('.progress-bar').style.display = 'none';
-                            document.getElementById('dias-texto').style.display = 'none';
-                            document.getElementById('estado-texto').style.display = 'none';
-                            document.getElementById('mensaje-sin-asalto').style.display = 'block';
-                        } else {
-                            document.getElementById('porcentaje-texto').style.display = 'block';
-                            document.querySelector('.progress-bar').style.display = 'block';
-                            document.getElementById('dias-texto').style.display = 'block';
-                            document.getElementById('estado-texto').style.display = 'block';
-                            document.getElementById('estado-texto').innerText = 'Activo';
-                            document.getElementById('mensaje-sin-asalto').style.display = 'none';
-                        }
-                    }
-                });
-            })
-            .catch(error => console.error('Error al conectar:', error));
-        
-        const contenedorTop5 = document.getElementById('top5-contenedor');
-
-        if (contenedorTop5) {
-            Promise.all([
-                fetch(apiRankingURL).then(res => res.json()),
-                fetch(apiUsuariosURL).then(res => res.json())
-            ])
-            .then(([rankingData, usuariosData]) => {
-                
-                const perfilesMap = {};
-                if (!usuariosData.error) {
-                    usuariosData.forEach(row => {
-                        const keys = Object.keys(row);
-                        const keyNombre = keys.find(k => k.trim().toLowerCase() === 'nombre');
-                        const keyFoto = keys.find(k => k.trim().toLowerCase().includes('foto') || k.trim().toLowerCase().includes('perfil'));
-                        
-                        if (keyNombre && row[keyNombre]) {
-                            const nombreUser = String(row[keyNombre]).trim().toLowerCase();
-                            const fotoRaw = keyFoto ? row[keyFoto] : '';
-                            if (fotoRaw) {
-                                perfilesMap[nombreUser] = convertirUrlDrive(fotoRaw);
-                            }
-                        }
-                    });
-                }
-
-                contenedorTop5.innerHTML = ''; 
-                const top5 = rankingData.slice(0, 5);
-                top5.forEach(jugador => {
-                    if (!jugador.nombre) return;
-                    const daño = jugador.asalto ? jugador.asalto : '0';
-                    const nombreBuscado = String(jugador.nombre).trim().toLowerCase();
-                    
-                    let fotoFinal = 'logo.jpg';
-                    if (perfilesMap[nombreBuscado]) {
-                        fotoFinal = perfilesMap[nombreBuscado];
-                    } else if (jugador.foto) {
-                        fotoFinal = convertirUrlDrive(jugador.foto);
-                    }
-
-                    contenedorTop5.innerHTML += `
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; background: var(--main-bg); border-radius: 12px; border-left: 4px solid var(--halloween-orange);">
-                            <div style="display: flex; align-items: center; gap: 15px;">
-                                <span style="font-size: 18px; font-weight: 800; color: var(--halloween-orange);">#${jugador.posicion}</span>
-                                <img src="${fotoFinal}" alt="${jugador.nombre}" class="top5-avatar" onerror="this.src='logo.jpg'">
-                                <span style="font-weight: 700; font-size: 14px;">${jugador.nombre}</span>
-                            </div>
-                            <div style="font-size: 14px; font-weight: 800; color: var(--accent-red);">
-                                <i class="fa-solid fa-fire-flame-curved"></i> ${daño}
-                            </div>
-                        </div>
-                    `;
-                });
-            })
-            .catch(error => {
-                console.error('Error al cargar el ranking:', error);
-                contenedorTop5.innerHTML = '<p style="color: var(--accent-red); font-size: 12px; padding: 10px;">Error al cargar el Top 5 oscuro.</p>';
-            });
         }
 
         const navTitles = document.querySelectorAll('.nav-title');

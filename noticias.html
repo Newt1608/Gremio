@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* TEMA OSCURO (Default) */
+        /* TEMA OSCURO (Morado oscuro y naranja) */
         :root {
             --sidebar-bg: #15131f; 
             --sidebar-text: #9691a5; 
@@ -61,8 +61,32 @@
             --halloween-orange: #000000;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; position: relative; }
+
+        /* ====== DECORACIONES DE HALLOWEEN (CSS ANIMADO) ====== */
+        .bat-bg { position: absolute; font-size: 24px; color: var(--text-dark); opacity: 0.15; pointer-events: none; z-index: 0; animation: flyBat 15s infinite linear; }
+        .bat-1 { top: 10%; left: -50px; animation-duration: 18s; }
+        .bat-2 { top: 40%; left: -50px; animation-duration: 25s; animation-delay: 5s; font-size: 16px; }
+        .bat-3 { top: 70%; left: -50px; animation-duration: 20s; animation-delay: 10s; font-size: 32px; }
+        
+        @keyframes flyBat {
+            0% { transform: translateX(-50px) translateY(0) scale(1); }
+            25% { transform: translateX(25vw) translateY(-30px) scale(1.1); }
+            50% { transform: translateX(50vw) translateY(20px) scale(1); }
+            75% { transform: translateX(75vw) translateY(-20px) scale(0.9); }
+            100% { transform: translateX(110vw) translateY(0) scale(1); }
+        }
+
+        .hanging-spider { position: absolute; top: -50px; font-size: 28px; color: var(--text-dark); opacity: 0.3; pointer-events: none; z-index: 10; display: flex; flex-direction: column; align-items: center; animation: hangSpider 6s infinite ease-in-out; }
+        .hanging-spider::before { content: ''; width: 2px; height: 150px; background: var(--text-dark); margin-bottom: -5px; }
+        .spider-1 { right: 15%; }
+        .spider-2 { right: 40%; animation-delay: 2s; animation-duration: 8s; font-size: 20px;}
+        
+        @keyframes hangSpider {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(40px); }
+        }
 
         /* BARRA LATERAL Y PERFIL */
         .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; z-index: 100; border-right: 1px solid var(--border-color); }
@@ -72,7 +96,7 @@
         .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
         .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--halloween-orange); font-weight: 700; }
         
-        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; min-width: 260px; background: rgba(25, 22, 34, 0.5); }
+        .user-profile-sidebar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; min-width: 260px; background: rgba(25, 22, 34, 0.5); }
         .profile-info-wrap { display: flex; align-items: center; gap: 10px; overflow: hidden; }
         .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--halloween-orange); object-fit: cover; flex-shrink: 0; }
         .user-meta { display: flex; flex-direction: column; overflow: hidden; }
@@ -119,13 +143,13 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* CONTENIDO PRINCIPAL */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; position: relative; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; position: relative; z-index: 10; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); z-index: 10; }
         .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
         .toggle-btn, .theme-btn { background: none; border: none; color: var(--halloween-orange); font-size: 18px; cursor: pointer; padding: 8px 12px; border-radius: 10px; background-color: var(--card-bg); border: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
         .toggle-btn:hover, .theme-btn:hover { background: rgba(255,140,0,0.1); }
         
-        .dashboard-container { padding: 30px 40px 60px 40px; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .dashboard-container { padding: 30px 40px 60px 40px; max-width: 1200px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
         
         .welcome-header { margin-bottom: 35px; }
         .welcome-header h1 { font-size: 36px; font-weight: 900; margin-bottom: 8px; color: var(--text-dark); }
@@ -142,8 +166,6 @@
         .news-date { color: var(--text-muted); }
         .news-article h2 { font-size: 20px; font-weight: 800; margin-bottom: 10px; color: var(--text-dark); }
         .news-article p { font-size: 14px; line-height: 1.6; color: var(--text-muted); max-width: 900px; }
-        .news-article a { color: var(--halloween-orange); font-weight: 700; text-decoration: none; }
-        .news-article a:hover { text-decoration: underline; }
 
         /* ESTILOS DEL ACERTIJO DESPLEGABLE */
         .riddle-toggle-btn { background: rgba(123, 31, 162, 0.15); border: 2px solid var(--halloween-purple); color: var(--halloween-orange); width: 100%; padding: 14px 20px; border-radius: 14px; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; font-size: 14px; text-transform: uppercase; }
@@ -163,6 +185,14 @@
     </style>
 </head>
 <body>
+
+    <!-- DECORACIONES HALLOWEEN FONDO -->
+    <i class="fa-solid fa-bat bat-bg bat-1"></i>
+    <i class="fa-solid fa-bat bat-bg bat-2"></i>
+    <i class="fa-solid fa-bat bat-bg bat-3"></i>
+    
+    <div class="hanging-spider spider-1"><i class="fa-solid fa-spider"></i></div>
+    <div class="hanging-spider spider-2"><i class="fa-solid fa-spider"></i></div>
 
     <!-- MENSAJE DE PERMISO DENEGADO -->
     <div class="toast-alert" id="toastAlert">
@@ -188,7 +218,7 @@
             </div>
         </div>
 
-        <!-- PERFIL DEL USUARIO DINÁMICO CON PUNTOS TOTALES -->
+        <!-- PERFIL DEL USUARIO DINÁMICO CON MONEDAS RESTAURADAS -->
         <div class="user-profile-sidebar" id="user-profile-sidebar">
             <div class="profile-info-wrap">
                 <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
@@ -227,12 +257,11 @@
             </div>
         </div>
         
-        <!-- EVENTOS ESPECIALES -->
+        <!-- SECCIÓN DE EVENTOS ESPECIALES -->
         <div class="nav-group">
             <div class="nav-title" style="color: var(--halloween-orange);">EVENTOS ESPECIALES <i class="fa-solid fa-ghost"></i></div>
             <div class="nav-items-container">
                 <a href="eventos.html" class="nav-item"><i class="fa-solid fa-spider"></i> Festival de Halloween</a>
-                <a href="Abismo Corrupto.html" class="nav-item"><i class="fa-solid fa-microchip"></i> Abismo Corrupto</a>
             </div>
         </div>
 
@@ -324,13 +353,41 @@
 
     <!-- WIDGETBOT DISCORD -->
     <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
-        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#15131f', notifications: true })
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#120e17', notifications: true })
     </script>
 
     <script>
         // ==========================================
-        // GESTIÓN DE TEMAS (Oscuro, Claro, Blanco y Negro)
+        // LÓGICA DEL ACERTIJO DESPLEGABLE
         // ==========================================
+        function toggleAcertijo() {
+            const content = document.getElementById('riddleContent');
+            const chevron = document.getElementById('riddleChevron');
+            content.classList.toggle('open');
+            chevron.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        function resolverAcertijo() {
+            const inputVal = document.getElementById('riddleInput').value.toLowerCase().trim();
+            const msg = document.getElementById('riddleMsg');
+
+            if (inputVal === 'pimiento' || inputVal === 'pimiento picante') {
+                localStorage.setItem('ruleta_desbloqueada', 'true');
+                msg.style.color = 'var(--poison-green)';
+                msg.innerHTML = '🎉 ¡Correcto! Has desbloqueado la Ruleta de Lorraine. Ya puedes acceder desde el Festival de Halloween.';
+                
+                setTimeout(() => {
+                    toggleAcertijo();
+                }, 3000);
+            } else {
+                msg.style.color = 'var(--accent-red)';
+                msg.innerHTML = '❌ Respuesta incorrecta. ¡Piénsalo bien!';
+            }
+        }
+
+        // =========================================================================
+        // GESTIÓN DE TEMAS (Oscuro, Claro, Blanco y Negro) EN LOCALSTORAGE
+        // =========================================================================
         const themeBtn = document.getElementById('themeToggle');
         const rootElement = document.documentElement;
 
@@ -362,43 +419,15 @@
             aplicarTema(temaActual);
         });
 
-        // ==========================================
-        // LÓGICA DEL ACERTIJO DESPLEGABLE
-        // ==========================================
-        function toggleAcertijo() {
-            const content = document.getElementById('riddleContent');
-            const chevron = document.getElementById('riddleChevron');
-            content.classList.toggle('open');
-            chevron.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
-        }
-
-        function resolverAcertijo() {
-            const inputVal = document.getElementById('riddleInput').value.toLowerCase().trim();
-            const msg = document.getElementById('riddleMsg');
-
-            if (inputVal === 'pimiento' || inputVal === 'pimiento picante') {
-                localStorage.setItem('ruleta_desbloqueada', 'true');
-                msg.style.color = 'var(--poison-green)';
-                msg.innerHTML = '🎉 ¡Correcto! Has desbloqueado la Ruleta de Lorraine. Ya puedes acceder desde el Festival de Halloween.';
-                
-                setTimeout(() => {
-                    toggleAcertijo();
-                }, 3000);
-            } else {
-                msg.style.color = 'var(--accent-red)';
-                msg.innerHTML = '❌ Respuesta incorrecta. ¡Piénsalo bien!';
-            }
-        }
-
         // =========================================================================
-        // COMPROBAR SESIÓN, CARGAR PERFIL Y PUNTOS DESDE SHEETDB
+        // NUEVA CONFIGURACIÓN DE CONEXIÓN VÍA GOOGLE APPS SCRIPT (ILIMITADO)
         // =========================================================================
-        const API_URL = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz7IeyA8op6c_3Haq-7f4-kxwRPeiJJ1PhqSCNQbTo2ud-HkkJoclnqIz0XsCSbSvJ4NA/exec';
 
         document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
                 const avatarGuardado = localStorage.getItem('usuario_avatar');
-                const nombreGuardado = localStorage.getItem('usuario_nombre');
+                const nombreGuardado = localStorage.getItem('usuario_nombre') || 'Newt';
                 const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
                 
                 document.getElementById('user-profile-sidebar').style.display = 'flex';
@@ -408,24 +437,42 @@
                 }
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
-                // Cargar Puntos Totales en la barra lateral
+                // Cargar datos principales usando la API de Apps Script
                 try {
-                    const res = await fetch(`${API_URL}&_=${new Date().getTime()}`);
-                    const rawData = await res.json();
-                    const pDataTotal = rawData.map(row => {
+                    const res = await fetch(`${API_URL}?_=${new Date().getTime()}`);
+                    const allSheetsData = await res.json();
+                    
+                    // 1. Cargar Puntos de usuario desde la pestaña "halloween"
+                    const rawHalloween = allSheetsData["halloween"] || [];
+                    const pDataTotal = rawHalloween.map(row => {
                         let newRow = {};
                         for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
                         return newRow;
                     });
                     const miRegistro = pDataTotal.find(r => r.nombre && r.nombre.toLowerCase().trim() === nombreGuardado.toLowerCase().trim());
-                    const miPoderTotal = miRegistro ? (parseInt(miRegistro.total) || 0) : 0;
-                    document.getElementById('sidebarTotalPower').innerText = miPoderTotal.toLocaleString();
-                } catch (e) {
-                    console.error("Error al cargar puntos en sidebar:", e);
-                    document.getElementById('sidebarTotalPower').innerText = "0";
+                    const totalPuntos = miRegistro ? (parseInt(miRegistro.total) || 0) : 0;
+                    document.getElementById('sidebarTotalPower').innerText = totalPuntos.toLocaleString();
+
+                    // 2. Cargar Pestaña "datos" (Información dinámica de noticias)
+                    const rawDatos = allSheetsData["datos"] || [];
+                    const datosProcesados = rawDatos.map(row => {
+                        let newRow = {};
+                        for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                        return newRow;
+                    });
+                    
+                    datosProcesados.forEach(fila => {
+                        const elemento = document.getElementById('sheet-' + fila.clave);
+                        if (elemento) {
+                            elemento.innerHTML = fila.texto;
+                        }
+                    });
+
+                } catch (err) {
+                    console.error("Error al cargar datos desde Apps Script:", err);
                 }
 
-                // Lógica de Candados según el Rol
+                // Control de permisos de usuario para los menús
                 document.querySelectorAll('.nav-item').forEach(link => {
                     const reqOriginal = link.getAttribute('data-req');
                     if (reqOriginal) {
@@ -460,41 +507,33 @@
                 });
 
             } else {
-                window.location.href = 'login.html';
+                window.location.href = 'login.html'; 
             }
         });
 
-        // BOTÓN CERRAR SESIÓN
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            document.getElementById('logoutOverlay').classList.add('active'); 
+            const logoutOverlay = document.getElementById('logoutOverlay');
+            logoutOverlay.classList.add('active'); 
+            
             setTimeout(() => {
                 localStorage.removeItem('sesion_activa');
                 localStorage.removeItem('usuario_nombre');
                 localStorage.removeItem('usuario_avatar');
-                localStorage.removeItem('usuario_roll');
+                localStorage.removeItem('usuario_roll'); 
                 window.location.href = 'login.html';
             }, 2500);
         });
 
-        // API NOTICIAS Y TEXTOS GLOBALES
-        const timestamp = new Date().getTime();
-        const apiURLNoticias = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Datos&_=${timestamp}`;
-
-        fetch(apiURLNoticias)
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(fila => {
-                    const elemento = document.getElementById('sheet-' + fila.clave);
-                    if (elemento) {
-                        elemento.innerHTML = fila.texto;
-                    }
-                });
-            })
-            .catch(error => console.error('Error al conectar con la hoja de cálculo:', error));
-
+        // Control de barra lateral colapsable
         const sidebar = document.getElementById('sidebar');
-        const toggleBtn = document.getElementById('toggleSidebar');
-        toggleBtn.addEventListener('click', () => { sidebar.classList.toggle('collapsed'); });
+        if (localStorage.getItem('sidebar-colapsada') === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => { 
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebar-colapsada', sidebar.classList.contains('collapsed'));
+        });
 
         const navTitles = document.querySelectorAll('.nav-title');
         navTitles.forEach(title => {

@@ -288,6 +288,8 @@
         let miPuntuacionAcumulada = 0; // Guardará el total de Juego2
         let pDataTotal = []; 
 
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz7IeyA8op6c_3Haq-7f4-kxwRPeiJJ1PhqSCNQbTo2ud-HkkJoclnqIz0XsCSbSvJ4NA/exec';
+
         document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
                 const avatarGuardado = localStorage.getItem('usuario_avatar');
@@ -305,8 +307,9 @@
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
                 try {
-                    const res = await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween&_=${new Date().getTime()}`);
-                    const rawData = await res.json();
+                    const res = await fetch(`${API_URL}?_=${new Date().getTime()}`);
+                    const allSheetsData = await res.json();
+                    const rawData = allSheetsData["halloween"] || [];
                     const pData = rawData.map(row => {
                         let newRow = {};
                         for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
@@ -490,10 +493,8 @@
         }
 
         // =========================================================================
-        // CONEXIÓN CON SHEETDB (ACUMULA EN JUEGO2, RECORDA EN TOP / COLUMNA L)
+        // CONEXIÓN CON GOOGLE APPS SCRIPT (ACUMULA EN JUEGO2, GUARDA EN TOP)
         // =========================================================================
-        const API_URL = 'https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween';
-
         function convertirUrlDrive(url) {
             if (!url) return 'logo.jpg';
             let limpia = String(url).trim().split(',')[0].trim();
@@ -507,10 +508,9 @@
         async function cargarLeaderboard() {
             try {
                 const t = new Date().getTime();
-                const res = await fetch(`${API_URL}&_=${t}`);
-                const rawData = await res.json();
-
-                if(rawData.error) throw new Error(rawData.error);
+                const res = await fetch(`${API_URL}?_=${t}`);
+                const allSheetsData = await res.json();
+                const rawData = allSheetsData["halloween"] || [];
                 
                 pDataTotal = rawData.map(row => {
                     let newRow = {};
@@ -540,7 +540,7 @@
             
             if (!Array.isArray(pDataTotal)) return;
 
-            // Ordena por el mejor récord en la columna top (L)
+            // Ordena por el mejor récord en la columna top
             const sorted = [...pDataTotal].sort((a, b) => {
                 const valA = parseInt(a.top) || parseInt(a.juego2) || 0;
                 const valB = parseInt(b.top) || parseInt(b.juego2) || 0;
@@ -556,7 +556,6 @@
                 if(!row.nombre) return;
                 const recordTop = parseInt(row.top) || 0;
                 const j2Acumulado = parseInt(row.juego2) || 0;
-                const puntajeTotal = parseInt(row.total) || j2Acumulado;
 
                 if(j2Acumulado === 0 && recordTop === 0) return;
 
@@ -585,10 +584,8 @@
                 const nombreSeguro = usuarioActual.nombre;
                 const avatarSeguro = usuarioActual.foto;
 
-                // 1. Suma los puntos a la columna Juego2 (D)
                 const nuevoJuego2 = miPuntuacionAcumulada + puntosPartida;
 
-                // 2. Compara y actualiza la columna top (L) si es una nueva puntuación más alta
                 let nuevoTop = miPuntuacionAlta;
                 let esNuevoRecord = false;
                 if (puntosPartida > miPuntuacionAlta) {
@@ -598,25 +595,28 @@
 
                 const miRegistro = Array.isArray(pDataTotal) ? pDataTotal.find(r => r.nombre && r.nombre.toLowerCase() === nombreSeguro.toLowerCase()) : null;
 
-                const datosAEnviar = {
-                    Juego2: nuevoJuego2,
-                    top: nuevoTop,
-                    Foto: avatarSeguro
-                };
+                let j3 = miRegistro && miRegistro.juego3 ? (parseInt(miRegistro.juego3) || 0) : 0;
+                let j4 = miRegistro && miRegistro.juego4 ? (parseInt(miRegistro.juego4) || 0) : 0;
+                let j5 = miRegistro && miRegistro.juego5 ? (parseInt(miRegistro.juego5) || 0) : 0;
+                let kamazon = miRegistro && miRegistro.kamazon ? (parseInt(miRegistro.kamazon) || 0) : 0;
+                let ganar = miRegistro && miRegistro.ganar ? (parseInt(miRegistro.ganar) || 0) : 0;
+                let descuentos = miRegistro && miRegistro.descuentos ? (parseInt(miRegistro.descuentos) || 0) : 0;
 
-                if (miRegistro) {
-                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo/Nombre/${nombreSeguro}?sheet=Halloween`, {
-                        method: 'PATCH',
-                        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: datosAEnviar })
-                    });
-                } else {
-                    await fetch(`https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Halloween`, {
-                        method: 'POST',
-                        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: [{ Nombre: nombreSeguro, Foto: avatarSeguro, Kamazon: 0, Juego2: nuevoJuego2, top: nuevoTop, Victorias: 0, Derrotas: 0 }] })
-                    });
-                }
+                let nuevoTotalGeneral = (kamazon + nuevoJuego2 + j3 + j4 + j5 + ganar) - descuentos;
+
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        sheet: "Halloween",
+                        action: "updateJuego2",
+                        nombre: nombreSeguro,
+                        juego2: nuevoJuego2,
+                        top: nuevoTop,
+                        total: nuevoTotalGeneral,
+                        foto: avatarSeguro
+                    })
+                });
 
                 miPuntuacionAcumulada = nuevoJuego2;
                 miPuntuacionAlta = nuevoTop;

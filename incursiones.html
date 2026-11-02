@@ -8,50 +8,117 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* TEMA OSCURO (Default) */
         :root {
-            --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
-            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #f9f5ed;
-            --card-bg: #ffffff; --text-dark: #201b2a; --text-muted: #7d7889;
-            --accent-red: #d84d65; --border-color: #e8e4dc; --setup-blue: #3b68ff;
+            --sidebar-bg: #15131f; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #221e2d; 
+            --sidebar-btn: #ff8c00; 
+            --main-bg: #121017;
+            --card-bg: #191622; 
+            --text-dark: #f0eef5; 
+            --text-muted: #888299;
+            --border-color: #272235; 
+            --accent-red: #ff5722;
+            --halloween-orange: #ff8c00; 
+            --halloween-purple: #7b1fa2;
+            --poison-green: #39ff14; 
+            --kamazon-gold: #ffcf00; 
+            --setup-blue: #4299f6;
+            --transition-speed: 0.3s;
         }
 
-        [data-theme="dark"] {
-            --main-bg: #1e1b2e; --card-bg: #151520; --text-dark: #ffffff;
-            --text-muted: #8888a5; --border-color: #2a2a3e; --sidebar-bg: #13111c;
+        /* TEMA CLARO */
+        [data-theme="light"] {
+            --sidebar-bg: #292437; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; 
+            --sidebar-btn: #ff8800; 
+            --main-bg: linear-gradient(135deg, #f9f5ed 0%, #f0eae1 100%);
+            --card-bg: #ffffff; 
+            --text-dark: #201b2a; 
+            --text-muted: #7d7889;
+            --border-color: #e8e4dc;
+            --halloween-orange: #ff6600;
+            --kamazon-gold: #d4ac0d;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: 0.3s; overflow: hidden; }
+        /* TEMA BLANCO Y NEGRO */
+        [data-theme="bn"] {
+            --sidebar-bg: #1a1a1a; 
+            --sidebar-text: #b0b0b0; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #333333; 
+            --sidebar-btn: #ffffff; 
+            --main-bg: #ffffff;
+            --card-bg: #f2f2f2; 
+            --text-dark: #000000; 
+            --text-muted: #555555;
+            --border-color: #cccccc; 
+            --kamazon-gold: #333333; 
+            --halloween-orange: #000000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; position: relative; }
+
+        /* ====== DECORACIONES DE HALLOWEEN (CSS ANIMADO) ====== */
+        .bat-bg { position: absolute; font-size: 24px; color: var(--text-dark); opacity: 0.15; pointer-events: none; z-index: 0; animation: flyBat 15s infinite linear; }
+        .bat-1 { top: 10%; left: -50px; animation-duration: 18s; }
+        .bat-2 { top: 40%; left: -50px; animation-duration: 25s; animation-delay: 5s; font-size: 16px; }
+        .bat-3 { top: 70%; left: -50px; animation-duration: 20s; animation-delay: 10s; font-size: 32px; }
+        
+        @keyframes flyBat {
+            0% { transform: translateX(-50px) translateY(0) scale(1); }
+            25% { transform: translateX(25vw) translateY(-30px) scale(1.1); }
+            50% { transform: translateX(50vw) translateY(20px) scale(1); }
+            75% { transform: translateX(75vw) translateY(-20px) scale(0.9); }
+            100% { transform: translateX(110vw) translateY(0) scale(1); }
+        }
+
+        .hanging-spider { position: absolute; top: -50px; font-size: 28px; color: var(--text-dark); opacity: 0.3; pointer-events: none; z-index: 10; display: flex; flex-direction: column; align-items: center; animation: hangSpider 6s infinite ease-in-out; }
+        .hanging-spider::before { content: ''; width: 2px; height: 150px; background: var(--text-dark); margin-bottom: -5px; }
+        .spider-1 { right: 15%; }
+        .spider-2 { right: 40%; animation-delay: 2s; animation-duration: 8s; font-size: 20px;}
+        
+        @keyframes hangSpider {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(40px); }
+        }
 
         /* BARRA LATERAL Y PERFIL */
-        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: 0.3s; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; z-index: 100; border-right: 1px solid var(--border-color); }
         .sidebar.collapsed { width: 0; padding: 0; }
-        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
-        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
+        .sidebar-header { padding: 22px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--halloween-orange); }
         .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
-        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--halloween-orange); font-weight: 700; }
         
-        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
-        .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
-        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--setup-blue); object-fit: cover; }
-        .profile-info-wrap span { color: white; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;}
-        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        .user-profile-sidebar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; min-width: 260px; background: rgba(25, 22, 34, 0.5); }
+        .profile-info-wrap { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--halloween-orange); object-fit: cover; flex-shrink: 0; }
+        .user-meta { display: flex; flex-direction: column; overflow: hidden; }
+        .user-meta span { color: white; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+        .user-meta p { font-size: 11px; color: var(--kamazon-gold); font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 1px; white-space: nowrap; }
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
 
-        .nav-group { margin-bottom: 10px; min-width: 260px; }
-        .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .nav-group { margin-bottom: 5px; min-width: 260px; }
+        .nav-title { padding: 10px 22px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; color: var(--text-muted); font-weight: 700; }
         .nav-title:hover { color: var(--sidebar-text-active); }
         .nav-title i { transition: transform 0.3s ease; }
         .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
-        .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
         .nav-group.collapsed-group .nav-items-container { max-height: 0; }
+        .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
         
-        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
-        .nav-item:hover { color: var(--sidebar-text-active); }
-        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
+        .nav-item { padding: 10px 22px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
+        .nav-item:hover { color: var(--sidebar-text-active); background: rgba(255, 140, 0, 0.05); }
+        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--halloween-orange); }
 
         /* CANDADOS ANIMADOS */
-        .lock-icon { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
+        .lock-icon { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
         .nav-item.locked { cursor: not-allowed; opacity: 0.6; }
         .nav-item.locked:hover .lock-icon { color: var(--accent-red); filter: drop-shadow(0 0 8px rgba(216, 77, 101, 0.8)); }
         
@@ -63,7 +130,7 @@
         .toast-alert { position: fixed; top: 20px; right: -300px; background: rgba(216, 77, 101, 0.95); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 700; font-size: 13px; box-shadow: 0 10px 30px rgba(216, 77, 101, 0.4); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 10px; z-index: 9999; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .toast-alert.show { right: 30px; }
 
-        /* ANIMACIÓN GRIS AL CERRAR SESIÓN */
+        /* OVERLAY CERRAR SESIÓN */
         .logout-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #110f17; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 9999; }
         .logout-overlay.active { opacity: 1; pointer-events: auto; }
         .logout-loader-container { position: relative; width: 120px; height: 120px; margin-bottom: 20px; }
@@ -76,15 +143,18 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* CONTENIDO PRINCIPAL */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
-        .breadcrumbs { font-size: 14px; color: var(--text-muted); }
-        .theme-btn, .toggle-btn { background: var(--card-bg); border: none; color: var(--text-dark); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
-        .dashboard-container { padding: 0 40px 60px 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 10; padding-bottom: 80px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); z-index: 10; }
+        .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
+        .toggle-btn, .theme-btn { background: none; border: none; color: var(--halloween-orange); font-size: 18px; cursor: pointer; padding: 8px 12px; border-radius: 10px; background-color: var(--card-bg); border: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
+        .toggle-btn:hover, .theme-btn:hover { background: rgba(255,140,0,0.1); }
+        
+        .dashboard-container { padding: 30px 40px 60px 40px; max-width: 1400px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
 
         .welcome-header { margin-bottom: 40px; text-align: center; margin-top: 20px; }
-        .welcome-tag { font-size: 12px; font-weight: 800; color: var(--setup-blue); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
-        .welcome-header h1 { font-size: 48px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .welcome-tag { font-size: 12px; font-weight: 800; color: var(--halloween-orange); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+        .welcome-header h1 { font-size: 48px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; color: var(--text-dark); }
+        .welcome-header h1 span { color: var(--halloween-orange); }
         .welcome-header p { font-size: 16px; color: var(--text-muted); font-weight: 600; max-width: 600px; margin: 0 auto; }
 
         /* TARJETAS DE SELECCIÓN DE MODO (HUB) */
@@ -93,32 +163,40 @@
         .hub-card {
             position: relative; height: 400px; border-radius: 24px; overflow: hidden; text-decoration: none; 
             display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; color: white; 
-            border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: 0.4s ease;
+            border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: 0.4s ease;
             background-color: var(--card-bg);
         }
         
         .hub-card:hover { transform: translateY(-15px); }
 
-        .hub-card.asalto { background: linear-gradient(180deg, rgba(32, 27, 42, 0.1) 0%, rgba(216, 77, 101, 0.95) 100%), #1e1b2e; border-color: rgba(216, 77, 101, 0.3); }
+        .hub-card.asalto { background: linear-gradient(180deg, rgba(25, 22, 34, 0.1) 0%, rgba(216, 77, 101, 0.95) 100%), var(--card-bg); border-color: rgba(216, 77, 101, 0.3); }
         .hub-card.asalto:hover { box-shadow: 0 20px 50px rgba(216, 77, 101, 0.4); border-color: var(--accent-red); }
 
-        .hub-card.arena { background: linear-gradient(180deg, rgba(32, 27, 42, 0.1) 0%, rgba(59, 104, 255, 0.95) 100%), #1e1b2e; border-color: rgba(59, 104, 255, 0.3); }
-        .hub-card.arena:hover { box-shadow: 0 20px 50px rgba(59, 104, 255, 0.4); border-color: var(--setup-blue); }
+        .hub-card.arena { background: linear-gradient(180deg, rgba(25, 22, 34, 0.1) 0%, rgba(255, 140, 0, 0.95) 100%), var(--card-bg); border-color: rgba(255, 140, 0, 0.3); }
+        .hub-card.arena:hover { box-shadow: 0 20px 50px rgba(255, 140, 0, 0.4); border-color: var(--halloween-orange); }
 
         .hub-card .bg-icon { position: absolute; top: -30px; right: -30px; font-size: 250px; opacity: 0.05; color: white; transition: 0.5s ease; pointer-events: none; }
         .hub-card:hover .bg-icon { transform: scale(1.1) rotate(-15deg); opacity: 0.15; }
 
         .card-content { position: relative; z-index: 2; }
-        .card-content h2 { font-size: 36px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .card-content p { font-size: 15px; font-weight: 600; opacity: 0.9; line-height: 1.5; text-shadow: 0 2px 5px rgba(0,0,0,0.5); max-width: 90%; }
+        .card-content h2 { font-size: 36px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); color: white; }
+        .card-content p { font-size: 15px; font-weight: 600; opacity: 0.9; line-height: 1.5; text-shadow: 0 2px 5px rgba(0,0,0,0.5); max-width: 90%; color: white; }
         
-        .enter-btn { margin-top: 25px; display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: rgba(0,0,0,0.5); padding: 15px 25px; border-radius: 12px; backdrop-filter: blur(5px); transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); }
+        .enter-btn { margin-top: 25px; display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: rgba(0,0,0,0.5); padding: 15px 25px; border-radius: 12px; backdrop-filter: blur(5px); transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); color: white; }
         .hub-card:hover .enter-btn { background: white; color: black; transform: translateX(10px); }
 
         @media (max-width: 1000px) { .sidebar { position: absolute; height: 100%; z-index: 100; } }
     </style>
 </head>
 <body>
+
+    <!-- DECORACIONES HALLOWEEN FONDO -->
+    <i class="fa-solid fa-bat bat-bg bat-1"></i>
+    <i class="fa-solid fa-bat bat-bg bat-2"></i>
+    <i class="fa-solid fa-bat bat-bg bat-3"></i>
+    
+    <div class="hanging-spider spider-1"><i class="fa-solid fa-spider"></i></div>
+    <div class="hanging-spider spider-2"><i class="fa-solid fa-spider"></i></div>
 
     <!-- MENSAJE DE PERMISO DENEGADO -->
     <div class="toast-alert" id="toastAlert">
@@ -137,25 +215,28 @@
     <aside class="sidebar" id="sidebar">
         <!-- HEADER PRINCIPAL -->
         <div class="sidebar-header">
-            <img src="logo.jpg" alt="Logo">
+            <img src="logo.jpg" alt="Logo" onerror="this.src='logo.jpg';">
             <div>
                 <h2>Mi Casita</h2>
                 <p>Gremio de Guardian Tales</p>
             </div>
         </div>
 
-        <!-- PERFIL DEL USUARIO DINÁMICO CON BOTÓN ROJO -->
+        <!-- PERFIL DEL USUARIO DINÁMICO -->
         <div class="user-profile-sidebar" id="user-profile-sidebar">
             <div class="profile-info-wrap">
                 <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
-                <span id="sidebar-name">Usuario</span>
+                <div class="user-meta">
+                    <span id="sidebar-name">Usuario</span>
+                    <p><i class="fa-solid fa-coins" style="color:var(--kamazon-gold);"></i> <span id="sidebarTotalPower">0</span> pts</p>
+                </div>
             </div>
             <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
                 <i class="fa-solid fa-power-off"></i>
             </button>
         </div>
 
-        <!-- MENÚ INICIO (Todos los roles pueden ver) -->
+        <!-- MENÚ INICIO -->
         <div class="nav-group">
             <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -164,7 +245,7 @@
             </div>
         </div>
 
-        <!-- MENÚ GREMIO (Bloqueado para Basico) -->
+        <!-- MENÚ GREMIO -->
         <div class="nav-group">
             <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -180,19 +261,29 @@
             </div>
         </div>
         
-        <!-- MENÚ GUARDIANES (Bloqueado para Basico y Caballero, Solo Heroe) -->
+        <!-- SECCIÓN DE EVENTOS ESPECIALES -->
+        <div class="nav-group">
+            <div class="nav-title" style="color: var(--halloween-orange);">EVENTOS ESPECIALES <i class="fa-solid fa-ghost"></i></div>
+            <div class="nav-items-container">
+                <a href="eventos.html" class="nav-item"><i class="fa-solid fa-spider"></i> Festival de Halloween</a>
+            </div>
+        </div>
+
+        <!-- MENÚ GUARDIANES -->
         <div class="nav-group">
             <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="heroes.html" class="nav-item restrict-heroe" data-req="Heroe">
-                    <i class="fa-solid fa-users-viewfinder"></i> Héroes
-                </a>
-                <a href="equipos.html" class="nav-item restrict-heroe" data-req="Heroe">
-                    <i class="fa-solid fa-shield-halved"></i> Equipos
-                </a>
-                <a href="incursiones.html" class="nav-item active restrict-heroe" data-req="Heroe">
-                    <i class="fa-solid fa-ghost"></i> Incursiones
-                </a>
+                <a href="heroes.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
+                <a href="equipos.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
+            </div>
+        </div>
+
+        <!-- MENÚ INCURSIONES -->
+        <div class="nav-group">
+            <div class="nav-title">INCURSIONES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="incursiones.html" class="nav-item active restrict-heroe" data-req="Heroe"><i class="fa-solid fa-ghost"></i> Asalto</a>
+                <a href="arena.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
             </div>
         </div>
     </aside>
@@ -201,9 +292,9 @@
         <div class="topbar">
             <div class="breadcrumbs">
                 <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
-                <span>Mi Casita &nbsp; > &nbsp; Cuentos de Guardianes &nbsp; > &nbsp; <b>Incursiones</b></span>
+                <span>Mi Casita &nbsp; > &nbsp; Incursiones &nbsp; > &nbsp; <b>Asalto / Hub</b></span>
             </div>
-            <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
+            <button class="theme-btn" id="themeToggle" title="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
         </div>
 
         <div class="dashboard-container">
@@ -246,19 +337,55 @@
         </div>
     </main>
 
+    <!-- WIDGETBOT DISCORD -->
     <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
-        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#292437', notifications: true })
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#120e17', notifications: true })
     </script>
 
     <script>
+        // ==========================================
+        // GESTIÓN DE TEMAS (Oscuro, Claro, Blanco y Negro)
+        // ==========================================
+        const themeBtn = document.getElementById('themeToggle');
+        const rootElement = document.documentElement;
+
+        function aplicarTema(tema) {
+            if (tema === 'light') {
+                rootElement.setAttribute('data-theme', 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else if (tema === 'bn') {
+                rootElement.setAttribute('data-theme', 'bn');
+                themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>';
+            } else {
+                rootElement.removeAttribute('data-theme');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        }
+
+        let temaActual = localStorage.getItem('tema-casita') || 'dark';
+        aplicarTema(temaActual);
+
+        themeBtn.addEventListener('click', () => {
+            if (!rootElement.hasAttribute('data-theme')) {
+                temaActual = 'light';
+            } else if (rootElement.getAttribute('data-theme') === 'light') {
+                temaActual = 'bn';
+            } else {
+                temaActual = 'dark';
+            }
+            localStorage.setItem('tema-casita', temaActual);
+            aplicarTema(temaActual);
+        });
+
         // =========================================================================
-        // COMPROBAR SESIÓN Y GESTIONAR ROLES Y CANDADOS
+        // COMPROBAR SESIÓN Y GESTIONAR ROLES, CANDADOS Y PUNTOS TOTALES
         // =========================================================================
-        document.addEventListener("DOMContentLoaded", () => {
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz7IeyA8op6c_3Haq-7f4-kxwRPeiJJ1PhqSCNQbTo2ud-HkkJoclnqIz0XsCSbSvJ4NA/exec';
+
+        document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
                 const avatarGuardado = localStorage.getItem('usuario_avatar');
-                const nombreGuardado = localStorage.getItem('usuario_nombre');
-                // Convertimos el rol a minúsculas, si está vacío asume 'basico'
+                const nombreGuardado = localStorage.getItem('usuario_nombre') || 'Newt';
                 const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
                 
                 document.getElementById('user-profile-sidebar').style.display = 'flex';
@@ -268,7 +395,25 @@
                 }
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
-                // Lógica de Candados
+                try {
+                    const res = await fetch(`${API_URL}?_=${new Date().getTime()}`);
+                    const allSheetsData = await res.json();
+                    
+                    const rawHalloween = allSheetsData["halloween"] || [];
+                    const pDataTotal = rawHalloween.map(row => {
+                        let newRow = {};
+                        for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                        return newRow;
+                    });
+                    const miRegistro = pDataTotal.find(r => r.nombre && r.nombre.toLowerCase().trim() === nombreGuardado.toLowerCase().trim());
+                    const totalPuntos = miRegistro ? (parseInt(miRegistro.total) || 0) : 0;
+                    document.getElementById('sidebarTotalPower').innerText = totalPuntos.toLocaleString();
+
+                } catch (err) {
+                    console.error("Error al cargar puntos desde Apps Script:", err);
+                }
+
+                // Control de permisos de usuario para los menús
                 document.querySelectorAll('.nav-item').forEach(link => {
                     const reqOriginal = link.getAttribute('data-req');
                     if (reqOriginal) {
@@ -302,9 +447,9 @@
             }
         });
 
-        // BOTÓN CERRAR SESIÓN
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            document.getElementById('logoutOverlay').classList.add('active'); 
+            const logoutOverlay = document.getElementById('logoutOverlay');
+            logoutOverlay.classList.add('active'); 
             setTimeout(() => {
                 localStorage.removeItem('sesion_activa');
                 localStorage.removeItem('usuario_nombre');
@@ -314,34 +459,19 @@
             }, 2500);
         });
 
-        // Lógica de Menú y Modo Oscuro
-        document.getElementById('toggleSidebar').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('collapsed'); });
-        document.querySelectorAll('.nav-title').forEach(title => {
-            title.addEventListener('click', () => { title.closest('.nav-group').classList.toggle('collapsed-group'); });
+        // Control de barra lateral colapsable
+        const sidebar = document.getElementById('sidebar');
+        if (localStorage.getItem('sidebar-colapsada') === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => { 
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebar-colapsada', sidebar.classList.contains('collapsed'));
         });
 
-        const themeBtn = document.getElementById('themeToggle');
-        const rootElement = document.documentElement;
-
-        if (localStorage.getItem('tema-casita') === 'dark') {
-            rootElement.setAttribute('data-theme', 'dark');
-            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
-        } else {
-            // Se fuerza el dark mode por defecto para que se vea premium
-            rootElement.setAttribute('data-theme', 'dark'); 
-            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
-        }
-        
-        themeBtn.addEventListener('click', () => {
-            if (rootElement.hasAttribute('data-theme')) { 
-                rootElement.removeAttribute('data-theme'); 
-                localStorage.setItem('tema-casita', 'light'); 
-                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>'; 
-            } else { 
-                rootElement.setAttribute('data-theme', 'dark'); 
-                localStorage.setItem('tema-casita', 'dark'); 
-                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>'; 
-            }
+        document.querySelectorAll('.nav-title').forEach(title => {
+            title.addEventListener('click', () => { title.closest('.nav-group').classList.toggle('collapsed-group'); });
         });
     </script>
 </body>

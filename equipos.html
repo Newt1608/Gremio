@@ -8,51 +8,117 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* VARIABLES DE COLOR */
+        /* TEMA OSCURO (Default) */
         :root {
-            --sidebar-bg: #292437; --sidebar-text: #9691a5; --sidebar-text-active: #ffffff;
-            --sidebar-bg-active: #3c354e; --sidebar-btn: #fdd843; --main-bg: #f9f5ed;
-            --card-bg: #ffffff; --text-dark: #201b2a; --text-muted: #7d7889;
-            --accent-red: #d84d65; --border-color: #e8e4dc; --transition-speed: 0.3s;
-            --setup-blue: #3b68ff;
+            --sidebar-bg: #15131f; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #221e2d; 
+            --sidebar-btn: #ff8c00; 
+            --main-bg: #121017;
+            --card-bg: #191622; 
+            --text-dark: #f0eef5; 
+            --text-muted: #888299;
+            --border-color: #272235; 
+            --accent-red: #ff5722;
+            --halloween-orange: #ff8c00; 
+            --halloween-purple: #7b1fa2;
+            --poison-green: #39ff14; 
+            --kamazon-gold: #ffcf00; 
+            --setup-blue: #4299f6;
+            --transition-speed: 0.3s;
         }
 
-        [data-theme="dark"] {
-            --main-bg: #181521; --card-bg: #221e2d; --text-dark: #f0eef5;
-            --text-muted: #a39eb5; --border-color: #353045; --sidebar-bg: #14111c;
+        /* TEMA CLARO */
+        [data-theme="light"] {
+            --sidebar-bg: #292437; 
+            --sidebar-text: #9691a5; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #3c354e; 
+            --sidebar-btn: #ff8800; 
+            --main-bg: linear-gradient(135deg, #f9f5ed 0%, #f0eae1 100%);
+            --card-bg: #ffffff; 
+            --text-dark: #201b2a; 
+            --text-muted: #7d7889;
+            --border-color: #e8e4dc;
+            --halloween-orange: #ff6600;
+            --kamazon-gold: #d4ac0d;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; }
+        /* TEMA BLANCO Y NEGRO */
+        [data-theme="bn"] {
+            --sidebar-bg: #1a1a1a; 
+            --sidebar-text: #b0b0b0; 
+            --sidebar-text-active: #ffffff;
+            --sidebar-bg-active: #333333; 
+            --sidebar-btn: #ffffff; 
+            --main-bg: #ffffff;
+            --card-bg: #f2f2f2; 
+            --text-dark: #000000; 
+            --text-muted: #555555;
+            --border-color: #cccccc; 
+            --kamazon-gold: #333333; 
+            --halloween-orange: #000000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); transition: background-color var(--transition-speed), color var(--transition-speed); overflow: hidden; position: relative; }
+
+        /* ====== DECORACIONES DE HALLOWEEN (CSS ANIMADO) ====== */
+        .bat-bg { position: absolute; font-size: 24px; color: var(--text-dark); opacity: 0.15; pointer-events: none; z-index: 0; animation: flyBat 15s infinite linear; }
+        .bat-1 { top: 10%; left: -50px; animation-duration: 18s; }
+        .bat-2 { top: 40%; left: -50px; animation-duration: 25s; animation-delay: 5s; font-size: 16px; }
+        .bat-3 { top: 70%; left: -50px; animation-duration: 20s; animation-delay: 10s; font-size: 32px; }
+        
+        @keyframes flyBat {
+            0% { transform: translateX(-50px) translateY(0) scale(1); }
+            25% { transform: translateX(25vw) translateY(-30px) scale(1.1); }
+            50% { transform: translateX(50vw) translateY(20px) scale(1); }
+            75% { transform: translateX(75vw) translateY(-20px) scale(0.9); }
+            100% { transform: translateX(110vw) translateY(0) scale(1); }
+        }
+
+        .hanging-spider { position: absolute; top: -50px; font-size: 28px; color: var(--text-dark); opacity: 0.3; pointer-events: none; z-index: 10; display: flex; flex-direction: column; align-items: center; animation: hangSpider 6s infinite ease-in-out; }
+        .hanging-spider::before { content: ''; width: 2px; height: 150px; background: var(--text-dark); margin-bottom: -5px; }
+        .spider-1 { right: 15%; }
+        .spider-2 { right: 40%; animation-delay: 2s; animation-duration: 8s; font-size: 20px;}
+        
+        @keyframes hangSpider {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(40px); }
+        }
 
         /* BARRA LATERAL Y PERFIL */
-        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; }
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width var(--transition-speed); overflow-y: auto; overflow-x: hidden; flex-shrink: 0; z-index: 100; border-right: 1px solid var(--border-color); }
         .sidebar.collapsed { width: 0; padding: 0; }
-        .sidebar-header { padding: 24px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;}
-        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--sidebar-btn); }
+        .sidebar-header { padding: 22px; display: flex; align-items: center; gap: 12px; margin-bottom: 5px; min-width: 260px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-header img { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--halloween-orange); }
         .sidebar-header h2 { color: white; font-size: 18px; font-weight: 800; line-height: 1.2; text-transform: capitalize; }
-        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sidebar-text); }
+        .sidebar-header p { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--halloween-orange); font-weight: 700; }
         
-        .user-profile-sidebar { display: none; align-items: center; justify-content: space-between; padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
-        .profile-info-wrap { display: flex; align-items: center; gap: 12px; }
-        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--setup-blue); object-fit: cover; }
-        .profile-info-wrap span { color: white; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;}
-        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        .user-profile-sidebar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; min-width: 260px; background: rgba(25, 22, 34, 0.5); }
+        .profile-info-wrap { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .profile-info-wrap img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--halloween-orange); object-fit: cover; flex-shrink: 0; }
+        .user-meta { display: flex; flex-direction: column; overflow: hidden; }
+        .user-meta span { color: white; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+        .user-meta p { font-size: 11px; color: var(--kamazon-gold); font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 1px; white-space: nowrap; }
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .logout-btn:hover { color: #ff7b93; transform: scale(1.15); }
 
-        .nav-group { margin-bottom: 10px; min-width: 260px; }
-        .nav-title { padding: 10px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .nav-group { margin-bottom: 5px; min-width: 260px; }
+        .nav-title { padding: 10px 22px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; color: var(--text-muted); font-weight: 700; }
         .nav-title:hover { color: var(--sidebar-text-active); }
         .nav-title i { transition: transform 0.3s ease; }
         .nav-group.collapsed-group .nav-title i { transform: rotate(-90deg); }
-        .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
         .nav-group.collapsed-group .nav-items-container { max-height: 0; }
-        .nav-item { padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
-        .nav-item:hover { color: var(--sidebar-text-active); }
-        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-btn); }
+        .nav-items-container { max-height: 300px; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+        
+        .nav-item { padding: 10px 22px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--sidebar-text); transition: 0.2s; position: relative; }
+        .nav-item:hover { color: var(--sidebar-text-active); background: rgba(255, 140, 0, 0.05); }
+        .nav-item.active { background-color: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left: 4px solid var(--halloween-orange); }
 
         /* CANDADOS ANIMADOS */
-        .lock-icon { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
+        .lock-icon { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); color: var(--setup-blue); font-size: 12px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(66, 153, 246, 0.5)); animation: floatLock 2s infinite ease-in-out alternate; }
         .nav-item.locked { cursor: not-allowed; opacity: 0.6; }
         .nav-item.locked:hover .lock-icon { color: var(--accent-red); filter: drop-shadow(0 0 8px rgba(216, 77, 101, 0.8)); }
         
@@ -64,7 +130,7 @@
         .toast-alert { position: fixed; top: 20px; right: -300px; background: rgba(216, 77, 101, 0.95); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 700; font-size: 13px; box-shadow: 0 10px 30px rgba(216, 77, 101, 0.4); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 10px; z-index: 9999; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .toast-alert.show { right: 30px; }
 
-        /* ANIMACIÓN GRIS AL CERRAR SESIÓN */
+        /* OVERLAY CERRAR SESIÓN */
         .logout-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #110f17; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 9999; }
         .logout-overlay.active { opacity: 1; pointer-events: auto; }
         .logout-loader-container { position: relative; width: 120px; height: 120px; margin-bottom: 20px; }
@@ -74,26 +140,27 @@
         .logout-overlay.active .spinner-ring-gray { opacity: 1; }
         .logout-text { font-size: 18px; font-weight: 700; color: #888; text-align: center; text-transform: uppercase; letter-spacing: 1px; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s; }
         .logout-overlay.active .logout-text { opacity: 1; transform: translateY(0); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* CONTENIDO PRINCIPAL */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; position: relative; z-index: 10; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); z-index: 10; }
         .breadcrumbs { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
-        .toggle-btn, .theme-btn { background: none; border: none; color: var(--text-dark); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; background-color: var(--card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
-        .dashboard-container { padding: 20px 40px 60px 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        .toggle-btn, .theme-btn { background: none; border: none; color: var(--halloween-orange); font-size: 18px; cursor: pointer; padding: 8px 12px; border-radius: 10px; background-color: var(--card-bg); border: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
+        .toggle-btn:hover, .theme-btn:hover { background: rgba(255,140,0,0.1); }
+        
+        .dashboard-container { padding: 30px 40px 60px 40px; max-width: 1400px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
 
-        /* HEADER DE GALERÍA DE EQUIPOS */
-        .gallery-header { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 20px; display: flex; align-items: center; gap: 20px; }
-        .gallery-icon { width: 60px; height: 60px; border-radius: 15px; background: linear-gradient(135deg, #d84d65, #ff7b93); display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; }
-        .gallery-title h1 { font-size: 28px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .gallery-header { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 25px; display: flex; align-items: center; gap: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        .gallery-icon { width: 60px; height: 60px; border-radius: 15px; background: rgba(123, 31, 162, 0.2); border: 1px solid var(--halloween-purple); display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--halloween-orange); }
+        .gallery-title h1 { font-size: 28px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dark); }
         .gallery-title p { font-size: 12px; color: var(--text-muted); font-weight: 700; }
 
-        /* BARRA DE BÚSQUEDA Y FILTRO DE CATEGORÍAS */
-        .toolbar-filters { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 14px 20px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .toolbar-filters { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 14px 20px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         .search-wrapper { position: relative; flex: 1; min-width: 240px; max-width: 380px; }
         .search-wrapper i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
         .search-input { width: 100%; padding: 11px 15px 11px 38px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--main-bg); color: var(--text-dark); font-size: 14px; font-weight: 600; outline: none; transition: 0.2s; }
-        .search-input:focus { border-color: var(--setup-blue); }
+        .search-input:focus { border-color: var(--halloween-orange); }
 
         .controls-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
         .element-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -105,81 +172,71 @@
         }
         .elem-filter-btn i, .filter-type-icon { font-size: 14px; }
         .filter-type-icon { width: 18px; height: 18px; object-fit: contain; transition: transform 0.2s; }
-        .elem-filter-btn:hover { border-color: var(--setup-blue); color: var(--text-dark); }
+        .elem-filter-btn:hover { border-color: var(--halloween-orange); color: var(--text-dark); }
         .elem-filter-btn:hover .filter-type-icon { transform: scale(1.15); }
-        .elem-filter-btn.active { border-color: var(--setup-blue); background: rgba(59, 104, 255, 0.2); color: #ffffff; box-shadow: 0 0 12px rgba(59, 104, 255, 0.35); }
+        .elem-filter-btn.active { border-color: var(--halloween-orange); background: rgba(255, 140, 0, 0.2); color: #ffffff; box-shadow: 0 0 12px rgba(255, 140, 0, 0.35); }
 
-        /* GRID DE EQUIPOS (TARJETAS COMPACTAS) */
         .equip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 15px; }
 
         .equip-card {
-            background: #292437; border: 2px solid #353045; border-radius: 12px;
+            background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 12px;
             padding: 15px 10px; cursor: pointer; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-            display: flex; flex-direction: column; align-items: center; text-align: center;
+            display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .equip-card:hover { transform: translateY(-4px); border-color: var(--setup-blue); }
+        .equip-card:hover { transform: translateY(-4px); border-color: var(--halloween-orange); }
         
-        /* =========================================================
-           MARCOS DE COLORES POR RAREZA (GRID)
-           ========================================================= */
-        /* Mítico (Morado a Rosa/Rojo) */
+        /* MARCOS DE COLORES POR RAREZA (GRID) */
         .equip-card.myth-equip {
-            background: linear-gradient(#292437, #292437) padding-box, linear-gradient(to bottom, #9c27b0, #ff4081) border-box;
+            background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(to bottom, #9c27b0, #ff4081) border-box;
             border: 2px solid transparent; box-shadow: 0 4px 15px rgba(156, 39, 176, 0.25);
         }
         .equip-card.myth-equip:hover { box-shadow: 0 8px 25px rgba(255, 64, 129, 0.45); }
 
-        /* Épico (Verde) */
         .equip-card.epic-equip {
-            background: linear-gradient(#292437, #292437) padding-box, linear-gradient(to bottom, #4caf50, #81c784) border-box;
+            background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(to bottom, #4caf50, #81c784) border-box;
             border: 2px solid transparent; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.25);
         }
         .equip-card.epic-equip:hover { box-shadow: 0 8px 25px rgba(76, 175, 80, 0.45); }
 
-        /* Legendario / Leyenda (Amarillo a Naranja) */
         .equip-card.leg-equip {
-            background: linear-gradient(#292437, #292437) padding-box, linear-gradient(to bottom, #ffd54f, #ff9800) border-box;
+            background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(to bottom, #ffd54f, #ff9800) border-box;
             border: 2px solid transparent; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.25);
         }
         .equip-card.leg-equip:hover { box-shadow: 0 8px 25px rgba(255, 152, 0, 0.45); }
 
-        /* Único (Naranja Puro) */
         .equip-card.unique-equip {
-            background: linear-gradient(#292437, #292437) padding-box, linear-gradient(to bottom, #ff5722, #e64a19) border-box;
+            background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(to bottom, #ff5722, #e64a19) border-box;
             border: 2px solid transparent; box-shadow: 0 4px 15px rgba(255, 87, 34, 0.25);
         }
         .equip-card.unique-equip:hover { box-shadow: 0 8px 25px rgba(255, 87, 34, 0.45); }
 
-        /* Raro / Extraño (Azul) */
         .equip-card.rare-equip {
-            background: linear-gradient(#292437, #292437) padding-box, linear-gradient(to bottom, #2196f3, #1976d2) border-box;
+            background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(to bottom, #2196f3, #1976d2) border-box;
             border: 2px solid transparent; box-shadow: 0 4px 15px rgba(33, 150, 243, 0.25);
         }
         .equip-card.rare-equip:hover { box-shadow: 0 8px 25px rgba(33, 150, 243, 0.45); }
 
-        /* Normal (Gris) */
         .equip-card.normal-equip {
-            background: linear-gradient(#292437, #292437) padding-box, linear-gradient(to bottom, #9e9e9e, #757575) border-box;
+            background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(to bottom, #9e9e9e, #757575) border-box;
             border: 2px solid transparent; box-shadow: 0 4px 15px rgba(158, 158, 158, 0.25);
         }
         .equip-card.normal-equip:hover { box-shadow: 0 8px 25px rgba(158, 158, 158, 0.45); }
 
-        /* Imágenes y Estrellas */
         .equip-img-wrapper { width: 60px; height: 60px; margin-bottom: 8px; display: flex; justify-content: center; align-items: center; }
         .equip-img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
         
         .equip-stars { display: flex; justify-content: center; gap: 1px; margin-bottom: 8px; }
         .equip-star { width: 14px; height: 14px; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.8)); }
 
-        .equip-info h3 { font-size: 12px; color: white; font-weight: 700; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .equip-info h3 { font-size: 12px; color: var(--text-dark); font-weight: 700; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .equip-info p { font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
 
-        /* RENDERIZADO DE CARTAS (SPRITESHEET) */
+        /* SPRITESHEET CARTAS */
         .sprite-item-card { width: 45px; height: 60px; background-size: 2625.641% 948.148%; background-repeat: no-repeat; border-radius: 4px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
         .sprite-item-modal { width: 140px; height: 185px; background-size: 2625.641% 948.148%; background-repeat: no-repeat; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.8); }
 
         /* MODAL DE EQUIPOS */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.82); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         
         .modal-content { background: var(--card-bg); width: 90%; max-width: 1000px; max-height: 90vh; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; position: relative; border: 2px solid var(--border-color); box-shadow: 0 20px 50px rgba(0,0,0,0.6); transform: translateY(20px) scale(0.95); transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
@@ -192,35 +249,33 @@
 
         .equip-modal-body { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; padding: 30px; overflow-y: auto; }
         
-        .em-img-box { background: linear-gradient(135deg, #292437, #181521); border: 2px solid #3c354e; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; aspect-ratio: 1/1; box-shadow: inset 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; }
+        .em-img-box { background: linear-gradient(135deg, var(--card-bg), var(--main-bg)); border: 2px solid var(--border-color); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; aspect-ratio: 1/1; box-shadow: inset 0 10px 30px rgba(0,0,0,0.2); transition: 0.3s; }
         .em-main-img { max-width: 100%; max-height: 220px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6)); }
 
-        /* =========================================================
-           MARCOS DE COLORES POR RAREZA (MODAL)
-           ========================================================= */
+        /* MARCOS DE COLORES POR RAREZA (MODAL) */
         .em-img-box.myth-modal-img {
-            background: linear-gradient(135deg, #292437, #181521) padding-box, linear-gradient(to bottom, #9c27b0, #ff4081) border-box !important;
-            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(255, 64, 129, 0.25), inset 0 10px 30px rgba(0,0,0,0.5) !important;
+            background: linear-gradient(135deg, var(--card-bg), var(--main-bg)) padding-box, linear-gradient(to bottom, #9c27b0, #ff4081) border-box !important;
+            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(255, 64, 129, 0.25), inset 0 10px 30px rgba(0,0,0,0.3) !important;
         }
         .em-img-box.epic-modal-img {
-            background: linear-gradient(135deg, #292437, #181521) padding-box, linear-gradient(to bottom, #4caf50, #81c784) border-box !important;
-            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(76, 175, 80, 0.25), inset 0 10px 30px rgba(0,0,0,0.5) !important;
+            background: linear-gradient(135deg, var(--card-bg), var(--main-bg)) padding-box, linear-gradient(to bottom, #4caf50, #81c784) border-box !important;
+            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(76, 175, 80, 0.25), inset 0 10px 30px rgba(0,0,0,0.3) !important;
         }
         .em-img-box.leg-modal-img {
-            background: linear-gradient(135deg, #292437, #181521) padding-box, linear-gradient(to bottom, #ffd54f, #ff9800) border-box !important;
-            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(255, 152, 0, 0.25), inset 0 10px 30px rgba(0,0,0,0.5) !important;
+            background: linear-gradient(135deg, var(--card-bg), var(--main-bg)) padding-box, linear-gradient(to bottom, #ffd54f, #ff9800) border-box !important;
+            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(255, 152, 0, 0.25), inset 0 10px 30px rgba(0,0,0,0.3) !important;
         }
         .em-img-box.unique-modal-img {
-            background: linear-gradient(135deg, #292437, #181521) padding-box, linear-gradient(to bottom, #ff5722, #e64a19) border-box !important;
-            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(255, 87, 34, 0.25), inset 0 10px 30px rgba(0,0,0,0.5) !important;
+            background: linear-gradient(135deg, var(--card-bg), var(--main-bg)) padding-box, linear-gradient(to bottom, #ff5722, #e64a19) border-box !important;
+            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(255, 87, 34, 0.25), inset 0 10px 30px rgba(0,0,0,0.3) !important;
         }
         .em-img-box.rare-modal-img {
-            background: linear-gradient(135deg, #292437, #181521) padding-box, linear-gradient(to bottom, #2196f3, #1976d2) border-box !important;
-            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(33, 150, 243, 0.25), inset 0 10px 30px rgba(0,0,0,0.5) !important;
+            background: linear-gradient(135deg, var(--card-bg), var(--main-bg)) padding-box, linear-gradient(to bottom, #2196f3, #1976d2) border-box !important;
+            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(33, 150, 243, 0.25), inset 0 10px 30px rgba(0,0,0,0.3) !important;
         }
         .em-img-box.normal-modal-img {
-            background: linear-gradient(135deg, #292437, #181521) padding-box, linear-gradient(to bottom, #9e9e9e, #757575) border-box !important;
-            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(158, 158, 158, 0.25), inset 0 10px 30px rgba(0,0,0,0.5) !important;
+            background: linear-gradient(135deg, var(--card-bg), var(--main-bg)) padding-box, linear-gradient(to bottom, #9e9e9e, #757575) border-box !important;
+            border: 2px solid transparent !important; box-shadow: 0 10px 30px rgba(158, 158, 158, 0.25), inset 0 10px 30px rgba(0,0,0,0.3) !important;
         }
 
         .section-panel { background: var(--main-bg); border-radius: 16px; padding: 25px; border: 1px solid var(--border-color); }
@@ -238,7 +293,15 @@
         }
     </style>
 </head>
-<body data-theme="dark">
+<body>
+
+    <!-- DECORACIONES HALLOWEEN FONDO -->
+    <i class="fa-solid fa-bat bat-bg bat-1"></i>
+    <i class="fa-solid fa-bat bat-bg bat-2"></i>
+    <i class="fa-solid fa-bat bat-bg bat-3"></i>
+    
+    <div class="hanging-spider spider-1"><i class="fa-solid fa-spider"></i></div>
+    <div class="hanging-spider spider-2"><i class="fa-solid fa-spider"></i></div>
 
     <!-- MENSAJE DE PERMISO DENEGADO -->
     <div class="toast-alert" id="toastAlert">
@@ -257,24 +320,28 @@
     <aside class="sidebar" id="sidebar">
         <!-- HEADER PRINCIPAL -->
         <div class="sidebar-header">
-            <img src="logo.jpg" alt="Logo">
+            <img src="logo.jpg" alt="Logo" onerror="this.src='logo.jpg';">
             <div>
                 <h2>Mi Casita</h2>
                 <p>Gremio de Guardian Tales</p>
             </div>
         </div>
 
-        <!-- PERFIL DEL USUARIO DINÁMICO CON BOTÓN ROJO -->
+        <!-- PERFIL DEL USUARIO DINÁMICO -->
         <div class="user-profile-sidebar" id="user-profile-sidebar">
             <div class="profile-info-wrap">
                 <img src="" id="sidebar-avatar" alt="Perfil" onerror="this.src='logo.jpg';">
-                <span id="sidebar-name">Usuario</span>
+                <div class="user-meta">
+                    <span id="sidebar-name">Usuario</span>
+                    <p><i class="fa-solid fa-coins" style="color:var(--kamazon-gold);"></i> <span id="sidebarTotalPower">0</span> pts</p>
+                </div>
             </div>
             <button class="logout-btn" id="logoutBtn" title="Cerrar sesión">
                 <i class="fa-solid fa-power-off"></i>
             </button>
         </div>
 
+        <!-- MENÚ INICIO -->
         <div class="nav-group">
             <div class="nav-title">INICIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
@@ -282,20 +349,46 @@
                 <a href="noticias.html" class="nav-item"><i class="fa-regular fa-newspaper"></i> Noticias del gremio</a>
             </div>
         </div>
+
+        <!-- MENÚ GREMIO -->
         <div class="nav-group">
             <div class="nav-title">GREMIO <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
-                <a href="resumen.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-chart-pie"></i> Resumen del gremio</a>
-                <a href="guia.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-book-bookmark"></i> Guía</a>
-                <a href="ranking.html" class="nav-item restrict-caballero" data-req="Caballero"><i class="fa-solid fa-trophy"></i> Ranking de la casa</a>
+                <a href="resumen.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-chart-pie"></i> Resumen del gremio
+                </a>
+                <a href="guia.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-book-bookmark"></i> Guía
+                </a>
+                <a href="ranking.html" class="nav-item restrict-caballero" data-req="Caballero">
+                    <i class="fa-solid fa-trophy"></i> Ranking de la casa
+                </a>
             </div>
         </div>
+        
+        <!-- SECCIÓN DE EVENTOS ESPECIALES -->
+        <div class="nav-group">
+            <div class="nav-title" style="color: var(--halloween-orange);">EVENTOS ESPECIALES <i class="fa-solid fa-ghost"></i></div>
+            <div class="nav-items-container">
+                <a href="eventos.html" class="nav-item"><i class="fa-solid fa-spider"></i> Festival de Halloween</a>
+            </div>
+        </div>
+
+        <!-- MENÚ GUARDIANES -->
         <div class="nav-group">
             <div class="nav-title">CUENTOS DE GUARDIANES <i class="fa-solid fa-chevron-down"></i></div>
             <div class="nav-items-container">
                 <a href="heroes.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-users-viewfinder"></i> Héroes</a>
                 <a href="equipos.html" class="nav-item active restrict-heroe" data-req="Heroe"><i class="fa-solid fa-shield-halved"></i> Equipos</a>
-                <a href="incursiones.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-ghost"></i> Incursiones</a>
+            </div>
+        </div>
+
+        <!-- MENÚ INCURSIONES -->
+        <div class="nav-group">
+            <div class="nav-title">INCURSIONES <i class="fa-solid fa-chevron-down"></i></div>
+            <div class="nav-items-container">
+                <a href="incursiones.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-solid fa-ghost"></i> Asalto</a>
+                <a href="arena.html" class="nav-item restrict-heroe" data-req="Heroe"><i class="fa-brands fa-d-and-d"></i> Arena de Mazmorras</a>
             </div>
         </div>
     </aside>
@@ -306,12 +399,12 @@
                 <button class="toggle-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
                 <span>Mi Casita &nbsp; > &nbsp; Cuentos de Guardianes &nbsp; > &nbsp; <b>Equipos</b></span>
             </div>
-            <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-sun"></i></button>
+            <button class="theme-btn" id="themeToggle" title="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
         </div>
 
         <div class="dashboard-container">
             <div class="gallery-header">
-                <div class="gallery-icon" style="background: linear-gradient(135deg, #d84d65, #ff7b93);"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="gallery-icon"><i class="fa-solid fa-shield-halved"></i></div>
                 <div class="gallery-title">
                     <h1>Arsenal y Equipamiento</h1>
                     <p>HOGAR / EQUIPOS</p>
@@ -346,16 +439,17 @@
             </div>
 
             <div class="equip-grid" id="equipGrid">
-                <p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Cargando arsenal desde la base de datos...</p>
+                <p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Cargando arsenal desde Google Apps Script...</p>
             </div>
         </div>
     </main>
 
+    <!-- MODAL DE DETALLES DEL ÍTEM -->
     <div class="modal-overlay" id="equipModal" onclick="closeModal()">
         <div class="modal-content" id="equipModalContent" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h2 id="em-header-name">
-                    <i class="fa-solid fa-shield-halved" style="color: var(--setup-blue); margin-right: 8px;"></i> Detalle del Ítem
+                    <i class="fa-solid fa-shield-halved" style="color: var(--halloween-orange); margin-right: 8px;"></i> Detalle del Ítem
                 </h2>
                 <button class="close-modal-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -364,7 +458,7 @@
                 <div class="equip-profile-col">
                     <div class="em-img-box" id="em-img-container">
                         <div id="em-stars-container" class="equip-stars" style="justify-content: center; margin-bottom: 12px; width: 100%;"></div>
-                        <img src="" id="em-main-img" class="em-main-img">
+                        <img src="" id="em-main-img" class="em-main-img" alt="Item">
                     </div>
                 </div>
 
@@ -395,22 +489,63 @@
                         
                         <div class="skill-item" id="em-hero-assoc-container" style="border-top: 1px dashed var(--border-color); padding-top: 15px; margin-top: 20px;">
                             <div class="skill-type">Exclusiva para el Héroe</div>
-                            <div class="skill-name" id="em-hero-assoc" style="color: var(--setup-blue);">-</div>
+                            <div class="skill-name" id="em-hero-assoc" style="color: var(--halloween-orange);">-</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- WIDGETBOT DISCORD -->
+    <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
+        new Crate({ server: '1518747166494163045', channel: '1518747167261593632', color: '#120e17', notifications: true })
+    </script>
     
     <script>
+        // ==========================================
+        // GESTIÓN DE TEMAS (Oscuro, Claro, Blanco y Negro)
+        // ==========================================
+        const themeBtn = document.getElementById('themeToggle');
+        const rootElement = document.documentElement;
+
+        function aplicarTema(tema) {
+            if (tema === 'light') {
+                rootElement.setAttribute('data-theme', 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else if (tema === 'bn') {
+                rootElement.setAttribute('data-theme', 'bn');
+                themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>';
+            } else {
+                rootElement.removeAttribute('data-theme');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        }
+
+        let temaActual = localStorage.getItem('tema-casita') || 'dark';
+        aplicarTema(temaActual);
+
+        themeBtn.addEventListener('click', () => {
+            if (!rootElement.hasAttribute('data-theme')) {
+                temaActual = 'light';
+            } else if (rootElement.getAttribute('data-theme') === 'light') {
+                temaActual = 'bn';
+            } else {
+                temaActual = 'dark';
+            }
+            localStorage.setItem('tema-casita', temaActual);
+            aplicarTema(temaActual);
+        });
+
         // =========================================================================
-        // COMPROBAR SESIÓN Y GESTIONAR ROLES Y CANDADOS
+        // COMPROBAR SESIÓN, CARGAR PERFIL Y PUNTOS TOTALES
         // =========================================================================
-        document.addEventListener("DOMContentLoaded", () => {
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz7IeyA8op6c_3Haq-7f4-kxwRPeiJJ1PhqSCNQbTo2ud-HkkJoclnqIz0XsCSbSvJ4NA/exec';
+
+        document.addEventListener("DOMContentLoaded", async () => {
             if (localStorage.getItem('sesion_activa') === 'true') {
                 const avatarGuardado = localStorage.getItem('usuario_avatar');
-                const nombreGuardado = localStorage.getItem('usuario_nombre');
+                const nombreGuardado = localStorage.getItem('usuario_nombre') || 'Newt';
                 const rolUsuario = (localStorage.getItem('usuario_roll') || 'basico').toLowerCase().trim();
                 
                 document.getElementById('user-profile-sidebar').style.display = 'flex';
@@ -420,6 +555,28 @@
                 }
                 if (nombreGuardado) document.getElementById('sidebar-name').innerText = nombreGuardado;
 
+                try {
+                    const res = await fetch(`${API_URL}?_=${new Date().getTime()}`);
+                    const allSheetsData = await res.json();
+                    
+                    const rawHalloween = allSheetsData["halloween"] || [];
+                    const pDataTotal = rawHalloween.map(row => {
+                        let newRow = {};
+                        for(let key in row) { newRow[key.trim().toLowerCase()] = row[key]; }
+                        return newRow;
+                    });
+                    const miRegistro = pDataTotal.find(r => r.nombre && r.nombre.toLowerCase().trim() === nombreGuardado.toLowerCase().trim());
+                    const totalPuntos = miRegistro ? (parseInt(miRegistro.total) || 0) : 0;
+                    document.getElementById('sidebarTotalPower').innerText = totalPuntos.toLocaleString();
+
+                    // Cargar Equipos y Héroes usando la API unificada
+                    cargarDatosEquipos(allSheetsData);
+
+                } catch (err) {
+                    console.error("Error al cargar datos desde Apps Script:", err);
+                }
+
+                // Control de permisos de usuario para los menús
                 document.querySelectorAll('.nav-item').forEach(link => {
                     const reqOriginal = link.getAttribute('data-req');
                     if (reqOriginal) {
@@ -454,7 +611,8 @@
         });
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            document.getElementById('logoutOverlay').classList.add('active'); 
+            const logoutOverlay = document.getElementById('logoutOverlay');
+            logoutOverlay.classList.add('active'); 
             setTimeout(() => {
                 localStorage.removeItem('sesion_activa');
                 localStorage.removeItem('usuario_nombre');
@@ -469,7 +627,6 @@
         // =========================================================================
         const urlSpritesheet = "https://static.wikia.nocookie.net/guardian-tales/images/1/10/Spritesheet_Cards.png?format=original";
         
-        // Íconos de Estrellas
         const starEpicUrl = "https://static.wikia.nocookie.net/guardian-tales/images/5/53/Icon_EquipStar_Epic.png/revision/latest?cb=20231021080533&format=original";
         const starLegUrl = "https://static.wikia.nocookie.net/guardian-tales/images/4/40/StageStar_Sub.png/revision/latest?cb=20210221222151&format=original";
 
@@ -530,18 +687,13 @@
         let equiposDB = [];
         let selectedType = 'all';
 
-        const timestamp = new Date().getTime();
-        const apiHeroes = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Heroes&_=${timestamp}`;
-        const apiArmas = `https://sheetdb.io/api/v1/ht7mdi08mv7xo?sheet=Armas&_=${timestamp}`;
-
-        Promise.all([
-            fetch(apiHeroes).then(res => res.json()),
-            fetch(apiArmas).then(res => res.json())
-        ]).then(([heroesData, armasData]) => {
+        function cargarDatosEquipos(allSheetsData) {
+            const rawHeroes = allSheetsData["heroes"] || [];
+            const rawArmas = allSheetsData["armas"] || [];
             
             let contadorCartas = 0;
 
-            equiposDB = armasData.filter(a => a.id_arma && a.nombre).map(a => {
+            equiposDB = rawArmas.filter(a => a.id_arma && a.nombre).map(a => {
                 let imgStr = normalizarUrlImagen(a.img);
                 const isCard = (a.tipo && a.tipo.toLowerCase() === 'carta') || (a.id_arma && a.id_arma.startsWith('carta_'));
                 
@@ -552,14 +704,12 @@
                     contadorCartas++;
                 }
 
-                // Determinador de categoría automática
                 let rawTipo = (a.tipo || '').toLowerCase();
                 let cat = 'arma';
                 if (rawTipo.includes('carta') || isCard) cat = 'carta';
                 else if (rawTipo.includes('reliquia')) cat = 'reliquia';
                 else if (rawTipo.includes('accesorio') || rawTipo.includes('anillo') || rawTipo.includes('collar') || rawTipo.includes('broche') || a.clasificacion === 'Epico') cat = 'accesorio';
 
-                // Determinar Rareza, Marcos y Estrellas
                 let classifLower = (a.clasificacion || '').toLowerCase();
                 
                 let isMythic = classifLower.includes('mito') || classifLower.includes('mitic');
@@ -576,15 +726,15 @@
                 if (isMythic) {
                     frameClass = 'myth-equip';
                     starCount = 6;
-                    starImg = starEpicUrl; // Usa la estrella de borde verde (Mítico son 6 estrellas)
+                    starImg = starEpicUrl;
                 } else if (isEpic) {
                     frameClass = 'epic-equip';
                     starCount = 5;
-                    starImg = starEpicUrl; // Estrella verde
+                    starImg = starEpicUrl;
                 } else if (isLegend) {
                     frameClass = 'leg-equip';
                     starCount = 4;
-                    starImg = starLegUrl; // Estrella dorada leyenda
+                    starImg = starLegUrl;
                 } else if (isUnique) {
                     frameClass = 'unique-equip';
                     starCount = 3;
@@ -599,13 +749,12 @@
                     starImg = starLegUrl;
                 }
 
-                // Las cartas no llevan marco ni estrellas
                 if (isCard) {
                     starCount = 0;
                     frameClass = '';
                 }
 
-                let heroObj = heroesData.find(h => h.id === a.heroe_id);
+                let heroObj = rawHeroes.find(h => h.id === a.heroe_id);
                 let heroName = heroObj ? heroObj.nombre : (a.heroe_id && a.heroe_id !== 'ninguno' ? a.heroe_id : 'Ninguno');
 
                 return {
@@ -628,11 +777,7 @@
             });
 
             applyFiltersAndSort();
-
-        }).catch(error => {
-            console.error("Error cargando los equipos:", error);
-            document.getElementById('equipGrid').innerHTML = '<p style="color:var(--accent-red); grid-column: 1/-1; text-align:center;">Error al cargar la base de datos. Verifica tu enlace de SheetDB.</p>';
-        });
+        }
 
         const grid = document.getElementById('equipGrid');
 
@@ -699,9 +844,9 @@
             });
         }
 
-        // =========================================================================
+        // ==========================================
         // FUNCIONALIDAD DEL MODAL
-        // =========================================================================
+        // ==========================================
         function openModal(id) {
             const item = equiposDB.find(e => e.id === id);
             if(!item) return;
@@ -713,7 +858,6 @@
             document.getElementById('em-skill-name').innerText = item.skillName;
             document.getElementById('em-skill-desc').innerText = item.skillDesc;
 
-            // Renderizar Estrellas en el Modal
             const starsContainer = document.getElementById('em-stars-container');
             if (item.starCount > 0) {
                 let sHTML = '';
@@ -734,11 +878,8 @@
             }
 
             const imgContainer = document.getElementById('em-img-container');
-            
-            // Limpiar clases previas del modal y agregar la nueva
             imgContainer.className = 'em-img-box';
             if (item.frameClass) {
-                // Mapear clase de grid a clase de modal (e.g. myth-equip -> myth-modal-img)
                 const modalClass = item.frameClass.replace('-equip', '-modal-img');
                 imgContainer.classList.add(modalClass);
             }
@@ -786,33 +927,19 @@
 
         document.getElementById('searchInput').addEventListener('input', applyFiltersAndSort);
 
-        document.getElementById('toggleSidebar').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('collapsed'); });
-        document.querySelectorAll('.nav-title').forEach(title => {
-            title.addEventListener('click', () => { title.closest('.nav-group').classList.toggle('collapsed-group'); });
-        });
-        
-        const themeBtn = document.getElementById('themeToggle');
-        const rootElement = document.body;
-
-        if (localStorage.getItem('tema-casita') === 'light') {
-            rootElement.removeAttribute('data-theme');
-            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
-        } else {
-            rootElement.setAttribute('data-theme', 'dark');
-            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        // Control de barra lateral colapsable
+        const sidebar = document.getElementById('sidebar');
+        if (localStorage.getItem('sidebar-colapsada') === 'true') {
+            sidebar.classList.add('collapsed');
         }
 
-        themeBtn.addEventListener('click', () => {
-            let isDark = rootElement.hasAttribute('data-theme');
-            if (isDark) {
-                rootElement.removeAttribute('data-theme');
-                localStorage.setItem('tema-casita', 'light');
-                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
-            } else {
-                rootElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('tema-casita', 'dark');
-                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
-            }
+        document.getElementById('toggleSidebar').addEventListener('click', () => { 
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebar-colapsada', sidebar.classList.contains('collapsed'));
+        });
+
+        document.querySelectorAll('.nav-title').forEach(title => {
+            title.addEventListener('click', () => { title.closest('.nav-group').classList.toggle('collapsed-group'); });
         });
     </script>
 </body>
